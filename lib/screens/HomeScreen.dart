@@ -1,20 +1,5 @@
 import 'package:flutter/material.dart';
 
-<<<<<<< HEAD
-
-
-class HomeScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-
-    return Scaffold(
-      appBar: AppBar(title: Text('Home')),
-      body: Center(child: Text('Bienvenido a la pantalla principal')),
-    );
-  }
-
-}
-=======
 class HomeScreen extends StatefulWidget {
   final String email;
 
@@ -110,4 +95,3 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
->>>>>>> 90a96c5ca88dcfca314c8e67a84281804ffe9bc3

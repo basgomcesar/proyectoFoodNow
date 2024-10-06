@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-<<<<<<< HEAD
 import '../controllers/AuthController.dart';
 import 'HomeScreen.dart';
-=======
->>>>>>> 90a96c5ca88dcfca314c8e67a84281804ffe9bc3
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -23,40 +20,15 @@ class _LoginScreenState extends State<LoginScreen> {
 
   // Método principal para manejar el inicio de sesión
   void _login() async {
-<<<<<<< HEAD
-    setState(() {
-      _isLoading = true;
-      _errorMessage = '';
-    });
-
-    bool isSuccess = true;
-=======
     if (_formKey.currentState?.validate() != true) {
       return; // Si el formulario no es válido, no continuar
     }
->>>>>>> 90a96c5ca88dcfca314c8e67a84281804ffe9bc3
 
     setState(() {
       _isLoading = true; // Mostrar indicador de carga
       _errorMessage = ''; // Limpiar mensaje de error
     });
 
-<<<<<<< HEAD
-      // Redirigir a la pantalla principal
-    if (isSuccess) {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => HomeScreen()),
-      );
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('Login')),
-      body: Padding(
-        padding: const EdgeInsets.all(50.0),
-=======
     await Future.delayed(Duration(seconds: 2)); // Simulación de espera
 
     if (_isCredentialsValid()) {
@@ -98,7 +70,6 @@ class _LoginScreenState extends State<LoginScreen> {
       padding: const EdgeInsets.all(16.0),
       child: Form(
         key: _formKey,
->>>>>>> 90a96c5ca88dcfca314c8e67a84281804ffe9bc3
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
