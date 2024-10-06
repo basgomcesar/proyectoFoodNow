@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
-import 'screens/LoginScreen.dart';
+import 'screens/loginScreen.dart';
+import 'screens/HomeScreen.dart';
+import 'screens/PerfilScreen.dart';
+import 'screens/CreateProfile.dart';
+
 
 void main() {
   runApp(MyApp());
@@ -11,7 +15,27 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Login App',
       theme: ThemeData(primarySwatch: Colors.blue),
-      home: LoginScreen(),
+      initialRoute: '/',
+      onGenerateRoute: (settings) {
+        if (settings.name == '/home') {
+          final String email = settings.arguments as String;
+          return MaterialPageRoute(
+            builder: (context) => HomeScreen(email: email),
+          );
+        } else if (settings.name == '/perfil') {
+          final String email = settings.arguments as String;
+          return MaterialPageRoute(
+            builder: (context) => PerfilScreen(email: email),
+          );
+        } else if (settings.name == '/createProfile') {
+          return MaterialPageRoute(
+            builder: (context) => CreateProfile(),
+          );
+        }
+        return MaterialPageRoute(
+          builder: (context) => LoginScreen(),
+        );
+      },
     );
   }
 }
