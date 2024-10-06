@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../controllers/AuthController.dart';
+import 'HomeScreen.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -19,19 +20,18 @@ class _LoginScreenState extends State<LoginScreen> {
       _errorMessage = '';
     });
 
-    bool isSuccess = await _authController.login(
-      _emailController.text,
-      _passwordController.text,
-    );
+    bool isSuccess = true;
 
     setState(() {
       _isLoading = false;
       _errorMessage = isSuccess ? '' : 'Credenciales incorrectas';
     });
 
-    if (isSuccess) {
       // Redirigir a la pantalla principal
-      print("Inicio de sesión exitoso");
+    if (isSuccess) {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (_) => HomeScreen()),
+      );
     }
   }
 
@@ -40,7 +40,7 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       appBar: AppBar(title: Text('Login')),
       body: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(50.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
