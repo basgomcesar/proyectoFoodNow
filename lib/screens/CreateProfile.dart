@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class CreateProfile extends StatefulWidget {
+  const CreateProfile({super.key});
+
   @override
   _CreateProfileState createState() => _CreateProfileState();
 }

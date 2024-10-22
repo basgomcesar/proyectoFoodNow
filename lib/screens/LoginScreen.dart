@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import '../controllers/AuthController.dart';
-import 'HomeScreen.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }
@@ -11,78 +12,50 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  final FocusNode _emailFocusNode = FocusNode(); // FocusNode para el campo de email
   bool _isLoading = false;
   String _errorMessage = '';
+  bool _isKeyboardVisible = false; // Verificar si el teclado está visible
 
-  // Credenciales predefinidas
-  final String _validEmail = '1@uv.com';
-  final String _validPassword = 'password123';
+  @override
+  void initState() {
+    super.initState();
 
-  // Método principal para manejar el inicio de sesión
-  void _login() async {
-    if (_formKey.currentState?.validate() != true) {
-      return; // Si el formulario no es válido, no continuar
-    }
+    // Escuchar cambios en el FocusNode
+    _emailFocusNode.addListener(_handleFocusChange);
+  }
 
-    setState(() {
-      _isLoading = true; // Mostrar indicador de carga
-      _errorMessage = ''; // Limpiar mensaje de error
-    });
-
-    await Future.delayed(Duration(seconds: 2)); // Simulación de espera
-
-    if (_isCredentialsValid()) {
-      _navigateToHome(); // Navegar a la pantalla principal
+  // Método para manejar el cambio de foco
+  void _handleFocusChange() {
+    if (_emailFocusNode.hasFocus) {
+      setState(() {
+        _isKeyboardVisible = true; // Ocultar el logo cuando el campo de email tenga foco
+      });
     } else {
-      _showError('Credenciales incorrectas'); // Mostrar mensaje de error
+      setState(() {
+        _isKeyboardVisible = false; // Mostrar el logo cuando el foco se pierde
+      });
     }
   }
 
-  // Método para validar las credenciales
-  bool _isCredentialsValid() {
-    return _emailController.text.trim() == _validEmail &&
-        _passwordController.text == _validPassword;
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    _emailFocusNode.dispose(); // Liberar el FocusNode cuando ya no se necesita
+    super.dispose();
   }
 
-  // Método para navegar a la pantalla principal
-  void _navigateToHome() {
-    setState(() {
-      _isLoading = false; // Detener el indicador de carga
-    });
-    Navigator.pushReplacementNamed(
-      context,
-      '/home',
-      arguments: _emailController.text.trim(),
-    );
-  }
-
-  // Método para mostrar un mensaje de error
-  void _showError(String message) {
-    setState(() {
-      _isLoading = false; // Detener el indicador de carga
-      _errorMessage = message; // Establecer mensaje de error
-    });
-  }
-
-  // Método para construir el cuerpo de la pantalla
-  Widget _buildBody() {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Form(
-        key: _formKey,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            _buildEmailField(),
-            const SizedBox(height: 20),
-            _buildPasswordField(),
-            const SizedBox(height: 20),
-            if (_errorMessage.isNotEmpty) _buildErrorMessage(),
-            const SizedBox(height: 20),
-            _buildActionButtons(),
-          ],
-        ),
-      ),
+  // Método para construir el logotipo
+  Widget _buildLogo() {
+    // Ocultar el logo si el teclado está visible
+    if (_isKeyboardVisible) {
+      return const SizedBox.shrink();
+    }
+    return SvgPicture.asset(
+      'assets/loginIcon.svg',
+      width: 200,
+      height: 200,
     );
   }
 
@@ -90,9 +63,12 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget _buildEmailField() {
     return TextFormField(
       controller: _emailController,
+      focusNode: _emailFocusNode, // Vincular el FocusNode al campo de email
       decoration: const InputDecoration(
         labelText: 'Email',
-        border: OutlineInputBorder(),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.all(Radius.circular(20)),
+        ),
       ),
       keyboardType: TextInputType.emailAddress,
       validator: (value) {
@@ -108,13 +84,49 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
+  // Método para construir el cuerpo de la pantalla
+  Widget _buildBody() {
+    return Padding(
+      padding: const EdgeInsets.only(top: 70, left: 20, right: 20),
+      child: Form(
+        key: _formKey,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            _buildLogo(), // Logo que se ocultará si el teclado está visible
+            const SizedBox(height: 20),
+            _buildIniciarSesionLabel(),
+            const SizedBox(height: 20),
+            _buildEmailField(),
+            const SizedBox(height: 20),
+            _buildPasswordField(),
+            const SizedBox(height: 20),
+            if (_errorMessage.isNotEmpty) _buildErrorMessage(),
+            const SizedBox(height: 20),
+            _buildActionButtons(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Método para construir el texto de inicio de sesión
+  Widget _buildIniciarSesionLabel() {
+    return const Text(
+      'Iniciar sesión',
+      style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+    );
+  }
+
   // Método para construir el campo de contraseña
   Widget _buildPasswordField() {
     return TextFormField(
       controller: _passwordController,
       decoration: const InputDecoration(
         labelText: 'Password',
-        border: OutlineInputBorder(),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.all(Radius.circular(20)),
+        ),
       ),
       obscureText: true,
       validator: (value) {
@@ -137,50 +149,38 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  // Método para construir el botón de inicio de sesión
-  Widget _buildLoginButton() {
-    return _isLoading
-        ? const CircularProgressIndicator() // Mostrar indicador de carga
-        : ElevatedButton(
-            onPressed: _login,
-            child: const Text('Iniciar sesión'),
-          );
-  }
-
-  // Método para construir el botón de registro
-  Widget _buildRegisterButton() {
-    return ElevatedButton(
-      onPressed: () {
-        Navigator.pushNamed(context, '/createProfile'); // Navegar a CreateProfile
-      },
-      child: const Text('Crear Perfil'),
-    );
-  }
-
   // Método para construir los botones de acción
   Widget _buildActionButtons() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Column(
       children: [
-        Expanded(child: _buildLoginButton()), // Botón de inicio de sesión
-        const SizedBox(width: 20),
-        Expanded(child: _buildRegisterButton()), // Botón de crear perfil
+        ElevatedButton(
+          onPressed: _login,
+          child: _isLoading
+              ? const CircularProgressIndicator()
+              : const Text('Iniciar sesión'),
+        ),
+        const SizedBox(height: 20),
+        ElevatedButton(
+          onPressed: () {
+            Navigator.pushNamed(context, '/createProfile');
+          },
+          child: const Text('Crear Perfil'),
+        ),
       ],
     );
   }
 
-  @override
-  void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
-    super.dispose();
+  // Método principal para manejar el inicio de sesión
+  void _login() {
+    if (_formKey.currentState?.validate() == true) {
+      // Lógica de login
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Login')),
-      body: _buildBody(), // Construir el cuerpo de la pantalla
+      body: _buildBody(),
     );
   }
 }
