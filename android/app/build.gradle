@@ -23,7 +23,7 @@ android {
     }
 
 defaultConfig {
-    applicationId = "com.example.food_now"
+    applicationId = "com.food.foodnow"
     minSdkVersion 21            // Especifica aquí la versión mínima del SDK
     targetSdkVersion 33         // Especifica la versión objetivo del SDK
     versionCode 1               // Número de versión de código

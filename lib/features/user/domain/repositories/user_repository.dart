@@ -1,6 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:loging_app/features/user/domain/entities/user.dart';
-import 'package:loging_app/core/error/Failure.dart';
+import 'package:loging_app/core/error/failure.dart';
 
 abstract class UserRepository {
   Future<Either<Failure, User>> getUser(String userId); 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'screens/loginScreen.dart';
+import 'package:loging_app/features/user/presentation/screens/LoginScreen.dart';
+import 'features/user/presentation/screens/LoginScreen.dart';
 import 'screens/HomeScreen.dart';
 import 'screens/PerfilScreen.dart';
 import 'screens/CreateProfile.dart';
@@ -10,7 +11,7 @@ import 'package:firebase_core/firebase_core.dart'; //PRUEBA FIREBASE
 void main() async{//PRUEBA FIREBASE
   WidgetsFlutterBinding.ensureInitialized(); //PRUEBA FIREBASE
   await Firebase.initializeApp(); //PRUEBA FIREBASE
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -20,28 +21,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Login App',
-      theme: ThemeData(primarySwatch: Colors.blue),
-      initialRoute: '/',
-      onGenerateRoute: (settings) {
-        if (settings.name == '/home') {
-          final String email = settings.arguments as String;
-          return MaterialPageRoute(
-            builder: (context) => HomeScreen(email: email),
-          );
-        } else if (settings.name == '/perfil') {
-          final String email = settings.arguments as String;
-          return MaterialPageRoute(
-            builder: (context) => PerfilScreen(email: email),
-          );
-        } else if (settings.name == '/createProfile') {
-          return MaterialPageRoute(
-            builder: (context) => CreateProfile(),
-          );
-        }
-        return MaterialPageRoute(
-          builder: (context) => LoginScreen(),
-        );
-      },
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(primarySwatch: Colors.orange,),
+      home:  const LoginScreen(),
     );
   }
 }
