@@ -1,15 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:loging_app/features/user/data/datasources/user_local_data_source.dart';
-import 'package:loging_app/features/user/data/datasources/user_remote_data_source.dart';
-import 'package:loging_app/features/user/data/repositories/user_repository_impl.dart';
 import 'package:loging_app/features/user/domain/use_cases/login_user_use_case.dart';
 import "package:loging_app/features/user/presentation/bloc/login_user/login_user_bloc.dart"; // Asegúrate de importar tu BLoC
 import 'package:loging_app/features/user/presentation/bloc/login_user/login_user_event.dart'; // Asegúrate de importar tus eventos
 import 'package:loging_app/features/user/presentation/bloc/login_user/login_user_state.dart'; // Asegúrate de importar tus estados
 import 'package:loging_app/injection_container.dart';
-import 'package:shared_preferences/shared_preferences.dart'; // Asegúrate de importar tus estados
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});

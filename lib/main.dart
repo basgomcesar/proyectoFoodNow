@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:loging_app/core/utils/routes.dart';
-import 'package:loging_app/features/user/presentation/screens/LoginScreen.dart';
 import 'package:loging_app/injection_container.dart' as di;
 import 'package:provider/provider.dart';
 

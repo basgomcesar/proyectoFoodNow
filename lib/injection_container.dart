@@ -1,5 +1,4 @@
 import 'package:get_it/get_it.dart';
-import 'package:loging_app/features/user/data/datasources/user_local_data_source.dart';
 import 'package:loging_app/features/user/data/datasources/user_remote_data_source.dart';
 import 'package:loging_app/features/user/data/repositories/user_repository_impl.dart';
 import 'package:loging_app/features/user/domain/repositories/user_repository.dart';

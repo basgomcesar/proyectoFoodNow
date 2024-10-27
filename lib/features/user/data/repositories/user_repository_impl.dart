@@ -1,7 +1,6 @@
 import 'package:dartz/dartz.dart';
 
 import 'package:loging_app/core/error/failure.dart';
-import 'package:loging_app/features/user/data/datasources/user_local_data_source.dart';
 import 'package:loging_app/features/user/data/datasources/user_remote_data_source.dart';
 
 import 'package:loging_app/features/user/domain/entities/user.dart';
