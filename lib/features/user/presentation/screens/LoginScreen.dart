@@ -1,5 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:loging_app/features/user/data/datasources/user_local_data_source.dart';
+import 'package:loging_app/features/user/data/datasources/user_remote_data_source.dart';
+import 'package:loging_app/features/user/data/repositories/user_repository_impl.dart';
+import 'package:loging_app/features/user/domain/use_cases/login_user_use_case.dart';
+import "package:loging_app/features/user/presentation/bloc/login_user/login_user_bloc.dart"; // Asegúrate de importar tu BLoC
+import 'package:loging_app/features/user/presentation/bloc/login_user/login_user_event.dart'; // Asegúrate de importar tus eventos
+import 'package:loging_app/features/user/presentation/bloc/login_user/login_user_state.dart'; // Asegúrate de importar tus estados
+import 'package:loging_app/injection_container.dart';
+import 'package:shared_preferences/shared_preferences.dart'; // Asegúrate de importar tus estados
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -12,60 +22,57 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  final FocusNode _emailFocusNode = FocusNode(); // FocusNode para el campo de email
-  bool _isLoading = false;
-  String _errorMessage = '';
-  bool _isKeyboardVisible = false; // Verificar si el teclado está visible
+  final FocusNode _emailFocusNode = FocusNode();
+  final FocusNode _passwordFocusNode = FocusNode();
+  bool _isKeyboardVisible = false;
+  LoginBloc _loginBloc =
+      LoginBloc(loginUserUseCase: serviceLocator<LoginUserUseCase>());
 
   @override
   void initState() {
     super.initState();
-
-    // Escuchar cambios en el FocusNode
     _emailFocusNode.addListener(_handleFocusChange);
+    _passwordFocusNode.addListener(_handleFocusChange);
   }
 
-  // Método para manejar el cambio de foco
   void _handleFocusChange() {
-    if (_emailFocusNode.hasFocus) {
-      setState(() {
-        _isKeyboardVisible = true; // Ocultar el logo cuando el campo de email tenga foco
-      });
-    } else {
-      setState(() {
-        _isKeyboardVisible = false; // Mostrar el logo cuando el foco se pierde
-      });
-    }
+    setState(() {
+      _isKeyboardVisible =
+          _emailFocusNode.hasFocus || _passwordFocusNode.hasFocus;
+    });
   }
 
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
-    _emailFocusNode.dispose(); // Liberar el FocusNode cuando ya no se necesita
+    _emailFocusNode.dispose();
     super.dispose();
   }
 
-  // Método para construir el logotipo
-  Widget _buildLogo() {
-    // Ocultar el logo si el teclado está visible
-    if (_isKeyboardVisible) {
-      return const SizedBox.shrink();
-    }
-    return SvgPicture.asset(
-      'assets/loginIcon.svg',
-      width: 200,
-      height: 200,
-    );
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _loginBloc =
+        LoginBloc(loginUserUseCase: serviceLocator<LoginUserUseCase>());
   }
 
-  // Método para construir el campo de correo electrónico
+  Widget _buildLogo() {
+    return _isKeyboardVisible
+        ? const SizedBox.shrink()
+        : SvgPicture.asset(
+            'assets/loginIcon.svg',
+            width: 200,
+            height: 200,
+          );
+  }
+
   Widget _buildEmailField() {
     return TextFormField(
       controller: _emailController,
-      focusNode: _emailFocusNode, // Vincular el FocusNode al campo de email
+      focusNode: _emailFocusNode,
       decoration: const InputDecoration(
-        labelText: 'Email',
+        labelText: 'Correo electrónico',
         border: OutlineInputBorder(
           borderRadius: BorderRadius.all(Radius.circular(20)),
         ),
@@ -84,46 +91,12 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  // Método para construir el cuerpo de la pantalla
-  Widget _buildBody() {
-    return Padding(
-      padding: const EdgeInsets.only(top: 70, left: 20, right: 20),
-      child: Form(
-        key: _formKey,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            _buildLogo(), // Logo que se ocultará si el teclado está visible
-            const SizedBox(height: 20),
-            _buildIniciarSesionLabel(),
-            const SizedBox(height: 20),
-            _buildEmailField(),
-            const SizedBox(height: 20),
-            _buildPasswordField(),
-            const SizedBox(height: 20),
-            if (_errorMessage.isNotEmpty) _buildErrorMessage(),
-            const SizedBox(height: 20),
-            _buildActionButtons(),
-          ],
-        ),
-      ),
-    );
-  }
-
-  // Método para construir el texto de inicio de sesión
-  Widget _buildIniciarSesionLabel() {
-    return const Text(
-      'Iniciar sesión',
-      style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
-    );
-  }
-
-  // Método para construir el campo de contraseña
   Widget _buildPasswordField() {
     return TextFormField(
       controller: _passwordController,
+      focusNode: _passwordFocusNode,
       decoration: const InputDecoration(
-        labelText: 'Password',
+        labelText: 'Contraseña',
         border: OutlineInputBorder(
           borderRadius: BorderRadius.all(Radius.circular(20)),
         ),
@@ -141,46 +114,119 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  // Método para construir el mensaje de error
-  Widget _buildErrorMessage() {
-    return Text(
-      _errorMessage,
-      style: const TextStyle(color: Colors.red),
-    );
-  }
-
-  // Método para construir los botones de acción
   Widget _buildActionButtons() {
     return Column(
       children: [
         ElevatedButton(
           onPressed: _login,
-          child: _isLoading
-              ? const CircularProgressIndicator()
-              : const Text('Iniciar sesión'),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color.fromRGBO(
+                220, 107, 39, 1), // Set the button color to orange
+          ),
+          child: const Text('Iniciar sesión',
+              style: TextStyle(
+                  color: Color.fromRGBO(255, 255, 255, 1), fontSize: 15)),
         ),
         const SizedBox(height: 20),
-        ElevatedButton(
-          onPressed: () {
-            Navigator.pushNamed(context, '/createProfile');
-          },
-          child: const Text('Crear Perfil'),
-        ),
+        _buildCreateAccountLabel(),
       ],
     );
   }
 
-  // Método principal para manejar el inicio de sesión
+// ElevatedButton(
+//           onPressed: () {
+//             Navigator.pushNamed(context, '/createProfile');
+//           },
+//           child: _buildCreateAccountLabel(),
+//         )
   void _login() {
     if (_formKey.currentState?.validate() == true) {
-      // Lógica de login
+      final email = _emailController.text;
+      final password = _passwordController.text;
+      print("Aqui se debe llamar al método de login del BLoC");
+      context.read<LoginBloc>().add(LoginButtonPressed(
+          email: email,
+          password:
+              password)); // Aquí se llama al evento de login del BLoC con los datos del formulario
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: _buildBody(),
+    return BlocProvider(
+      create: (_) => _loginBloc,
+      child: BlocListener(
+        bloc: _loginBloc,
+        listener: (context, state) {
+          if (state is LoginSuccess) {
+            Navigator.pushNamed(context, '/home');
+          } else if (state is LoginFailure) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(state.error)),
+            );
+          } else if (state is LoginLoading) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text("Cargando...")),
+            );
+          }
+        },
+        child: Scaffold(
+          body: Padding(
+            padding: const EdgeInsets.only(top: 70, left: 20, right: 20),
+            child: _buildForm(),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildIniciarSesionLabel() {
+    return const Text(
+      'Iniciar sesión',
+      style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+    );
+  }
+
+  Widget _buildForm() {
+    return Form(
+      key: _formKey,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          _buildLogo(),
+          const SizedBox(height: 20),
+          _buildIniciarSesionLabel(),
+          const SizedBox(height: 20),
+          _buildEmailField(),
+          const SizedBox(height: 20),
+          _buildPasswordField(),
+          const SizedBox(height: 20),
+          _buildActionButtons(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCreateAccountLabel() {
+    //Label ¿No tienes una cuenta? and the button to create an account
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const Text('¿No tienes una cuenta?'),
+        const SizedBox(width: 10),
+        GestureDetector(
+          onTap: () {
+            Navigator.pushNamed(context, '/createProfile');
+          },
+          child: const Text(
+            'Crear cuenta',
+            style: TextStyle(
+              color: Colors.blue,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

@@ -38,5 +38,7 @@ class UserModel  extends User{
       userType: user.userType,
     );
   }
+
+  get id => null;
   
 }

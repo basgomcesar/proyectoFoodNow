@@ -9,10 +9,10 @@ import 'package:loging_app/features/user/domain/entities/user.dart';
 import '../../domain/repositories/user_repository.dart';
 
 class UserRepositoryImpl implements UserRepository {
-  final UserLocalDataSource userLocalDataSource;
+
   final UserRemoteDataSource userRemoteDataSource;
 
-  UserRepositoryImpl({required this.userLocalDataSource, required this.userRemoteDataSource});
+  UserRepositoryImpl(this.userRemoteDataSource);
 
   @override
   Future<Either<Failure, User>> authenticateUser(String email, String password) async {

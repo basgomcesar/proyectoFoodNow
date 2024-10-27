@@ -1,29 +1,36 @@
 import 'package:flutter/material.dart';
+import 'package:loging_app/core/utils/routes.dart';
 import 'package:loging_app/features/user/presentation/screens/LoginScreen.dart';
-import 'features/user/presentation/screens/LoginScreen.dart';
-import 'screens/HomeScreen.dart';
-import 'screens/PerfilScreen.dart';
-import 'screens/CreateProfile.dart';
-import 'package:flutter/material.dart'; //PRUEBA FIREBASE
-import 'package:firebase_core/firebase_core.dart'; //PRUEBA FIREBASE
+import 'package:loging_app/injection_container.dart' as di;
+import 'package:provider/provider.dart';
+
+import 'features/user/presentation/bloc/login_user/login_user_bloc.dart';
 
 
-void main() async{//PRUEBA FIREBASE
-  WidgetsFlutterBinding.ensureInitialized(); //PRUEBA FIREBASE
-  await Firebase.initializeApp(); //PRUEBA FIREBASE
-  runApp(const MyApp());
+void main() async{
+  WidgetsFlutterBinding.ensureInitialized();
+  await di.init();
+  runApp(
+    MultiProvider(
+      providers: [
+        Provider<LoginBloc>(create: (_) => LoginBloc(loginUserUseCase: di.serviceLocator())),
+      ],
+      child:  MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
- // this line is added automatically by Flutter and is used to create a stateless widget called MyApp and extends StatelessWidget class which is a base class for widgets that do not require mutable state.
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Login App',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(primarySwatch: Colors.orange,),
-      home:  const LoginScreen(),
+      initialRoute:  AppRoutes.login,
+      routes: AppRoutes.getRoutes(),
     );
   }
 }

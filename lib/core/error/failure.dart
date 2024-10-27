@@ -8,9 +8,9 @@ abstract class Failure {
 }
 
 class ServerFailure extends Failure {
-  ServerFailure(String message) : super(message);
+  ServerFailure(super.message);
 }
 
 class LocalFailure extends Failure {
-  LocalFailure(String message) : super(message);
+  LocalFailure(super.message);
 }
