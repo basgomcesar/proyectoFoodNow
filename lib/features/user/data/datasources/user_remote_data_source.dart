@@ -12,19 +12,38 @@ abstract class UserRemoteDataSource {
 class UserRemoteDataSourceImpl implements UserRemoteDataSource {
   final Dio client = Dio();
   // Eliminar la referencia a FirebaseFirestore
-  final String apiUrl = 'http://localhost:3000/users'; // URL de tu API
+  final String apiUrl = 'http://localhost:3000/auth/login'; // URL de tu API
 
   // Constructor sin FirebaseFirestore
   UserRemoteDataSourceImpl();
 
   @override
-  Future<UserModel> authenticateUser(String email, String password) async {
-    final response = await client.get('$apiUrl?email=$email&password=$password');
+  Future<UserModel> authenticateUser(String correo, String password) async {
+    
+    final response = await client.post(
+      apiUrl,
+      data: {
+        'correo': correo,
+        'password': password,
+      },
+      options: Options(headers: {'Content-Type': 'application/json'}),
+    );
 
-    if (response.statusCode == 200 && response.data.isNotEmpty) {
-      return UserModel.fromJson(response.data.first);
+    if (response.statusCode == 200) {
+      print('UserRemoteDataSourceImpl: authenticateUser: response.data: ${response.data}');
+      //Hacer un usermodel de prueba que se regrese en lugar de response.data para que no falle el login en el login_user_bloc.dart
+      return UserModel (
+        name: 'name', //Lo que hac eesta linea es que si el login es exitoso, se regresa un usermodel con los datos que se necesitan para que no falle el login en el login_user_bloc.dart
+        lastName: 'lastName',
+        email: response.data['correo'],
+        password: response.data['password'],
+        phoneNumber: 'telefono',
+        userType: 'userType',
+        photo: 'photo',
+      );
+
     } else {
-      throw Exception('User not found');
+      throw Exception('Failed to authenticate user');
     }
   }
 
