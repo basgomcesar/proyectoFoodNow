@@ -14,7 +14,7 @@ void main() async{
       providers: [
         Provider<LoginBloc>(create: (_) => LoginBloc(loginUserUseCase: di.serviceLocator())),
       ],
-      child:  MyApp(),
+      child:  const MyApp(),
     ),
   );
 }

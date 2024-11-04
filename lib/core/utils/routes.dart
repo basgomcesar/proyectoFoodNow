@@ -11,9 +11,9 @@ class AppRoutes {
 
   static Map<String, WidgetBuilder> getRoutes() {
     return {
-      login: (context) => LoginScreen(),
-      createProfile: (context) => CreateProfile(),
-      home: (context) => HomeScreen(email: '',),
+      login: (context) => const LoginScreen(),
+      createProfile: (context) => const CreateProfile(),
+      home: (context) => const HomeScreen(email: '',),
     };
   }
 }

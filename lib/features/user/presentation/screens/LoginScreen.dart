@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:loging_app/features/user/domain/use_cases/login_user_use_case.dart';
 import 'package:loging_app/features/user/presentation/bloc/login_user/login_user_bloc.dart';
 import 'package:loging_app/features/user/presentation/bloc/login_user/login_user_event.dart';
 import 'package:loging_app/features/user/presentation/bloc/login_user/login_user_state.dart';
 import 'package:loging_app/injection_container.dart';
+import 'package:loging_app/features/user/presentation/widgets/logo_widget.dart';
+import 'package:loging_app/features/user/presentation/widgets/email_field_widget.dart';
+import 'package:loging_app/features/user/presentation/widgets/password_field_widget.dart';
+import 'package:loging_app/features/user/presentation/widgets/actions_buttons.dart';
+
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -20,8 +24,7 @@ class LoginScreen extends StatelessWidget {
 }
 
 class LoginScreenContent extends StatefulWidget {
-  const LoginScreenContent({Key? key}) : super(key: key);
-
+  const LoginScreenContent({super.key});
   @override
   _LoginScreenContentState createState() => _LoginScreenContentState();
 }
@@ -56,77 +59,6 @@ class _LoginScreenContentState extends State<LoginScreenContent> {
     super.dispose();
   }
 
-  Widget _buildLogo() {
-    return _isKeyboardVisible
-        ? const SizedBox.shrink()
-        : SvgPicture.asset(
-            'assets/loginIcon.svg',
-            width: 200,
-            height: 200,
-          );
-  }
-
-  Widget _buildEmailField() {
-    return TextFormField(
-      controller: _emailController,
-      focusNode: _emailFocusNode,
-      decoration: const InputDecoration(
-        labelText: 'Correo electrónico',
-        border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(20))),
-      ),
-      keyboardType: TextInputType.emailAddress,
-      validator: (value) {
-        if (value == null || value.trim().isEmpty) {
-          return 'Por favor, ingresa tu correo electrónico';
-        }
-        final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+');
-        if (!emailRegex.hasMatch(value.trim())) {
-          return 'Por favor, ingresa un correo electrónico válido';
-        }
-        return null;
-      },
-    );
-  }
-
-  Widget _buildPasswordField() {
-    return TextFormField(
-      controller: _passwordController,
-      focusNode: _passwordFocusNode,
-      decoration: const InputDecoration(
-        labelText: 'Contraseña',
-        border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(20))),
-      ),
-      obscureText: true,
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return 'Por favor, ingresa tu contraseña';
-        }
-        if (value.length < 6) {
-          return 'La contraseña debe tener al menos 6 caracteres';
-        }
-        return null;
-      },
-    );
-  }
-
-  Widget _buildActionButtons(BuildContext context) {
-    return Column(
-      children: [
-        ElevatedButton(
-          onPressed: () => _login(context),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: const Color.fromRGBO(220, 107, 39, 1),
-          ),
-          child: const Text(
-            'Iniciar sesión',
-            style: TextStyle(color: Colors.white, fontSize: 15),
-          ),
-        ),
-        const SizedBox(height: 20),
-        _buildCreateAccountLabel(context),
-      ],
-    );
-  }
 
   void _login(BuildContext context) {
     if (_formKey.currentState?.validate() == true) {
@@ -173,9 +105,12 @@ class _LoginScreenContentState extends State<LoginScreenContent> {
   }
 
   Widget _buildIniciarSesionLabel() {
-    return const Text(
-      'Iniciar sesión',
-      style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+    return Container(
+      margin: const EdgeInsets.only(top: 10, bottom: 10),
+      child: const Text(
+        'Iniciar sesión',
+        style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+      ),
     );
   }
 
@@ -185,36 +120,21 @@ class _LoginScreenContentState extends State<LoginScreenContent> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          _buildLogo(),
-          const SizedBox(height: 20),
+          LogoWidget(isVisible: _isKeyboardVisible),
           _buildIniciarSesionLabel(),
-          const SizedBox(height: 20),
-          _buildEmailField(),
-          const SizedBox(height: 20),
-          _buildPasswordField(),
-          const SizedBox(height: 20),
-          _buildActionButtons(context),
+          EmailField(controller: _emailController, focusNode: _emailFocusNode),
+          PasswordField(controller: _passwordController, focusNode: _passwordFocusNode),
+          ActionButtons(
+            onLoginPressed: () => _login(context),
+            onCreateAccountPressed: () => _createAccount(context),
+          ),
         ],
       ),
     );
   }
-
-  Widget _buildCreateAccountLabel(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        const Text('¿No tienes una cuenta?'),
-        const SizedBox(width: 10),
-        GestureDetector(
-          onTap: () {
-            Navigator.pushNamed(context, '/createProfile');
-          },
-          child: const Text(
-            'Crear cuenta',
-            style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
-          ),
-        ),
-      ],
-    );
+  
+  void _createAccount(BuildContext context) {
+    Navigator.pushNamed(context, '/register');
   }
+
 }

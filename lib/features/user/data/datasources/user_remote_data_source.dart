@@ -33,10 +33,10 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
       print('UserRemoteDataSourceImpl: authenticateUser: response.data: ${response.data}');
       //Hacer un usermodel de prueba que se regrese en lugar de response.data para que no falle el login en el login_user_bloc.dart
       return UserModel (
-        name: 'name', //Lo que hac eesta linea es que si el login es exitoso, se regresa un usermodel con los datos que se necesitan para que no falle el login en el login_user_bloc.dart
-        lastName: 'lastName',
+        name: response.data['nombre'], //Lo que hac eesta linea es que si el login es exitoso, se regresa un usermodel con los datos que se necesitan para que no falle el login en el login_user_bloc.dart
+        lastName: 'Recuerda que este es un usermodel de prueba',
         email: response.data['correo'],
-        password: response.data['password'],
+        password: response.data['contrasenia'],
         phoneNumber: 'telefono',
         userType: 'userType',
         photo: 'photo',
