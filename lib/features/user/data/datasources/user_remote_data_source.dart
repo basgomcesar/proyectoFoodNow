@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:loging_app/features/user/data/models/user_model.dart';
+import 'package:loging_app/core/utils/session.dart';
 
 abstract class UserRemoteDataSource {
   Future<UserModel> getUser(String userId);
@@ -13,6 +14,7 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
   final Dio client = Dio();
   // Eliminar la referencia a FirebaseFirestore
   final String apiUrl = 'http://localhost:3000/auth/login'; // URL de tu API
+  final Session session = Session.instance;
 
   // Constructor sin FirebaseFirestore
   UserRemoteDataSourceImpl();
@@ -24,23 +26,29 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
       apiUrl,
       data: {
         'correo': correo,
-        'password': password,
+        'contrasenia': password,
       },
       options: Options(headers: {'Content-Type': 'application/json'}),
     );
 
     if (response.statusCode == 200) {
-      print('UserRemoteDataSourceImpl: authenticateUser: response.data: ${response.data}');
-      //Hacer un usermodel de prueba que se regrese en lugar de response.data para que no falle el login en el login_user_bloc.dart
-      return UserModel (
-        name: response.data['nombre'], //Lo que hac eesta linea es que si el login es exitoso, se regresa un usermodel con los datos que se necesitan para que no falle el login en el login_user_bloc.dart
-        lastName: 'Recuerda que este es un usermodel de prueba',
-        email: response.data['correo'],
-        password: response.data['contrasenia'],
-        phoneNumber: 'telefono',
-        userType: 'userType',
-        photo: 'photo',
-      );
+      try {
+        final idUsuario = response.data['idUsuario'];
+        final token = response.headers['x-token']?.first ?? '';
+        session.startSession(userId: idUsuario.toString(), token: token);
+
+        return UserModel(
+          name: response.data['nombre'], 
+          lastName: 'Recuerda que este es un usermodel de prueba',
+          email: response.data['correo'],
+          password: response.data['contrasenia'],
+          phoneNumber: 'telefono',
+          userType: 'userType',
+          photo: 'photo',
+        );
+      } catch (e) {
+        throw Exception('Failed to authenticate user');
+      }
 
     } else {
       throw Exception('Failed to authenticate user');
