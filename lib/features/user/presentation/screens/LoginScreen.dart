@@ -14,6 +14,7 @@ import 'package:loging_app/features/user/presentation/widgets/actions_buttons.da
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
 
+//escucha pantalla
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
@@ -59,7 +60,7 @@ class _LoginScreenContentState extends State<LoginScreenContent> {
     super.dispose();
   }
 
-
+  // Valida el formulario y si es válido, emite un evento
   void _login(BuildContext context) {
     if (_formKey.currentState?.validate() == true) {
       context.read<LoginBloc>().add(
@@ -71,6 +72,7 @@ class _LoginScreenContentState extends State<LoginScreenContent> {
     }
   }
 
+//BlocListener: Escucha los cambios en el estado del LoginBloc
   @override
   Widget build(BuildContext context) {
     return BlocListener<LoginBloc, LoginState>(
@@ -134,7 +136,7 @@ class _LoginScreenContentState extends State<LoginScreenContent> {
   }
   
   void _createAccount(BuildContext context) {
-    Navigator.pushNamed(context, '/register');
+    Navigator.pushNamed(context, '/createProfile');
   }
 
 }

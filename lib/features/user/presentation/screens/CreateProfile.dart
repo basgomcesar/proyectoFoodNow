@@ -1,27 +1,90 @@
-import 'package:flutter/material.dart';
+import 'dart:convert';
 
-class CreateProfile extends StatefulWidget {
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:loging_app/features/user/domain/use_cases/create_profile_use_case.dart';
+import 'package:loging_app/features/user/presentation/bloc/create_profile/create_profile_bloc.dart';
+import 'package:loging_app/features/user/presentation/bloc/create_profile/create_profile_event.dart';
+import 'package:loging_app/features/user/presentation/bloc/create_profile/create_profile_state.dart';
+import 'package:loging_app/features/user/presentation/widgets/custom_text_field.dart';
+import 'package:loging_app/features/user/presentation/widgets/header_logo.dart';
+import 'package:loging_app/features/user/presentation/widgets/custom_dropdown_field.dart'; 
+import 'package:loging_app/features/user/presentation/widgets/image_picker_button.dart';
+import 'package:image_picker/image_picker.dart';  // Importa el paquete image_picker
+import 'dart:typed_data';
+
+import 'package:loging_app/injection_container.dart'; // Para trabajar con Uint8List
+
+class CreateProfile extends StatelessWidget  {
   const CreateProfile({super.key});
 
-  @override
-  _CreateProfileState createState() => _CreateProfileState();
-}
-
-class _CreateProfileState extends State<CreateProfile> {
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _lastNameController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _phoneController = TextEditingController();
-  final _formKey = GlobalKey<FormState>();
-  
-  // Lista de opciones para el combobox de tipo de usuario
-  final List<String> _userTypes = ['Vendedor', 'Cliente'];
-  String? _selectedUserType; // Variable para almacenar la opción seleccionada
-
+ 
+//escucha pantalla
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Crear Perfil')),
+    return BlocProvider(
+      create: (_) => CreateProfileBloc(createProfileUseCase: serviceLocator<CreateProfileUseCase>()),
+      child: const CreateProfileContent(),
+    );
+  }
+}
+
+class CreateProfileContent extends StatefulWidget {
+  const CreateProfileContent({super.key});
+  @override
+  _CreateProfileContentState createState() => _CreateProfileContentState();
+}
+
+
+class _CreateProfileContentState extends State<CreateProfileContent> {
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  final _formKey = GlobalKey<FormState>();
+  final FocusNode _nameFocusNode = FocusNode();
+  final FocusNode _emailFocusNode = FocusNode();
+  final FocusNode _passwordFocusNode = FocusNode();
+
+
+@override
+void dispose() {
+  _nameFocusNode.dispose();
+  _emailFocusNode.dispose();
+  _passwordFocusNode.dispose();
+  super.dispose();
+}
+
+  final List<String> _userTypes = ['Vendedor', 'Cliente'];
+  String? _selectedUserType;
+  Uint8List? _profileImageBytes;  // Para almacenar los bytes de la imagen
+
+  // Método para seleccionar imagen desde el sistema de archivos
+  Future<void> _pickImage() async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+
+    if (image != null) {
+      final bytes = await image.readAsBytes();  // Lee los bytes de la imagen
+      setState(() {
+        _profileImageBytes = bytes;  // Asigna los bytes a la variable
+      });
+    }
+  }
+
+  @override
+Widget build(BuildContext context) {
+  return BlocListener<CreateProfileBloc, CreateProfileState>(
+    listener: (context, state) {
+      if (state is CreateProfileStateSucess) {
+        //Muestra mensaje de éxito
+      } else if (state is CreateProfileStateFailure) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(state.error)),
+        );
+      }
+    },
+    child: Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
@@ -29,15 +92,78 @@ class _CreateProfileState extends State<CreateProfile> {
             key: _formKey,
             child: Column(
               children: [
-                _buildNameField(),
+                LogoHeader(
+                  titulo: 'Crear Perfil',
+                  onNavigateBack: () {
+                    Navigator.pop(context);
+                  },
+                ),
+                if (_profileImageBytes != null)
+                  Image.memory(
+                    _profileImageBytes!,
+                    width: 100,
+                    height: 100,
+                    fit: BoxFit.cover,
+                  ),
                 const SizedBox(height: 16),
-                _buildLastNameField(),
+                ImagePickerButton(
+                  onPressed: _pickImage,
+                ),
                 const SizedBox(height: 16),
-                _buildEmailField(),
+                CustomTextField(
+                  controller: _nameController,
+                  labelText: 'Nombre',
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Por favor, ingresa tu nombre';
+                    }
+                    return null;
+                  },
+                ),
                 const SizedBox(height: 16),
-                _buildPhoneField(),
+                CustomTextField(
+                  controller: _emailController,
+                  labelText: 'Correo Electrónico',
+                  keyboardType: TextInputType.emailAddress,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Por favor, ingresa tu correo electrónico';
+                    }
+                    final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+');
+                    if (!emailRegex.hasMatch(value.trim())) {
+                      return 'Por favor, ingresa un correo electrónico válido';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 16),
+                CustomTextField(
+                  controller: _passwordController,
+                  labelText: 'Contraseña',
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Por favor, ingresa tu contraseña';
+                    }
+                    return null;
+                  },
+                ),
                 const SizedBox(height: 20),
-                _buildUserTypeDropdown(),
+                CustomDropdownField<String>(
+                  labelText: 'Tipo de Usuario',
+                  items: _userTypes,
+                  selectedValue: _selectedUserType,
+                  onChanged: (newValue) {
+                    setState(() {
+                      _selectedUserType = newValue;
+                    });
+                  },
+                  validator: (value) {
+                    if (value == null) {
+                      return 'Por favor, selecciona el tipo de usuario';
+                    }
+                    return null;
+                  },
+                ),
                 const SizedBox(height: 20),
                 _buildSubmitButton(),
               ],
@@ -45,126 +171,48 @@ class _CreateProfileState extends State<CreateProfile> {
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 
-  Widget _buildNameField() {
-    return TextFormField(
-      controller: _nameController,
-      decoration: const InputDecoration(
-        labelText: 'Nombre',
-        border: OutlineInputBorder(),
-      ),
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return 'Por favor, ingresa tu nombre';
-        }
-        return null;
-      },
-    );
-  }
-
-  Widget _buildLastNameField() {
-    return TextFormField(
-      controller: _lastNameController,
-      decoration: const InputDecoration(
-        labelText: 'Apellidos',
-        border: OutlineInputBorder(),
-      ),
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return 'Por favor, ingresa tus apellidos';
-        }
-        return null;
-      },
-    );
-  }
-
-  Widget _buildEmailField() {
-    return TextFormField(
-      controller: _emailController,
-      decoration: const InputDecoration(
-        labelText: 'Correo Electrónico',
-        border: OutlineInputBorder(),
-      ),
-      keyboardType: TextInputType.emailAddress,
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return 'Por favor, ingresa tu correo electrónico';
-        }
-        final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+');
-        if (!emailRegex.hasMatch(value.trim())) {
-          return 'Por favor, ingresa un correo electrónico válido';
-        }
-        return null;
-      },
-    );
-  }
-
-  Widget _buildPhoneField() {
-    return TextFormField(
-      controller: _phoneController,
-      decoration: const InputDecoration(
-        labelText: 'Número Telefónico',
-        border: OutlineInputBorder(),
-      ),
-      keyboardType: TextInputType.phone,
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return 'Por favor, ingresa tu número telefónico';
-        }
-        return null;
-      },
-    );
-  }
-  
-  // Combobox para seleccionar el tipo de usuario
-  Widget _buildUserTypeDropdown() {
-    return DropdownButtonFormField<String>(
-      value: _selectedUserType,
-      decoration: const InputDecoration(
-        labelText: 'Tipo de Usuario',
-        border: OutlineInputBorder(),
-      ),
-      items: _userTypes.map((String userType) {
-        return DropdownMenuItem<String>(
-          value: userType,
-          child: Text(userType),
-        );
-      }).toList(),
-      onChanged: (newValue) {
-        setState(() {
-          _selectedUserType = newValue;
-        });
-      },
-      validator: (value) {
-        if (value == null) {
-          return 'Por favor, selecciona el tipo de usuario';
-        }
-        return null;
-      },
-    );
-  }
 
   Widget _buildSubmitButton() {
-    return ElevatedButton(
-      onPressed: () {
-        if (_formKey.currentState?.validate() == true) {
-          // Aquí puedes manejar el envío del formulario, como guardar datos
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Perfil creado exitosamente')),
-          );
-          // Limpiar los campos después de enviar
-          _nameController.clear();
-          _lastNameController.clear();
-          _emailController.clear();
-          _phoneController.clear();
-          setState(() {
-            _selectedUserType = null; // Limpiar el combobox
-          });
-        }
-      },
-      child: const Text('Crear Perfil'),
-    );
-  }
+  return ElevatedButton(
+    onPressed: () {
+      if (_profileImageBytes == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Por favor, selecciona una imagen de perfil')),
+        );
+        return;
+      }
+
+      if (_formKey.currentState?.validate() == true) {
+        // Convertir los bytes de la imagen a base64
+        String base64Image = base64Encode(_profileImageBytes!);
+
+        // Envía los datos al Bloc al hacer clic en "Crear Perfil"
+        context.read<CreateProfileBloc>().add(
+          CreateProfileButtonPressed(
+            name: _nameController.text,
+            email: _emailController.text,
+            password: _passwordController.text,
+            userType: _selectedUserType!,
+            profileImage: base64Image,  // Aquí enviamos la imagen en base64
+          ),
+        );
+
+        // Limpia los campos después de enviar
+        _nameController.clear();
+        _emailController.clear();
+        _passwordController.clear();
+        setState(() {
+          _selectedUserType = null;
+          _profileImageBytes = null;
+        });
+      }
+    },
+    child: const Text('Crear Perfil'),
+  );
+}
+
 }

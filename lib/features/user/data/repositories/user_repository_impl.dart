@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:dartz/dartz.dart';
 
 import 'package:loging_app/core/error/failure.dart';
@@ -26,11 +28,15 @@ class UserRepositoryImpl implements UserRepository {
       return Left(ServerFailure('Authentication failed'));
     }
   }
-
+ 
   @override
-  Future<Either<Failure, User>> createUser(User user) {
-    // TODO: implement createUser
-    throw UnimplementedError();
+  Future<Either<Failure, User>> createUser(String name, String email, String password, String userType, String profileImage, booldisponibility ) async {
+    try {
+      final User user = await userRemoteDataSource.createUser(name, email, password, userType, profileImage, booldisponibility);// Aquí se hace la petición al servidor
+      return Right(user);
+    } catch (e) {
+      return Left(ServerFailure('Authentication failed'));
+    }
   }
 
   @override
