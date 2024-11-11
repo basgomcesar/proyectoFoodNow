@@ -22,7 +22,7 @@ abstract class UserRemoteDataSource {
 class UserRemoteDataSourceImpl implements UserRemoteDataSource {
   final Dio client = Dio();
   // Eliminar la referencia a FirebaseFirestore
-  final String apiUrl = 'http://localhost:3000/auth/login'; // URL de tu API
+  final String apiUrl = 'http://localhost:3000'; // URL de tu API
   final Session session = Session.instance;
 
   // Constructor sin FirebaseFirestore
@@ -31,7 +31,7 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
   @override
   Future<UserModel> authenticateUser(String correo, String password) async {    
     final response = await client.post(
-      apiUrl,
+      '$apiUrl/auth/login',
       data: {
         'correo': correo,
         'contrasenia': password,
@@ -64,12 +64,12 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
 @override
 Future<UserModel> createUser(  String name,  String email,  String password,  String userType,  String? photo,  bool disponibility,) async {
   final response  = await client.post(
-    apiUrl,
+    '$apiUrl/usuarios',
       data: {
         'nombre': name,
         'correo': email,
         'contrasenia': password,
-        'tipoUsuario': userType,
+        'tipo ': userType,
         'foto': photo,
         'disponibilidad': disponibility,
       },
