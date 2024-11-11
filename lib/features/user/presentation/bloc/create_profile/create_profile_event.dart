@@ -13,13 +13,16 @@ class CreateProfileButtonPressed extends CreateProfileEvent {
   final String password;
   final String userType;
   final String profileImage;
+  final bool disponibility;
 
   CreateProfileButtonPressed({
     required this.name,
     required this.email, 
     required this.password,
     required this.userType, 
-    required this.profileImage});
+    required this.profileImage,
+    required this.disponibility  
+  });
 
 }
 

@@ -29,6 +29,7 @@ class CreateProfile extends StatelessWidget  {
   }
 }
 
+//Widget que contiene el contenido de la pantalla
 class CreateProfileContent extends StatefulWidget {
   const CreateProfileContent({super.key});
   @override
@@ -37,6 +38,7 @@ class CreateProfileContent extends StatefulWidget {
 
 
 class _CreateProfileContentState extends State<CreateProfileContent> {
+  // Inicialización de las variables
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -45,8 +47,9 @@ class _CreateProfileContentState extends State<CreateProfileContent> {
   final FocusNode _nameFocusNode = FocusNode();
   final FocusNode _emailFocusNode = FocusNode();
   final FocusNode _passwordFocusNode = FocusNode();
+  bool _isAvailable = true; // Valor predeterminado
 
-
+//Libera recursos cuando ya no son utilizados
 @override
 void dispose() {
   _nameFocusNode.dispose();
@@ -72,12 +75,14 @@ void dispose() {
     }
   }
 
+// Se configura la interfaz
   @override
 Widget build(BuildContext context) {
+  // BlocListener escucha el estado del BLoC y muestra un mensaje de error o éxito 
   return BlocListener<CreateProfileBloc, CreateProfileState>(
     listener: (context, state) {
       if (state is CreateProfileStateSucess) {
-        //Muestra mensaje de éxito
+        //Muestra mensaje de éxito        
       } else if (state is CreateProfileStateFailure) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(state.error)),
@@ -155,6 +160,8 @@ Widget build(BuildContext context) {
                   onChanged: (newValue) {
                     setState(() {
                       _selectedUserType = newValue;
+                          print('Selected User Type: $_selectedUserType');  // Verificar el valor seleccionado
+
                     });
                   },
                   validator: (value) {
@@ -175,7 +182,7 @@ Widget build(BuildContext context) {
   );
 }
 
-
+// botón que valida el formulario y dispara el evento CreateProfileButtonPressed 
   Widget _buildSubmitButton() {
   return ElevatedButton(
     onPressed: () {
@@ -192,13 +199,16 @@ Widget build(BuildContext context) {
 
         // Envía los datos al Bloc al hacer clic en "Crear Perfil"
         context.read<CreateProfileBloc>().add(
-          CreateProfileButtonPressed(
+          
+          CreateProfileButtonPressed(            
             name: _nameController.text,
             email: _emailController.text,
             password: _passwordController.text,
             userType: _selectedUserType!,
-            profileImage: base64Image,  // Aquí enviamos la imagen en base64
+            profileImage: base64Image,  // Aquí enviamos la imagen en base64       
+             disponibility: _isAvailable,     
           ),
+          
         );
 
         // Limpia los campos después de enviar
