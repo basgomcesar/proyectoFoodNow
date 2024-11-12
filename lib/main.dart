@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:loging_app/core/utils/routes.dart';
+import 'package:loging_app/features/user/data/datasources/user_remote_data_source.dart';
+import 'package:loging_app/features/user/data/repositories/user_repository_impl.dart';
+import 'package:loging_app/features/user/domain/repositories/user_repository.dart';
+import 'package:loging_app/features/user/domain/use_cases/create_profile_use_case.dart';
 import 'package:loging_app/features/user/presentation/bloc/create_profile/create_profile_bloc.dart';
 import 'package:loging_app/injection_container.dart' as di;
+import 'package:loging_app/injection_container.dart';
 import 'package:provider/provider.dart';
 
 import 'features/user/presentation/bloc/login_user/login_user_bloc.dart';
@@ -9,17 +14,20 @@ import 'features/user/presentation/bloc/login_user/login_user_bloc.dart';
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
+  
   await di.init();
   runApp(
     MultiProvider(
       providers: [
-        Provider<LoginBloc>(create: (_) => LoginBloc(loginUserUseCase: di.serviceLocator())),
         Provider<CreateProfileBloc>(create: (_) => CreateProfileBloc(createProfileUseCase: di.serviceLocator())),
+        Provider<LoginBloc>(create: (_) => LoginBloc(loginUserUseCase: di.serviceLocator())),
 
       ],
       child:  const MyApp(),
     ),
   );
+
+  
 }
 
 class MyApp extends StatelessWidget {
