@@ -199,7 +199,7 @@ Widget build(BuildContext context) {
 
         // Envía los datos al Bloc al hacer clic en "Crear Perfil"
         context.read<CreateProfileBloc>().add(
-          
+
           CreateProfileButtonPressed(            
             name: _nameController.text,
             email: _emailController.text,
@@ -207,8 +207,7 @@ Widget build(BuildContext context) {
             userType: _selectedUserType!,
             profileImage: base64Image,  // Aquí enviamos la imagen en base64       
              disponibility: _isAvailable,     
-          ),
-          
+          ),          
         );
 
         // Limpia los campos después de enviar

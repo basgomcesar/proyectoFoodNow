@@ -85,6 +85,7 @@ class _LoginScreenContentState extends State<LoginScreenContent> {
           );
         }
       },
+      //BlocBuilder: Reconstruye la interfaz de usuario dependiendo del estado del LoginBlo
       child: BlocBuilder<LoginBloc, LoginState>(
         builder: (context, state) {
           return Scaffold(
