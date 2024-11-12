@@ -62,14 +62,15 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
   }
 
 @override
-Future<UserModel> createUser(  String name,  String email,  String password,  String userType,  String? photo,  bool disponibility,) async {
+Future<UserModel> createUser(  String name,  String email,  String password,  String userType,  String? photo,  bool disponibility) async {
+
   final response  = await client.post(
     '$apiUrl/usuarios',
       data: {
         'nombre': name,
         'correo': email,
         'contrasenia': password,
-        'tipo ': userType,
+        'tipo': userType,
         'foto': photo,
         'disponibilidad': disponibility,
       },
@@ -83,7 +84,7 @@ Future<UserModel> createUser(  String name,  String email,  String password,  St
           name: response.data['nombre'], 
           email: response.data['correo'],
           password: response.data['contrasenia'],
-          userType: response.data['tipoUsuario'], 
+          userType: response.data['tipo'], 
           photo: response.data['foto'], 
           disponibility: response.data['disponibilidad'], 
         );

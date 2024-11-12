@@ -82,7 +82,10 @@ Widget build(BuildContext context) {
   return BlocListener<CreateProfileBloc, CreateProfileState>(
     listener: (context, state) {
       if (state is CreateProfileStateSucess) {
-        //Muestra mensaje de éxito        
+        //Muestra mensaje de éxito   
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Perfil creado correctamente')),
+        );     
       } else if (state is CreateProfileStateFailure) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(state.error)),
