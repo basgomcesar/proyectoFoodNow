@@ -11,15 +11,18 @@ class CreateProfileBloc extends Bloc<CreateProfileEvent, CreateProfileState> {
   CreateProfileBloc({required this.createProfileUseCase}) : super(CreateProfileStateInitial()) {
     on<CreateProfileEvent>((event, emit) async {
       if (event is CreateProfileButtonPressed) {
-        emit(CreateProfileStateLoading());
+        try{
+          emit(CreateProfileStateLoading());
+        
 
         final failureOrUser = await createProfileUseCase(
           event.name, 
           event.email, 
           event.password, 
           event.userType,
-           event.profileImage,
-            true,);
+          event.profileImage,
+          event.disponibility
+        );
 
         failureOrUser.fold(
           (failure) {
@@ -27,6 +30,18 @@ class CreateProfileBloc extends Bloc<CreateProfileEvent, CreateProfileState> {
           },
           (user) => emit(CreateProfileStateSucess()),
         );
+        // Verifica que el evento ha llegado al Bloc
+        print('Datos dentro del bloc:');
+        print('Nombre: ${event.name}');
+        print('Correo: ${event.email}');
+        print('Contraseña: ${event.password}');
+        print('Tipo de usuario: ${event.userType}');
+        print('Disponibilidad: ${event.disponibility}');
+        } catch (e) {
+          emit(CreateProfileStateFailure(error: e.toString()));
+        }
+        
+        
       }
     });
   }

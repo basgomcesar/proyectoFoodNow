@@ -13,13 +13,17 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         emit(LoginLoading());// Emitimos el estado de carga
         // Agregamos 4 segundos de delay para simular una petición a una API
         final failureOrUser = await loginUserUseCase(event.email, event.password);
-
+        print('Correo bloc login: ${event.email}');
+        print('Contraseña bloc login: ${event.password}');
         failureOrUser.fold(
           (failure) {
             emit(LoginFailure(error: failure.message));
           },
+          
           (user) => emit(LoginSuccess()),
+          
         );
+        
       }
     });
   }

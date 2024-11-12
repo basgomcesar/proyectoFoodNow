@@ -10,6 +10,8 @@ class LoginUserUseCase {
   LoginUserUseCase({required this.repository});
 
   Future<Either<Failure, User>> call(String email, String password) async {
+    print('Correo login use case: $email');
+    print('Contraseña login use case: $password');
     return await repository.authenticateUser(email, password);
   }
 }
