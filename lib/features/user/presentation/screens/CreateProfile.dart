@@ -82,7 +82,10 @@ Widget build(BuildContext context) {
   return BlocListener<CreateProfileBloc, CreateProfileState>(
     listener: (context, state) {
       if (state is CreateProfileStateSucess) {
-        //Muestra mensaje de éxito        
+        //Muestra mensaje de éxito   
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Perfil creado correctamente')),
+        );     
       } else if (state is CreateProfileStateFailure) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(state.error)),
@@ -199,7 +202,7 @@ Widget build(BuildContext context) {
 
         // Envía los datos al Bloc al hacer clic en "Crear Perfil"
         context.read<CreateProfileBloc>().add(
-          
+
           CreateProfileButtonPressed(            
             name: _nameController.text,
             email: _emailController.text,
@@ -207,8 +210,7 @@ Widget build(BuildContext context) {
             userType: _selectedUserType!,
             profileImage: base64Image,  // Aquí enviamos la imagen en base64       
              disponibility: _isAvailable,     
-          ),
-          
+          ),          
         );
 
         // Limpia los campos después de enviar
