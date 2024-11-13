@@ -8,7 +8,7 @@ class PasswordField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ConstrainedBox(constraints: BoxConstraints(maxWidth: 700),
+    return ConstrainedBox(constraints: const BoxConstraints(maxWidth: 700),
     child:  Container(
       margin: const EdgeInsets.only(bottom: 20),
       child: TextFormField(

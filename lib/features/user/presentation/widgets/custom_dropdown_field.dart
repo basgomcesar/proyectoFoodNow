@@ -8,13 +8,13 @@ class CustomDropdownField<T> extends StatelessWidget {
   final FormFieldValidator<T>? validator;
 
   const CustomDropdownField({
-    Key? key,
+    super.key,
     required this.labelText,
     required this.items,
     required this.selectedValue,
     required this.onChanged,
     this.validator,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +22,7 @@ class CustomDropdownField<T> extends StatelessWidget {
       value: selectedValue,
       decoration: InputDecoration(
         labelText: labelText,
-        border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(20))),
+        border: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(20))),
       ),
       items: items.map((T item) {
         return DropdownMenuItem<T>(

@@ -47,7 +47,7 @@ class _CreateProfileContentState extends State<CreateProfileContent> {
   final FocusNode _nameFocusNode = FocusNode();
   final FocusNode _emailFocusNode = FocusNode();
   final FocusNode _passwordFocusNode = FocusNode();
-  bool _isAvailable = true; // Valor predeterminado
+  final bool _isAvailable = true; // Valor predeterminado
 
 //Libera recursos cuando ya no son utilizados
 @override
