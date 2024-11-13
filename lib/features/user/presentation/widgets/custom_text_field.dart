@@ -7,12 +7,12 @@ class CustomTextField extends StatelessWidget {
   final String? Function(String?)? validator;
 
   const CustomTextField({
-    Key? key,
+    super.key,
     required this.controller,
     required this.labelText,
     this.keyboardType = TextInputType.text,
     this.validator,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +20,7 @@ class CustomTextField extends StatelessWidget {
       controller: controller,
       decoration: InputDecoration(
         labelText: labelText,
-        border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(20))),
+        border: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(20))),
       ),
       keyboardType: keyboardType,
       validator: validator,
