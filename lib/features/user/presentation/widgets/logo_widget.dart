@@ -4,7 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 class LogoWidget extends StatelessWidget {
   final bool isVisible;
 
-  const LogoWidget({Key? key, required this.isVisible}) : super(key: key);
+  const LogoWidget({super.key, required this.isVisible});
 
   @override
   Widget build(BuildContext context) {

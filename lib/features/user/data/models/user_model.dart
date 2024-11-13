@@ -3,20 +3,13 @@ import 'package:loging_app/features/user/domain/entities/user.dart';
 class UserModel extends User {
   // Constructor modificado para que reciba los parámetros directamente
   UserModel({
-    required String name,
-    required String email,
-    required String password,
-    required String photo,
-    required String userType,
-    required bool disponibility,
-  }) : super(
-          name: name,
-          email: email,
-          password: password,
-          photo: photo,
-          userType: userType,
-          disponibility: disponibility,
-        );
+    required super.name,
+    required super.email,
+    required super.password,
+    required super.photo,
+    required super.userType,
+    required super.disponibility,
+  });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(

@@ -7,11 +7,11 @@ class LogoHeader extends StatelessWidget {
   final Function()? onNavigateBack;   // Navegación opcional para regresar
 
   const LogoHeader({
-    Key? key,
+    super.key,
     required this.titulo,
     this.onBackPressed,  // Opcional
     this.onNavigateBack,  // Opcional para una acción de navegación más específica
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +32,7 @@ class LogoHeader extends StatelessWidget {
                 children: [
                   if (onBackPressed != null || onNavigateBack != null)  // Si se pasa alguna acción de retroceso, muestra el IconButton
                     IconButton(
-                      icon: Icon(Icons.arrow_back),
+                      icon: const Icon(Icons.arrow_back),
                       onPressed: onNavigateBack ?? onBackPressed,  // Llama a la función de navegación pasada como parámetro
                     ),
                   const SizedBox(width: 10), // Espacio horizontal entre la flecha y el texto
@@ -63,7 +63,7 @@ class LogoHeader extends StatelessWidget {
                   BoxShadow(
                     color: Colors.black.withOpacity(0.2), // Color de la sombra
                     blurRadius: 4, // Radio del desenfoque de la sombra
-                    offset: Offset(0, 2), // Desplazamiento de la sombra (hacia abajo)
+                    offset: const Offset(0, 2), // Desplazamiento de la sombra (hacia abajo)
                   ),
                 ],
               ),
