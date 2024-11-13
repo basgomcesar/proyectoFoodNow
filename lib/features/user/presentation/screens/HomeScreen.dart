@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:loging_app/features/user/presentation/widgets/list_view.dart';
+import 'package:loging_app/features/product/presentation/screens/ProductListView.dart';
 
 class HomeScreen extends StatefulWidget {
   final String email;
@@ -24,7 +25,7 @@ class _HomeScreenState extends State<HomeScreen> {
         child: DrawerListView(email: widget.email),
       ),
       body: const Center(
-        child: Text('Contenido de Inicio'),
+        child: ProductListScreen(),
       ),
     );
   }
