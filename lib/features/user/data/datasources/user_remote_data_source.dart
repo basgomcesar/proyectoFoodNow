@@ -2,10 +2,16 @@
 import 'package:dio/dio.dart';
 import 'package:loging_app/features/user/data/models/user_model.dart';
 import 'package:loging_app/core/utils/session.dart';
+import 'package:loging_app/features/user/domain/entities/user.dart';
 
 abstract class UserRemoteDataSource {
   Future<UserModel> getUser(String userId);
-  Future<bool> updateUser(UserModel user);
+  Future<UserModel> updateUser(
+      String name,
+      String email,
+      String password,
+      String? photo,
+      );
   Future<bool> deleteUser(String userId);
   Future<UserModel> createUser(
       String name,
@@ -42,9 +48,8 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
       try {
         final idUsuario = response.data['idUsuario'];
         final token = response.headers['x-token']?.first ?? '';
-        session.startSession(userId: idUsuario.toString(), token: token);
-
-        return UserModel(
+        
+        UserModel userAuth = UserModel(
           name: response.data['nombre'], 
           email: response.data['correo'],
           password: response.data['contrasenia'],
@@ -52,6 +57,8 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
           photo: 'photo',
           disponibility: true,
         );
+        session.startSession(userId: idUsuario.toString(), token: token, user: userAuth);
+        return userAuth;
       } catch (e) {
         throw Exception('Failed to authenticate user');
       }
@@ -61,7 +68,7 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
   }
 
 @override
-Future<UserModel> createUser(  String name,  String email,  String password,  String userType,  String? photo,  bool disponibility) async {
+Future<UserModel> createUser(String name,  String email,  String password,  String userType,  String? photo,  bool disponibility) async {
 
   final response  = await client.post(
     '$apiUrl/usuarios',
@@ -95,6 +102,32 @@ Future<UserModel> createUser(  String name,  String email,  String password,  St
     }
 }
 
+@override
+  Future<UserModel> updateUser(String name, String email, String password, String? photo) async {
+    
+    final response = await client.put(
+      '$apiUrl/usuarios/', 
+      data: {
+        'nombre': name,
+        'correo': email,
+        'contrasenia': password,
+        'foto': photo,
+      },
+      options: Options(
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'x-token ${session.token}',
+        },
+      ),
+    );
+
+    if (response.statusCode == 200) {
+      return UserModel.fromJson(response.data);
+    } else {
+      throw Exception('Failed to update user');
+    }
+  }
+
   @override
   Future<bool> deleteUser(String userId) async {
     final response = await client.delete('$apiUrl/$userId');
@@ -117,18 +150,5 @@ Future<UserModel> createUser(  String name,  String email,  String password,  St
     }
   }
 
-  @override
-  Future<bool> updateUser(UserModel user) async {
-    final response = await client.put(
-      '$apiUrl/${user.id}', // Suponiendo que 'id' es el identificador del usuario
-      data: user.toJson(),
-      options: Options(headers: {'Content-Type': 'application/json'}),
-    );
-
-    if (response.statusCode == 200) {
-      return true;
-    } else {
-      throw Exception('Failed to update user');
-    }
-  }
+  
 }

@@ -24,10 +24,10 @@ class DrawerListView extends StatelessWidget {
         // Opción de Perfil
         ListTile(
           leading: const Icon(Icons.person),
-          title: const Text('Perfil'),
+          title: const Text('Editar perfil'),
           onTap: () {
             Navigator.pop(context); // Cerrar el Drawer
-            Navigator.pushNamed(context, '/perfil', arguments: email);
+            Navigator.pushNamed(context, '/editProfile');
           },
         ),
         // Otras opciones del Drawer
