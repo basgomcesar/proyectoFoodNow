@@ -69,9 +69,9 @@ void dispose() {
     // Cargar los datos del usuario desde la sesión
     final user = Session.instance.user;
     if (user != null) {
-      _nameController.text = user.name ?? '';  // Asigna el nombre
-      _emailController.text = user.email ?? '';  // Asigna el correo
-      _passwordController.text = user.password ?? '';  // Asigna la contraseña
+      _nameController.text = user.name;  // Asigna el nombre
+      _emailController.text = user.email;  // Asigna el correo
+      _passwordController.text = user.password;  // Asigna la contraseña
       _profileImageBytes = user.photo;
     }
   }

@@ -55,9 +55,9 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
           name: response.data['nombre'], 
           email: response.data['correo'],
           password: response.data['contrasenia'],
-          userType: 'userType',
+          userType: response.data['tipo'],
           photo: Uint8List.fromList(List<int>.from(response.data['foto']['data'])), // Convierte la foto a Uint8List si es un arreglo de bytes
-          disponibility: true,
+          disponibility: response.data['disponibilidad'] == 'true',
         );
         session.startSession(userId: idUsuario.toString(), token: token, user: userAuth);
         return userAuth;
@@ -71,34 +71,31 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
 
 @override
 Future<UserModel> createUser(String name, String email, String password, String userType, Uint8List photo, bool disponibility) async {
+   FormData formData = FormData.fromMap({
+        'nombre': name,
+        'correo': email,
+        'contrasenia': password,
+        'tipo': userType,
+        'foto': MultipartFile.fromBytes(photo, filename: 'photo.jpg'),  // Convierte la foto a MultipartFile
+        'disponibilidad': disponibility,
+      });
   final response = await client.post(
-    '$apiUrl/usuarios',
-    data: {
-      'nombre': name,
-      'correo': email,
-      'contrasenia': password,
-      'tipo': userType,
-      'foto': photo,
-      'disponibilidad': disponibility,
-    },
-    options: Options(headers: {'Content-Type': 'application/json'}),
-  );
+        '$apiUrl/usuarios',
+        data: formData,  
+      );
 
   if (response.statusCode == 201) {
     try {
-      // Asegúrate de que los datos de la respuesta sean correctos
-      print(response.data);  // Imprime la respuesta para revisar los datos
 
       return UserModel(
         name: response.data['nombre'],
         email: response.data['correo'],
         password: response.data['contrasenia'],
         userType: response.data['tipo'],
-        photo: Uint8List.fromList(List<int>.from(response.data['foto'])), // Convierte la foto a Uint8List si es un arreglo de bytes
-        disponibility: response.data['disponibilidad'],
+        photo: Uint8List.fromList(List<int>.from(response.data['foto']['data'])), 
+        disponibility: response.data['disponibilidad'] == 'true',
       );
     } catch (e) {
-      print('Error en createUser: $e');
       throw Exception('Failed to register user1');
     }
   } else {

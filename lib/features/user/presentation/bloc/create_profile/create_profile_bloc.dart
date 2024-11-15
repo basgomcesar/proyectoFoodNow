@@ -30,13 +30,6 @@ class CreateProfileBloc extends Bloc<CreateProfileEvent, CreateProfileState> {
           },
           (user) => emit(CreateProfileStateSucess()),
         );
-        // Verifica que el evento ha llegado al Bloc
-        print('Datos dentro del bloc:');
-        print('Nombre: ${event.name}');
-        print('Correo: ${event.email}');
-        print('Contraseña: ${event.password}');
-        print('Tipo de usuario: ${event.userType}');
-        print('Disponibilidad: ${event.disponibility}');
         } catch (e) {
           emit(CreateProfileStateFailure(error: e.toString()));
         }
