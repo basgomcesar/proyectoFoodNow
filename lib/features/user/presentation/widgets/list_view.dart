@@ -1,9 +1,16 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
+import 'package:loging_app/core/utils/session.dart';
 
 class DrawerListView extends StatelessWidget {
   final String email;
+  final user = Session.instance.user;
+  final Uint8List? image = Session.instance.user?.photo != null
+      ? Uint8List.fromList(Session.instance.user!.photo)
+      : null;
 
-  const DrawerListView({super.key, required this.email});
+  DrawerListView({super.key, required this.email});
 
   @override
   Widget build(BuildContext context) {
@@ -15,19 +22,21 @@ class DrawerListView extends StatelessWidget {
           decoration: const BoxDecoration(
             color: Colors.deepPurple,
           ),
-          accountName: const Text('Miguel Caixba'),
-          accountEmail: Text(email), // Mostrar el correo electrónico pasado
-          currentAccountPicture: const CircleAvatar(
-            backgroundImage: NetworkImage('https://picsum.photos/200'),
+          accountName: Text(user!.name), // Mostrar el nombre pasado
+          accountEmail: Text(user!.email), // Mostrar el correo electrónico pasado
+          currentAccountPicture: CircleAvatar(
+                backgroundImage: image != null
+                ? Image.memory(image!).image
+                : const AssetImage('assets/images/default_avatar.png'),
           ),
         ),
         // Opción de Perfil
         ListTile(
           leading: const Icon(Icons.person),
-          title: const Text('Perfil'),
+          title: const Text('Editar perfil'),
           onTap: () {
             Navigator.pop(context); // Cerrar el Drawer
-            Navigator.pushNamed(context, '/perfil', arguments: email);
+            Navigator.pushNamed(context, '/editProfile');
           },
         ),
         // Otras opciones del Drawer
