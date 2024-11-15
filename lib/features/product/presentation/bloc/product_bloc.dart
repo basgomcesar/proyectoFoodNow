@@ -23,7 +23,7 @@ class ProductEvent extends Equatable{
 class ProductBloc extends Bloc<ProductEvent,ProductState> {
   final GetProducts getProducts;
 
-  ProductBloc(this.getProducts) : super(ProductInitial());
+  ProductBloc({required this.getProducts}) : super(ProductInitial());
 
   Future<void> fetchProducts() async {
     emit(ProductLoading());

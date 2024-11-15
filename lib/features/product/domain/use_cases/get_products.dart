@@ -6,7 +6,7 @@ import '../../../../core/error/failure.dart';
 class GetProducts {
   final ProductRepository repository;
 
-  GetProducts(this.repository);
+  GetProducts({required this.repository});
 
   Future<Either<Failure, List<Product>>> call() async {
     return await repository.getProducts();

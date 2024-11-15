@@ -1,4 +1,5 @@
 import 'package:get_it/get_it.dart';
+import 'package:loging_app/features/product/domain/use_cases/get_products.dart';
 import 'package:loging_app/features/user/data/datasources/user_remote_data_source.dart';
 import 'package:loging_app/features/user/data/repositories/user_repository_impl.dart';
 import 'package:loging_app/features/user/domain/repositories/user_repository.dart';
@@ -27,5 +28,9 @@ void initInjections(){
   // Registra las dependencias necesarias para crear el perfil
   serviceLocator.registerLazySingleton<CreateProfileUseCase>(  // Registra el CreateProfileUseCase
     () => CreateProfileUseCase(repository: serviceLocator())  
+  );
+
+  serviceLocator.registerLazySingleton<GetProducts>(
+    ()=> GetProducts(repository:serviceLocator())
   );
 }

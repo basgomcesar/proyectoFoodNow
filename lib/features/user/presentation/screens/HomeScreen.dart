@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:loging_app/features/user/presentation/widgets/list_view.dart';
+import 'package:provider/provider.dart';
+import 'package:loging_app/features/product/presentation/bloc/product_bloc.dart';
 import 'package:loging_app/features/product/presentation/screens/ProductListView.dart';
+import 'package:loging_app/injection_container.dart' as di;
 
 class HomeScreen extends StatefulWidget {
   final String email;
@@ -17,16 +19,15 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Bienvenido'),
+    return Provider<ProductBloc>(
+      create: (_) => ProductBloc(getProducts: di.serviceLocator()),
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text("Lista de productos"),
+        ),
+        body: const ProductListScreen(),
       ),
-      drawer: Drawer(
-        child: DrawerListView(email: widget.email),
-      ),
-      body: const Center(
-        child: ProductListScreen(),
-      ),
+
     );
   }
 }

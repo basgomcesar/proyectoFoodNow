@@ -16,6 +16,7 @@ void main() async{
       providers: [
         Provider<CreateProfileBloc>(create: (_) => CreateProfileBloc(createProfileUseCase: di.serviceLocator())),
         Provider<LoginBloc>(create: (_) => LoginBloc(loginUserUseCase: di.serviceLocator())),
+        //Provider<ProductBloc>(create: (_) => ProductBloc(getProducts:di.serviceLocator())),
 
       ],
       child:  const MyApp(),
