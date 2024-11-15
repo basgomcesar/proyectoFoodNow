@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:loging_app/core/utils/session.dart';
 import 'package:loging_app/features/user/domain/use_cases/edit_profile_use_case.dart';
 import 'package:loging_app/features/user/presentation/bloc/Edit_profile/edit_profile_bloc.dart';
 import 'package:loging_app/features/user/presentation/bloc/Edit_profile/edit_profile_event.dart';
@@ -42,6 +43,11 @@ class _EditProfileContentState extends State<EditProfileContent> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
+  Uint8List? _profileImageBytes;  // Para almacenar los bytes de la imagen
+  final userPhoto = Session.instance.user?.photo;
+
+   Uint8List? userPhotoBytes;  // Variable para almacenar los bytes de la imagen
+
   final _formKey = GlobalKey<FormState>();
   final FocusNode _nameFocusNode = FocusNode();
   final FocusNode _emailFocusNode = FocusNode();
@@ -56,7 +62,21 @@ void dispose() {
   super.dispose();
 }
 
-  Uint8List? _profileImageBytes;  // Para almacenar los bytes de la imagen
+ @override
+  void initState() {
+    super.initState();
+
+    // Cargar los datos del usuario desde la sesión
+    final user = Session.instance.user;
+    if (user != null) {
+      _nameController.text = user.name ?? '';  // Asigna el nombre
+      _emailController.text = user.email ?? '';  // Asigna el correo
+      _passwordController.text = user.password ?? '';  // Asigna la contraseña
+      _profileImageBytes = user.photo;
+    }
+  }
+
+  
 
   // Método para seleccionar imagen desde el sistema de archivos
   Future<void> _pickImage() async {
@@ -188,7 +208,7 @@ Widget build(BuildContext context) {
             name: _nameController.text,
             email: _emailController.text,
             password: _passwordController.text,
-            profileImage: base64Image,  // Aquí enviamos la imagen en base64       
+           profileImage: base64Image,  // Aquí enviamos la imagen en base64       
           ),          
         );
 

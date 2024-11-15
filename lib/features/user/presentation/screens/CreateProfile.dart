@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -8,7 +9,8 @@ import 'package:loging_app/features/user/presentation/bloc/create_profile/create
 import 'package:loging_app/features/user/presentation/bloc/create_profile/create_profile_state.dart';
 import 'package:loging_app/features/user/presentation/widgets/custom_text_field.dart';
 import 'package:loging_app/features/user/presentation/widgets/header_logo.dart';
-import 'package:loging_app/features/user/presentation/widgets/custom_dropdown_field.dart'; 
+import 'package:loging_app/features/user/presentation/widgets/custom_dropdown_field.dart';
+import 'package:loging_app/features/user/presentation/widgets/image_display.dart'; 
 import 'package:loging_app/features/user/presentation/widgets/image_picker_button.dart';
 import 'package:image_picker/image_picker.dart';  // Importa el paquete image_picker
 import 'dart:typed_data';
@@ -105,13 +107,12 @@ Widget build(BuildContext context) {
                   onNavigateBack: () {
                     Navigator.pop(context);
                   },
-                ),
-                if (_profileImageBytes != null)
-                  Image.memory(
-                    _profileImageBytes!,
-                    width: 100,
-                    height: 100,
-                    fit: BoxFit.cover,
+                ),               
+                const SizedBox(height: 16),
+
+                // Aquí usas tu widget ImageDisplay
+                  ImageDisplay(
+                    imageBytes: _profileImageBytes, 
                   ),
                 const SizedBox(height: 16),
                 ImagePickerButton(
@@ -129,6 +130,7 @@ Widget build(BuildContext context) {
                   },
                 ),
                 const SizedBox(height: 16),
+
                 CustomTextField(
                   controller: _emailController,
                   labelText: 'Correo Electrónico',
@@ -145,6 +147,7 @@ Widget build(BuildContext context) {
                   },
                 ),
                 const SizedBox(height: 16),
+
                 CustomTextField(
                   controller: _passwordController,
                   labelText: 'Contraseña',
@@ -159,6 +162,7 @@ Widget build(BuildContext context) {
                   },
                 ),
                 const SizedBox(height: 20),
+                
                 CustomDropdownField<String>(
                   labelText: 'Tipo de Usuario',
                   items: _userTypes,
@@ -200,9 +204,6 @@ Widget build(BuildContext context) {
       }
 
       if (_formKey.currentState?.validate() == true) {
-        // Convertir los bytes de la imagen a base64
-        String base64Image = base64Encode(_profileImageBytes!);
-
         // Envía los datos al Bloc al hacer clic en "Crear Perfil"
         context.read<CreateProfileBloc>().add(
 
@@ -211,7 +212,7 @@ Widget build(BuildContext context) {
             email: _emailController.text,
             password: _passwordController.text,
             userType: _selectedUserType!,
-            profileImage: base64Image,  // Aquí enviamos la imagen en base64       
+            profileImage: _profileImageBytes!,  // Aquí enviamos la imagen en base64       
              disponibility: _isAvailable,     
           ),          
         );

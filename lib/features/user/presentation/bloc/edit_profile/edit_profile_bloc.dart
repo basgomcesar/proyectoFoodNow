@@ -1,6 +1,7 @@
 // create_profile_bloc.dart
 import 'package:bloc/bloc.dart';
 import 'edit_profile_event.dart';
+import 'dart:typed_data';
 import 'edit_profile_state.dart';
 import 'package:loging_app/features/user/domain/use_cases/edit_profile_use_case.dart';
 
@@ -19,7 +20,7 @@ class EditProfileBloc extends Bloc<EditProfileEvent, EditProfileState> {
           event.name, 
           event.email, 
           event.password, 
-          event.profileImage,
+          Uint8List.fromList(event.profileImage.codeUnits),
         );
 
         failureOrUser.fold(

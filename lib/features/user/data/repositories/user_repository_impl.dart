@@ -1,4 +1,6 @@
 
+import 'dart:typed_data';
+
 import 'package:dartz/dartz.dart';
 
 import 'package:loging_app/core/error/failure.dart';
@@ -29,7 +31,7 @@ class UserRepositoryImpl implements UserRepository {
   }
  
   @override
-  Future<Either<Failure, User>> createUser(String name, String email, String password, String userType, String profileImage, bool disponibility ) async {
+  Future<Either<Failure, User>> createUser(String name, String email, String password, String userType, Uint8List profileImage, bool disponibility ) async {
     try {
       print('name: $name');
       print('email: $email');
@@ -46,7 +48,7 @@ class UserRepositoryImpl implements UserRepository {
   }
 
 @override
-  Future<Either<Failure, User>> updateUser(String name, String email, String password, String profileImage)async{
+  Future<Either<Failure, User>> updateUser(String name, String email, String password, Uint8List profileImage)async{
     try {
           print('name: $name');
           print('email: $email');
