@@ -107,27 +107,51 @@ Future<UserModel> createUser(String name, String email, String password, String 
 
 @override
   Future<UserModel> updateUser(String name, String email, String password, Uint8List photo) async {
-    
-    final response = await client.put(
-      '$apiUrl/usuarios/', 
-      data: {
+    FormData formData = FormData.fromMap({
         'nombre': name,
         'correo': email,
         'contrasenia': password,
-        'foto': photo,
-      },
-      options: Options(
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'x-token ${session.token}',
-        },
-      ),
-    );
+        'foto': MultipartFile.fromBytes(photo, filename: 'photo.jpg'),  // Convierte la foto a MultipartFile
+      });
 
-    if (response.statusCode == 200) {
-      return UserModel.fromJson(response.data);
-    } else {
-      throw Exception('Failed to update user');
+      // Asegúrate de que tienes el idUsuario en la sesión
+    String? userId = session.userId;  // Esto es obtenido desde tu singleton Session
+    if (userId == null) {
+      throw Exception('User ID is not available');
+    }
+  try{
+      final response = await client.put(
+        '$apiUrl/usuarios/$userId', 
+        data: formData,
+        options: Options(
+          headers: {
+            //'Content-Type': 'application/json',
+            'Content-Type': 'multipart/form-data',
+            'x-token': session.token,
+          },
+        ),
+      );    
+
+      if (response.statusCode == 200) {
+        return UserModel(
+          name: response.data['nombre'],
+          email: response.data['correo'],
+          password: response.data['contrasenia'],
+          userType: response.data['tipo'],
+          photo: Uint8List.fromList(List<int>.from(response.data['foto']['data'])), 
+          disponibility: response.data['disponibilidad'] == 'true',
+        );
+      } else if (response.statusCode == 400) {
+        throw Exception('Invalid data provided');
+      } else if (response.statusCode == 404) {
+        throw Exception('User not found');
+      } else if (response.statusCode == 500) {
+        throw Exception('Server error');
+      } else {
+        throw Exception('Failed to update user with status code ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Failed to update user: $e');
     }
   }
 

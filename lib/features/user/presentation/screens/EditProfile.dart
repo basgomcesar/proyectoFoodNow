@@ -9,6 +9,7 @@ import 'package:loging_app/features/user/presentation/bloc/Edit_profile/edit_pro
 import 'package:loging_app/features/user/presentation/bloc/Edit_profile/edit_profile_state.dart';
 import 'package:loging_app/features/user/presentation/widgets/custom_text_field.dart';
 import 'package:loging_app/features/user/presentation/widgets/header_logo.dart';
+import 'package:loging_app/features/user/presentation/widgets/image_display.dart';
 import 'package:loging_app/features/user/presentation/widgets/image_picker_button.dart';
 import 'package:image_picker/image_picker.dart';  // Importa el paquete image_picker
 import 'dart:typed_data';
@@ -44,9 +45,8 @@ class _EditProfileContentState extends State<EditProfileContent> {
   final TextEditingController _passwordController = TextEditingController();
 
   Uint8List? _profileImageBytes;  // Para almacenar los bytes de la imagen
-  final userPhoto = Session.instance.user?.photo;
-
-   Uint8List? userPhotoBytes;  // Variable para almacenar los bytes de la imagen
+  //final userPhoto = Session.instance.user?.photo;
+  //Uint8List? userPhotoBytes;  // 
 
   final _formKey = GlobalKey<FormState>();
   final FocusNode _nameFocusNode = FocusNode();
@@ -122,18 +122,19 @@ Widget build(BuildContext context) {
                     Navigator.pop(context);
                   },
                 ),
+                const SizedBox(height: 16),
+
                 if (_profileImageBytes != null)
-                  Image.memory(
-                    _profileImageBytes!,
-                    width: 100,
-                    height: 100,
-                    fit: BoxFit.cover,
+                  ImageDisplay(
+                    imageBytes: _profileImageBytes, 
                   ),
                 const SizedBox(height: 16),
+
                 ImagePickerButton(
                   onPressed: _pickImage,
                 ),
                 const SizedBox(height: 16),
+
                 CustomTextField(
                   controller: _nameController,
                   labelText: 'Nombre',
@@ -145,6 +146,7 @@ Widget build(BuildContext context) {
                   },
                 ),
                 const SizedBox(height: 16),
+
                 CustomTextField(
                   controller: _emailController,
                   labelText: 'Correo Electrónico',
@@ -161,6 +163,7 @@ Widget build(BuildContext context) {
                   },
                 ),
                 const SizedBox(height: 16),
+
                 CustomTextField(
                   controller: _passwordController,
                   labelText: 'Contraseña',
@@ -198,27 +201,19 @@ Widget build(BuildContext context) {
       }
 
       if (_formKey.currentState?.validate() == true) {
-        // Convertir los bytes de la imagen a base64
-        String base64Image = base64Encode(_profileImageBytes!);
 
-        // Envía los datos al Bloc al hacer clic en "Crear Perfil"
+        // Envía los datos al EditProfileBloc
         context.read<EditProfileBloc>().add(
 
           EditProfileButtonPressed(            
             name: _nameController.text,
             email: _emailController.text,
             password: _passwordController.text,
-           profileImage: base64Image,  // Aquí enviamos la imagen en base64       
+            profileImage: _profileImageBytes!,  
           ),          
         );
 
-        // Limpia los campos después de enviar
-        _nameController.clear();
-        _emailController.clear();
-        _passwordController.clear();
-        setState(() {
-          _profileImageBytes = null;
-        });
+        // Hacer algo después de enviar los datos        
       }
     },
     child: const Text('Editar Perfil'),
