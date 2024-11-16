@@ -213,7 +213,18 @@ Widget build(BuildContext context) {
           ),          
         );
 
-        // Hacer algo después de enviar los datos        
+        // Despues de enviar los datos
+        Future.delayed(const Duration(seconds: 1), () {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Inicia sesión nuevamente')),
+          );
+
+          // Cerrar la sesión
+          Session.instance.endSession();
+          Navigator.pushNamed(context, '/login');
+
+        });
+
       }
     },
     child: const Text('Editar Perfil'),
