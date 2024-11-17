@@ -1,4 +1,6 @@
 
+import 'dart:typed_data';
+
 import 'package:equatable/equatable.dart';
 
 abstract class EditProfileEvent extends Equatable {
@@ -10,7 +12,7 @@ class EditProfileButtonPressed extends EditProfileEvent {
   final String name;
   final String email;
   final String password;
-  final String profileImage;
+  final Uint8List profileImage;
 
   EditProfileButtonPressed({
     required this.name,

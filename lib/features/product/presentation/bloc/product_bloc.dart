@@ -20,10 +20,21 @@ class ProductEvent extends Equatable{
   
 }
 
+class FetchProducts extends ProductEvent {}
+
 class ProductBloc extends Bloc<ProductEvent,ProductState> {
   final GetProducts getProducts;
 
-  ProductBloc({required this.getProducts}) : super(ProductInitial());
+  ProductBloc({required this.getProducts}) : super(ProductInitial()){
+    on<FetchProducts>((event, emit) async {
+      emit(ProductLoading());
+      final result = await getProducts();
+      result.fold(
+        (failure) => emit(ProductError()),
+        (products) => emit(ProductLoaded(products)),
+      );
+    });
+  }
 
   Future<void> fetchProducts() async {
     emit(ProductLoading());

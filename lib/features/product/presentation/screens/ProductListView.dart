@@ -8,6 +8,7 @@ class ProductListScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    context.read<ProductBloc>().add(FetchProducts());
     return Scaffold(
       appBar: AppBar(title: const Text('Product List')),
       body: BlocBuilder<ProductBloc, ProductState>(
