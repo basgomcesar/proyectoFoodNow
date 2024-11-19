@@ -8,7 +8,7 @@ class GetProducts {
 
   GetProducts({required this.repository});
 
-  Future<Either<Failure, List<Product>>> call() async {
-    return await repository.getProducts();
+  Stream<Either<Failure, Product>> call() {
+    return repository.getProducts();
   }
 }

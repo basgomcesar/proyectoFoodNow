@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:loging_app/features/user/presentation/widgets/header_logo.dart';
+import 'package:loging_app/features/user/presentation/widgets/list_view.dart';
 import 'package:provider/provider.dart';
 import 'package:loging_app/features/product/presentation/bloc/product_bloc.dart';
 import 'package:loging_app/features/product/presentation/screens/ProductListView.dart';
@@ -23,7 +25,12 @@ class _HomeScreenState extends State<HomeScreen> {
       create: (_) => ProductBloc(getProducts: di.serviceLocator()),
       child: Scaffold(
         appBar: AppBar(
-          title: const Text("Lista de productos"),
+  title: const LogoHeader(
+    titulo: 'Lista de productos',
+  ),
+        ),
+        drawer: Drawer(
+          child: DrawerListView(email: widget.email),
         ),
         body: const ProductListScreen(),
       ),

@@ -3,45 +3,46 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../domain/use_cases/get_products.dart';
 import '../../domain/entities/product.dart';
 
-abstract class ProductState {}
+abstract class ProductState extends Equatable {
+  @override
+  List<Object> get props => [];
+}
 
 class ProductInitial extends ProductState {}
 class ProductLoading extends ProductState {}
 class ProductLoaded extends ProductState {
   final List<Product> products;
   ProductLoaded(this.products);
+
+  @override
+  List<Object> get props => [products];
 }
 class ProductError extends ProductState {}
 
-class ProductEvent extends Equatable{
+abstract class ProductEvent extends Equatable {
   @override
-  // TODO: implement props
-   List<Object> get props => [];
-  
+  List<Object> get props => [];
 }
 
 class FetchProducts extends ProductEvent {}
 
-class ProductBloc extends Bloc<ProductEvent,ProductState> {
+class ProductBloc extends Bloc<ProductEvent, ProductState> {
   final GetProducts getProducts;
 
-  ProductBloc({required this.getProducts}) : super(ProductInitial()){
+  ProductBloc({required this.getProducts}) : super(ProductInitial()) {
     on<FetchProducts>((event, emit) async {
       emit(ProductLoading());
-      final result = await getProducts();
-      result.fold(
-        (failure) => emit(ProductError()),
-        (products) => emit(ProductLoaded(products)),
-      );
+      final List<Product> products = [];
+      await for (final result in getProducts()) {
+        print('Result: $result');
+        result.fold(
+          (failure) => emit(ProductError()),
+          (product) {
+            products.add(product);
+            emit(ProductLoaded(List.unmodifiable(products)));
+          },
+        );
+      }
     });
-  }
-
-  Future<void> fetchProducts() async {
-    emit(ProductLoading());
-    final result = await getProducts();
-    result.fold(
-      (failure) => emit(ProductError()),
-      (products) => emit(ProductLoaded(products)),
-    );
   }
 }
