@@ -3,5 +3,5 @@ import '../../../../core/error/failure.dart';
 import '../entities/product.dart';
 
 abstract class ProductRepository {
-  Future<Either<Failure, List<Product>>> getProducts();
+  Stream<Either<Failure, Product>> getProducts();
 }

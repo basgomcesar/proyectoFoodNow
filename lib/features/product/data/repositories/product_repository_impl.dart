@@ -1,4 +1,5 @@
 import 'package:dartz/dartz.dart';
+import 'package:loging_app/features/product/data/models/product_model.dart';
 import '../../domain/entities/product.dart';
 import '../../domain/repositories/product_repository.dart';
 import '../../../../core/error/failure.dart';
@@ -10,12 +11,14 @@ class ProductRepositoryImpl implements ProductRepository {
   ProductRepositoryImpl(this.remoteDataSource);
 
   @override
-  Future<Either<Failure, List<Product>>> getProducts() async {
+  Stream<Either<Failure, Product>> getProducts() async* {
     try {
-      final products = await remoteDataSource.getProducts();
-      return Right(products);
+      await for (final product in remoteDataSource.getProducts()) {
+        print("product in the repo $product");
+        yield Right(product.toDomain());
+      }
     } catch (e) {
-      return Left(ServerFailure('An error occurred while fetching products'));
+      yield Left(ServerFailure('An error occurred while fetching products'));
     }
   }
 }

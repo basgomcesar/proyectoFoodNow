@@ -10,13 +10,17 @@ class ProductListScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     context.read<ProductBloc>().add(FetchProducts());
     return Scaffold(
-      appBar: AppBar(title: const Text('Product List')),
       body: BlocBuilder<ProductBloc, ProductState>(
         builder: (context, state) {
           if (state is ProductLoading) {
             return const Center(child: CircularProgressIndicator());
           } else if (state is ProductLoaded) {
-            return ListView.builder(
+            return GridView.builder(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 8,
+                mainAxisSpacing: 8,
+              ),
               itemCount: state.products.length,
               itemBuilder: (context, index) {
                 return ProductBox(product: state.products[index]);
