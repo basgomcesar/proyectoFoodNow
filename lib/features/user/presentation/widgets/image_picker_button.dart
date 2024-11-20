@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 class ImagePickerButton extends StatelessWidget {
   final VoidCallback onPressed;
 
-  const ImagePickerButton({Key? key, required this.onPressed}) : super(key: key);
+  const ImagePickerButton({super.key, required this.onPressed});
 
   @override
   Widget build(BuildContext context) {

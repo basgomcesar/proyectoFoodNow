@@ -4,7 +4,7 @@ class ActionButtons extends StatelessWidget {
   final VoidCallback onLoginPressed;
   final VoidCallback onCreateAccountPressed;
 
-  const ActionButtons({Key? key, required this.onLoginPressed, required this.onCreateAccountPressed}) : super(key: key);
+  const ActionButtons({super.key, required this.onLoginPressed, required this.onCreateAccountPressed});
 
   @override
   Widget build(BuildContext context) {

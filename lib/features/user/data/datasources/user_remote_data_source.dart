@@ -1,4 +1,3 @@
-import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
 import 'package:loging_app/features/user/data/models/user_model.dart';
