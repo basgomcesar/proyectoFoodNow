@@ -13,15 +13,27 @@ class ProductBox extends StatelessWidget {
       width: 150,
       child: Card(
         margin: const EdgeInsets.all(8),
-        child: Padding(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16.0),
+        ),
+        child: Container(
           padding: const EdgeInsets.all(16.0),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16.0),
+            image: DecorationImage(
+              image: MemoryImage(product.photo),
+              fit: BoxFit.cover,
+            ),
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              Text(product.name, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              Text(product.name,
+                  style: const TextStyle(
+                      fontSize: 18, fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
-              Text('Available: ${product.available ? 'Yes' : 'No'}'),
-              Text('Status: ${product.available ? 'Available' : 'Not Available'}'),
+              Text('Precio:  ${product.price}'),
             ],
           ),
         ),
