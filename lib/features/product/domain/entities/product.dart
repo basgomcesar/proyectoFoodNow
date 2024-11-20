@@ -5,10 +5,10 @@ class Product {
   final String name;
   final bool available;
   final String? description;
-      final double price;
-    final int quantityAvailable;
-    final Uint8List photo;
-   final String userId;
+  final double price;
+  final int quantityAvailable;
+  final Uint8List photo;
+  final String userId;
 
   Product({
     required this.id,
