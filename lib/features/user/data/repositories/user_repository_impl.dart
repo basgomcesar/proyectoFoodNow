@@ -1,4 +1,6 @@
 
+import 'dart:typed_data';
+
 import 'package:dartz/dartz.dart';
 
 import 'package:loging_app/core/error/failure.dart';
@@ -29,7 +31,7 @@ class UserRepositoryImpl implements UserRepository {
   }
  
   @override
-  Future<Either<Failure, User>> createUser(String name, String email, String password, String userType, String profileImage, bool disponibility ) async {
+  Future<Either<Failure, User>> createUser(String name, String email, String password, String userType, Uint8List profileImage, bool disponibility ) async {
     try {
       print('name: $name');
       print('email: $email');
@@ -45,6 +47,20 @@ class UserRepositoryImpl implements UserRepository {
     }
   }
 
+@override
+  Future<Either<Failure, User>> updateUser(String name, String email, String password, Uint8List profileImage)async{
+    try {
+          print('name: $name');
+          print('email: $email');
+          print('password: $password');
+          final User user = await userRemoteDataSource.updateUser(name, email, password, profileImage);// Aquí se hace la petición al servidor
+          print('Usuario actualizado correctamente en el datasource');
+          return Right(user);
+    } catch (e) {
+          print('Error en updateUser en UserRepositoryImpl: $e');
+          return Left(ServerFailure('Update user failed'));
+    }
+  }
 
   @override
   Future<Either<Failure, bool>> deleteUser(String userId) {
@@ -58,10 +74,6 @@ class UserRepositoryImpl implements UserRepository {
     throw UnimplementedError();
   }
 
-  @override
-  Future<Either<Failure, bool>> updateUser(User user) {
-    // TODO: implement updateUser
-    throw UnimplementedError();
-  }
+  
 
 }

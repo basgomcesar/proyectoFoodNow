@@ -1,8 +1,10 @@
+import 'dart:typed_data';
+
 class User {
   final String name;
   final String email;
   final String password; 
-  final String photo; 
+  final Uint8List photo; 
   final String userType;
   final bool disponibility;
 

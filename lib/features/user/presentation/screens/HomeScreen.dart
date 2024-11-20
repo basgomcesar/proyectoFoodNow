@@ -1,4 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:loging_app/features/user/presentation/widgets/header_logo.dart';
+import 'package:loging_app/features/user/presentation/widgets/list_view.dart';
+import 'package:provider/provider.dart';
+import 'package:loging_app/features/product/presentation/bloc/product_bloc.dart';
+import 'package:loging_app/features/product/presentation/screens/ProductListView.dart';
+import 'package:loging_app/injection_container.dart' as di;
 
 class HomeScreen extends StatefulWidget {
   final String email;
@@ -10,61 +16,22 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  bool _isSwitched = false; // Estado del Switch
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Bienvenido'),
-      ),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            UserAccountsDrawerHeader(
-              decoration: const BoxDecoration(
-                color: Colors.deepPurple,
-              ),
-              accountName: const Text('Miguel Caixba'),
-              accountEmail: Text(widget.email),
-              currentAccountPicture: const CircleAvatar(
-                backgroundImage: NetworkImage('https://picsum.photos/200'),
-              ),
-            ),
-            // Switch directo debajo del nombre
-            ListTile(
-              leading: const Icon(Icons.toggle_on),
-              title: Row(
-                children: [
-                  const Text('Apagado'),
-                  Switch(
-                    value: _isSwitched,
-                    onChanged: (value) {
-                      setState(() {
-                        _isSwitched = value;
-                      });
-                    },
-                  ),
-                  const Text('Encendido'),
-                ],
-              ),
-            ),
-            const Divider(),
-            ListTile(
-              leading: const Icon(Icons.logout),
-              title: const Text('Cerrar Sesión'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.pushReplacementNamed(context, '/');
-              },
-            ),
-          ],
+    return Provider<ProductBloc>(
+      create: (_) => ProductBloc(getProducts: di.serviceLocator()),
+      child: Scaffold(
+        appBar: AppBar(
+  title: const LogoHeader(
+    titulo: 'Lista de productos',
+  ),
         ),
+        drawer: Drawer(
+          child: DrawerListView(email: widget.email),
+        ),
+        body: const ProductListScreen(),
       ),
-      body: const Center(
-        child: Text('Contenido de Inicio'),
-      ),
+
     );
   }
 }
