@@ -15,15 +15,20 @@ class ProductListScreen extends StatelessWidget {
           if (state is ProductLoading) {
             return const Center(child: CircularProgressIndicator());
           } else if (state is ProductLoaded) {
-            return GridView.builder(
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 8,
-                mainAxisSpacing: 8,
-              ),
-              itemCount: state.products.length,
-              itemBuilder: (context, index) {
-                return ProductBox(product: state.products[index]);
+            return LayoutBuilder(
+              builder: (context, constraints) {
+                int crossAxisCount = constraints.maxWidth > 600 ? (constraints.maxWidth / 195).floor() : 2;
+                return GridView.builder(
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: crossAxisCount,
+                    crossAxisSpacing: 8,
+                    mainAxisSpacing: 8,
+                  ),
+                  itemCount: state.products.length,
+                  itemBuilder: (context, index) {
+                    return ProductBox(product: state.products[index]);
+                  },
+                );
               },
             );
           } else if (state is ProductError) {
