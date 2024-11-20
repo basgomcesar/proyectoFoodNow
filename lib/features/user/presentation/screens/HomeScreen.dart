@@ -9,7 +9,6 @@ import 'package:loging_app/injection_container.dart' as di;
 class HomeScreen extends StatefulWidget {
   final String email;
 
-  // Constructor para recibir el correo electrónico
   const HomeScreen({super.key, required this.email});
 
   @override
@@ -17,8 +16,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  // Puedes añadir más variables de estado si es necesario
-
   @override
   Widget build(BuildContext context) {
     return Provider<ProductBloc>(

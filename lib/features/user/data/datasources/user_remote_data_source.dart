@@ -1,11 +1,10 @@
-
 import 'dart:typed_data';
-
+ 
 import 'package:dio/dio.dart';
 import 'package:loging_app/features/user/data/models/user_model.dart';
 import 'package:loging_app/core/utils/session.dart';
 import 'package:loging_app/features/user/domain/entities/user.dart';
-
+ 
 abstract class UserRemoteDataSource {
   Future<UserModel> getUser(String userId);
   Future<UserModel> updateUser(
@@ -25,16 +24,16 @@ abstract class UserRemoteDataSource {
     );
   Future<UserModel> authenticateUser(String email, String password);
 }
-
+ 
 class UserRemoteDataSourceImpl implements UserRemoteDataSource {
   final Dio client = Dio();
   // Eliminar la referencia a FirebaseFirestore
   final String apiUrl = 'http://localhost:3000'; // URL de tu API
   final Session session = Session.instance;
-
+ 
   // Constructor sin FirebaseFirestore
   UserRemoteDataSourceImpl();
-
+ 
   @override
   Future<UserModel> authenticateUser(String correo, String password) async {    
     final Response response = await client.post(
@@ -45,14 +44,14 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
       },
       options: Options(headers: {'Content-Type': 'application/json'}),
     );
-    
-
+   
+ 
     if (response.statusCode == 200) {
       try {
         final idUsuario = response.data['idUsuario'];
         final token = response.headers['x-token']?.first ?? '';
         UserModel userAuth = UserModel(
-          name: response.data['nombre'], 
+          name: response.data['nombre'],
           email: response.data['correo'],
           password: response.data['contrasenia'],
           userType: response.data['tipo'],
@@ -68,7 +67,7 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
       throw Exception('Failed to authenticate user');
     }
   }
-
+ 
 @override
 Future<UserModel> createUser(String name, String email, String password, String userType, Uint8List photo, bool disponibility) async {
    FormData formData = FormData.fromMap({
@@ -83,16 +82,16 @@ Future<UserModel> createUser(String name, String email, String password, String 
         '$apiUrl/usuarios',
         data: formData,  
       );
-
+ 
   if (response.statusCode == 201) {
     try {
-
+ 
       return UserModel(
         name: response.data['nombre'],
         email: response.data['correo'],
         password: response.data['contrasenia'],
         userType: response.data['tipo'],
-        photo: Uint8List.fromList(List<int>.from(response.data['foto']['data'])), 
+        photo: Uint8List.fromList(List<int>.from(response.data['foto']['data'])),
         disponibility: response.data['disponibilidad'] == 'true',
       );
     } catch (e) {
@@ -103,8 +102,8 @@ Future<UserModel> createUser(String name, String email, String password, String 
     throw Exception('Failed to register user2');
   }
 }
-
-
+ 
+ 
 @override
   Future<UserModel> updateUser(String name, String email, String password, Uint8List photo) async {
     FormData formData = FormData.fromMap({
@@ -113,7 +112,7 @@ Future<UserModel> createUser(String name, String email, String password, String 
         'contrasenia': password,
         'foto': MultipartFile.fromBytes(photo, filename: 'photo.jpg'),  // Convierte la foto a MultipartFile
       });
-
+ 
       // Asegúrate de que tienes el idUsuario en la sesión
     String? userId = session.userId;  // Esto es obtenido desde tu singleton Session
     if (userId == null) {
@@ -121,7 +120,7 @@ Future<UserModel> createUser(String name, String email, String password, String 
     }
   try{
       final response = await client.put(
-        '$apiUrl/usuarios/$userId', 
+        '$apiUrl/usuarios/$userId',
         data: formData,
         options: Options(
           headers: {
@@ -131,14 +130,14 @@ Future<UserModel> createUser(String name, String email, String password, String 
           },
         ),
       );    
-
+ 
       if (response.statusCode == 200) {
         return UserModel(
           name: response.data['nombre'],
           email: response.data['correo'],
           password: response.data['contrasenia'],
           userType: response.data['tipo'],
-          photo: Uint8List.fromList(List<int>.from(response.data['foto']['data'])), 
+          photo: Uint8List.fromList(List<int>.from(response.data['foto']['data'])),
           disponibility: response.data['disponibilidad'] == 'true',
         );
       } else if (response.statusCode == 400) {
@@ -154,28 +153,29 @@ Future<UserModel> createUser(String name, String email, String password, String 
       throw Exception('Failed to update user: $e');
     }
   }
-
+ 
   @override
   Future<bool> deleteUser(String userId) async {
     final response = await client.delete('$apiUrl/$userId');
-
+ 
     if (response.statusCode == 200) {
       return true;
     } else {
       throw Exception('Failed to delete user');
     }
   }
-
+ 
   @override
   Future<UserModel> getUser(String userId) async {
     final response = await client.get('$apiUrl/$userId');
-
+ 
     if (response.statusCode == 200) {
       return UserModel.fromJson(response.data);
     } else {
       throw Exception('Failed to get user');
     }
   }
-
-  
+ 
+ 
 }
+ 
