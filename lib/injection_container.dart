@@ -24,7 +24,7 @@ void initInjections() {
 
   serviceLocator.registerLazySingleton<ClientChannel>(
     () => ClientChannel(
-      'localhost',
+      '192.168.100.40',
       port: 50051,
       options: const ChannelOptions(credentials: ChannelCredentials.insecure()),
     )
