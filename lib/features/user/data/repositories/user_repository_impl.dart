@@ -63,9 +63,14 @@ class UserRepositoryImpl implements UserRepository {
   }
 
   @override
-  Future<Either<Failure, bool>> deleteUser(String userId) {
-    // TODO: implement deleteUser
-    throw UnimplementedError();
+  Future<Either<Failure, bool>> deleteUser() async{
+    try {
+      final bool result = await userRemoteDataSource.deleteUser();// Aquí se hace la petición al servidor
+      return Right(result);
+    } catch (e) {
+      print('Error en deleteUser en UserRepositoryImpl: $e');
+      return Left(ServerFailure('Delete user failed'));
+    }
   }
 
   @override

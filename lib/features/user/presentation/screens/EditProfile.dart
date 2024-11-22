@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loging_app/core/utils/session.dart';
+import 'package:loging_app/features/user/domain/repositories/user_repository.dart';
 import 'package:loging_app/features/user/domain/use_cases/edit_profile_use_case.dart';
 import 'package:loging_app/features/user/presentation/bloc/Edit_profile/edit_profile_bloc.dart';
 import 'package:loging_app/features/user/presentation/bloc/Edit_profile/edit_profile_event.dart';
@@ -190,45 +191,105 @@ Widget build(BuildContext context) {
 }
 
 // botón que valida el formulario y dispara el evento CreateProfileButtonPressed 
-  Widget _buildSubmitButton() {
-  return ElevatedButton(
-    onPressed: () {
-      if (_profileImageBytes == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Por favor, selecciona una imagen de perfil')),
-        );
-        return;
-      }
+// botón que valida el formulario y dispara el evento CreateProfileButtonPressed 
+Widget _buildSubmitButton() {
+  return Row(
+    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+    children: [
+      ElevatedButton(
+        onPressed: () {
+          if (_profileImageBytes == null) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Por favor, selecciona una imagen de perfil')),
+            );
+            return;
+          }
 
-      if (_formKey.currentState?.validate() == true) {
+          if (_formKey.currentState?.validate() == true) {
+            // Envía los datos al EditProfileBloc
+            context.read<EditProfileBloc>().add(
+              EditProfileButtonPressed(
+                name: _nameController.text,
+                email: _emailController.text,
+                password: _passwordController.text,
+                profileImage: _profileImageBytes!,
+              ),
+            );
 
-        // Envía los datos al EditProfileBloc
-        context.read<EditProfileBloc>().add(
+            // Despues de enviar los datos
+            Future.delayed(const Duration(seconds: 1), () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Inicia sesión nuevamente')),
+              );
 
-          EditProfileButtonPressed(            
-            name: _nameController.text,
-            email: _emailController.text,
-            password: _passwordController.text,
-            profileImage: _profileImageBytes!,  
-          ),          
-        );
+              // Cerrar la sesión
+              Session.instance.endSession();
+              Navigator.pushNamed(context, '/login');
+            });
+          }
+        },
+        child: const Text('Editar Perfil'),
+      ),
+      ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.red, // Botón rojo para destacar
+           foregroundColor: Colors.white,
+        ),
+        onPressed: () {
+          // Lógica para eliminar perfil
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('Eliminar Perfil'),
+              content: const Text('¿Estás seguro de que deseas eliminar tu perfil? Esta acción no se puede deshacer.'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Text('Cancelar'),
+                ),
 
-        // Despues de enviar los datos
-        Future.delayed(const Duration(seconds: 1), () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Inicia sesión nuevamente')),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red, // Botón rojo en el diálogo
+                    foregroundColor: Colors.white,
+                  ),
+                  onPressed: () async {
+                    try {
+                      // Elimina el perfil
+                      final userRepository = serviceLocator<UserRepository>(); 
+                      await userRepository.deleteUser();
+
+                      // Cierra sesión
+                      Session.instance.endSession();
+
+                      // Redirige a la pantalla de login
+                      Navigator.pushNamed(context, '/login');
+                      // Muestra mensaje de éxito
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Perfil eliminado exitosamente')),
+                      );
+
+                    } catch (e) {
+                      // Manejo de errores si la operación falla
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Error al eliminar el perfil: $e')),
+                      );
+                    }
+
+                  },
+                  child: const Text('Eliminar'),
+                ),
+              ],
+            ),
           );
-
-          // Cerrar la sesión
-          Session.instance.endSession();
-          Navigator.pushNamed(context, '/login');
-
-        });
-
-      }
-    },
-    child: const Text('Editar Perfil'),
+        },
+        child: const Text('Eliminar Perfil'),
+      ),
+    ],
   );
 }
+
 
 }

@@ -14,7 +14,7 @@ abstract class UserRemoteDataSource {
       String password,
       Uint8List photo,
       );
-  Future<bool> deleteUser(String userId);
+  Future<bool> deleteUser();
   Future<UserModel> createUser(
       String name,
       String email,
@@ -114,8 +114,7 @@ Future<UserModel> createUser(String name, String email, String password, String 
         'foto': MultipartFile.fromBytes(photo, filename: 'photo.jpg'),  // Convierte la foto a MultipartFile
       });
 
-      // Asegúrate de que tienes el idUsuario en la sesión
-    String? userId = session.userId;  // Esto es obtenido desde tu singleton Session
+    String? userId = session.userId;  
     if (userId == null) {
       throw Exception('User ID is not available');
     }
@@ -125,7 +124,6 @@ Future<UserModel> createUser(String name, String email, String password, String 
         data: formData,
         options: Options(
           headers: {
-            //'Content-Type': 'application/json',
             'Content-Type': 'multipart/form-data',
             'x-token': session.token,
           },
@@ -145,8 +143,6 @@ Future<UserModel> createUser(String name, String email, String password, String 
         throw Exception('Invalid data provided');
       } else if (response.statusCode == 404) {
         throw Exception('User not found');
-      } else if (response.statusCode == 500) {
-        throw Exception('Server error');
       } else {
         throw Exception('Failed to update user with status code ${response.statusCode}');
       }
@@ -156,13 +152,34 @@ Future<UserModel> createUser(String name, String email, String password, String 
   }
 
   @override
-  Future<bool> deleteUser(String userId) async {
-    final response = await client.delete('$apiUrl/$userId');
+  Future<bool> deleteUser() async {
+    String? userId = session.userId;  
+    if (userId == null) {
+      throw Exception('User ID is not available');
+    }
+    try{
+        final response = await client.delete(
+          '$apiUrl/usuarios/$userId', 
+          options: Options(
+            headers: {
+              'Content-Type': 'multipart/form-data',
+              'x-token': session.token,
+            },
+          ),
+        );    
 
-    if (response.statusCode == 200) {
-      return true;
-    } else {
-      throw Exception('Failed to delete user');
+        if (response.statusCode == 200) {
+          return true;
+
+        } else if (response.statusCode == 400) {
+          throw Exception('Invalid data provided');
+        } else if (response.statusCode == 404) {
+          throw Exception('User not found');
+        } else {
+          throw Exception('Failed to update user with status code ${response.statusCode}');
+        }
+    } catch (e) {
+      throw Exception('Failed to update user: $e');
     }
   }
 
