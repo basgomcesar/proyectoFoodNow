@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:loging_app/features/product/domain/entities/product.dart';
+import 'package:numberpicker/numberpicker.dart';
 
-class ProductDetailsScreen extends StatelessWidget {
+class ProductDetailsScreen extends StatefulWidget {
   final Product product;
 
   const ProductDetailsScreen({
@@ -10,7 +11,16 @@ class ProductDetailsScreen extends StatelessWidget {
   });
 
   @override
+  _ProductDetailsScreenState createState() => _ProductDetailsScreenState();
+}
+
+class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
+  int currentValue = 1;
+
+  @override
   Widget build(BuildContext context) {
+    final product = widget.product;
+
     return Scaffold(
       appBar: AppBar(
         title: Text(product.name),
@@ -47,7 +57,7 @@ class ProductDetailsScreen extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             const Text(
-              "Detalles del Producto:",
+              "Descripción:",
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -57,6 +67,54 @@ class ProductDetailsScreen extends StatelessWidget {
             Text(
               product.description ?? 'Sin descripción disponible',
               style: const TextStyle(fontSize: 16),
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              "Cantidad:",
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            NumberPicker(
+              value: currentValue,
+              minValue: 1,
+              maxValue: product.quantityAvailable,
+              axis: Axis.horizontal,
+              itemWidth: 50, // Valor ajustado para mejor usabilidad
+              onChanged: (value) {
+                setState(() {
+                  currentValue = value;
+                });
+              },
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: const Color.fromARGB(255, 255, 0, 0)),
+              ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.remove),
+                  onPressed: () {
+                    setState(() {
+                      final newValue = currentValue - 1;
+                      currentValue = newValue.clamp(1, product.quantityAvailable);
+                    });
+                  },
+                ),
+                Text('Producto(s) seleccionado(s): $currentValue'),
+                IconButton(
+                  icon: const Icon(Icons.add),
+                  onPressed: () {
+                    setState(() {
+                      final newValue = currentValue + 1;
+                      currentValue = newValue.clamp(1, product.quantityAvailable);
+                    });
+                  },
+                ),
+              ],
             ),
           ],
         ),
