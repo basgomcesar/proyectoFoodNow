@@ -7,6 +7,7 @@ class User {
   final Uint8List photo; 
   final String userType;
   final bool disponibility;
+  final String location;
 
   User({
     required this.name,
@@ -15,5 +16,6 @@ class User {
     required this.photo,
     required this.userType,
     required this.disponibility,
+    required this.location
   });
 }

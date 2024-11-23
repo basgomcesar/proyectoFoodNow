@@ -1,7 +1,7 @@
 import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:loging_app/core/utils/session.dart';
+import '../screens/ChangeAvailability.dart';
 
 class DrawerListView extends StatelessWidget {
   final String email;
@@ -17,35 +17,110 @@ class DrawerListView extends StatelessWidget {
     return ListView(
       padding: EdgeInsets.zero,
       children: [
-        // Cabecera del Drawer con información del usuario
-        UserAccountsDrawerHeader(
+        // Cabecera personalizada del Drawer
+        Container(
           decoration: const BoxDecoration(
             color: Colors.deepPurple,
           ),
-          accountName: Text(user!.name), // Mostrar el nombre pasado
-          accountEmail: Text(user!.email), // Mostrar el correo electrónico pasado
-          currentAccountPicture: CircleAvatar(
-                backgroundImage: image != null
-                ? Image.memory(image!).image
-                : const AssetImage('assets/images/default_avatar.png'),
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  // Imagen del perfil
+                  CircleAvatar(
+                    radius: 40,
+                    backgroundImage: image != null
+                        ? Image.memory(image!).image
+                        : const AssetImage('assets/images/default_avatar.png'),
+                  ),
+                  const SizedBox(width: 16),
+                  // Leyenda "Disponible" y "Ubicación"
+                const Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [ // Añadido `const` aquí
+                      Text(
+                        'Disponible', // Leyenda "Disponible"
+                        style: TextStyle(
+                          color: Colors.green,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
+                      ),
+                      SizedBox(height: 8),
+                      Text(
+                        'Ubicación: Salón 104', // Leyenda de ubicación
+                        style: TextStyle(
+                          color: Colors.white70,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                  // Ícono ">"
+                  IconButton(
+                    icon: const Icon(
+                      Icons.arrow_forward,
+                      color: Colors.white,
+                      size: 24,
+                    ),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => SecondScreen()),
+                      );
+                    },
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              // Información del usuario (centrada hacia la izquierda)
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      user!.name,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      user!.email,
+                      style: const TextStyle(
+                        color: Colors.white70,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
         ),
-        // Opción de Perfil
+        // Opciones del Drawer
         ListTile(
           leading: const Icon(Icons.person),
           title: const Text('Editar perfil'),
           onTap: () {
-            Navigator.pop(context); // Cerrar el Drawer
+            Navigator.pop(context);
             Navigator.pushNamed(context, '/editProfile');
           },
         ),
-        // Otras opciones del Drawer
         ListTile(
           leading: const Icon(Icons.gite_rounded),
           title: const Text('Productos'),
           onTap: () {
             Navigator.pop(context);
-            // Navigator.pushNamed(context, '/configuraciones');
           },
         ),
         ListTile(
@@ -53,7 +128,6 @@ class DrawerListView extends StatelessWidget {
           title: const Text('Pedidos a recoger'),
           onTap: () {
             Navigator.pop(context);
-            // Navigator.pushNamed(context, '/historial');
           },
         ),
         ListTile(
@@ -61,7 +135,6 @@ class DrawerListView extends StatelessWidget {
           title: const Text('Pedidos a entregar'),
           onTap: () {
             Navigator.pop(context);
-            // Navigator.pushNamed(context, '/ayuda');
           },
         ),
         ListTile(
@@ -69,7 +142,6 @@ class DrawerListView extends StatelessWidget {
           title: const Text('Acerca de'),
           onTap: () {
             Navigator.pop(context);
-            // Navigator.pushNamed(context, '/acerca');
           },
         ),
         const Divider(),
@@ -78,7 +150,6 @@ class DrawerListView extends StatelessWidget {
           title: const Text('Cerrar Sesión'),
           onTap: () {
             Navigator.pop(context);
-            // Navegar de regreso al LoginScreen y reemplazar la pila de navegación
             Navigator.pushReplacementNamed(context, '/');
           },
         ),

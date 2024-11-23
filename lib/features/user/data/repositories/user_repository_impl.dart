@@ -73,7 +73,23 @@ class UserRepositoryImpl implements UserRepository {
     // TODO: implement getUser
     throw UnimplementedError();
   }
+  
+  @override
+  Future<Either<Failure, User>> getUserAvailability(String userId) async {
+    try {
+      print('UserRepositoryImpl: getUserAvailability');
+      print('userId: $userId');
+      
+      // Llamada al data source remoto
+      final User user = await userRemoteDataSource.getUserAvailability(userId);
+
+      print('User obtenido en getUserAvailability: $user');
+      return Right(user);
+    } catch (e) {
+      print('Error en getUserAvailability en UserRepositoryImpl: $e');
+      return Left(ServerFailure('Failed to fetch user availability'));
+    }
+  }
 
   
-
 }

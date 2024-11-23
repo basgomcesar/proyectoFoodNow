@@ -23,6 +23,9 @@ abstract class UserRemoteDataSource {
       bool disponibility,
     );
   Future<UserModel> authenticateUser(String email, String password);
+
+  Future<UserModel> getUserAvailability(String userId);
+  
 }
  
 class UserRemoteDataSourceImpl implements UserRemoteDataSource {
@@ -56,7 +59,7 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
           password: response.data['contrasenia'],
           userType: response.data['tipo'],
           photo: Uint8List.fromList(List<int>.from(response.data['foto']['data'])), // Convierte la foto a Uint8List si es un arreglo de bytes
-          disponibility: response.data['disponibilidad'] == 'true',
+          disponibility: response.data['disponibilidad'] == 'true', location: '',
         );
         session.startSession(userId: idUsuario.toString(), token: token, user: userAuth);
         return userAuth;
@@ -92,7 +95,7 @@ Future<UserModel> createUser(String name, String email, String password, String 
         password: response.data['contrasenia'],
         userType: response.data['tipo'],
         photo: Uint8List.fromList(List<int>.from(response.data['foto']['data'])),
-        disponibility: response.data['disponibilidad'] == 'true',
+        disponibility: response.data['disponibilidad'] == 'true', location: '',
       );
     } catch (e) {
       throw Exception('Failed to register user1');
@@ -138,7 +141,7 @@ Future<UserModel> createUser(String name, String email, String password, String 
           password: response.data['contrasenia'],
           userType: response.data['tipo'],
           photo: Uint8List.fromList(List<int>.from(response.data['foto']['data'])),
-          disponibility: response.data['disponibilidad'] == 'true',
+          disponibility: response.data['disponibilidad'] == 'true', location: '',
         );
       } else if (response.statusCode == 400) {
         throw Exception('Invalid data provided');
@@ -176,6 +179,27 @@ Future<UserModel> createUser(String name, String email, String password, String 
     }
   }
  
- 
+@override
+Future<UserModel> getUserAvailability(String userId) async {
+  try {
+    final response = await client.get('$apiUrl/usuarios/$userId/disponibilidad');
+
+    if (response.statusCode == 200) {
+      // Extraer los datos relevantes del response y construir el UserModel
+      return UserModel(
+        name: response.data['nombre'],
+        email: response.data['correo'],
+        password: '', // Puede estar vacío si no es necesario
+        userType: response.data['tipo'],
+        photo: Uint8List(0), // Si no envía la foto, usa un Uint8List vacío
+        disponibility: response.data['disponibilidad'] == 'true',
+        location: response.data['ubicacion'] ?? 'No especificada',
+      );
+    } else {
+      throw Exception('Error al obtener disponibilidad del usuario');
+    }
+  } catch (e) {
+    throw Exception('Error en getUserAvailability: $e');
+  }
 }
- 
+}
