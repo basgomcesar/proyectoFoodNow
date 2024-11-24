@@ -18,6 +18,12 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   int currentValue = 1;
 
   @override
+  void initState() {
+    super.initState();
+    currentValue = currentValue.clamp(1, widget.product.quantityAvailable);
+  }
+
+  @override
   Widget build(BuildContext context) {
     final product = widget.product;
 
