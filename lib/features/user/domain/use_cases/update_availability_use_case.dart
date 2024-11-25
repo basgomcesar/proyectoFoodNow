@@ -3,12 +3,12 @@ import 'package:loging_app/core/error/failure.dart';
 import 'package:loging_app/features/user/domain/entities/user.dart';
 import 'package:loging_app/features/user/domain/repositories/user_repository.dart';
 
-class GeteAvailabilityUseCase {
+class UpdateAvailabilityUseCase {
   final UserRepository repository;
 
-  GeteAvailabilityUseCase({required this.repository});
+  UpdateAvailabilityUseCase({required this.repository});
 
-  Future<Either<Failure, User>> call(String userId) async {
-    return await repository.getUserAvailability(userId);
+  Future<Either<Failure, User>> call(bool availability, String location) async {
+    return await repository.updateAvailability(availability, location);
   }
 }

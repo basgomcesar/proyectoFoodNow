@@ -18,4 +18,5 @@ class User {
     required this.disponibility,
     required this.location
   });
+
 }

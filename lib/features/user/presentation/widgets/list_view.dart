@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:loging_app/core/utils/session.dart';
-import '../screens/ChangeAvailability.dart';
+import 'package:loging_app/features/user/presentation/screens/ChangeAvailabilityScreen.dart';
 
 class DrawerListView extends StatelessWidget {
   final String email;
@@ -38,12 +38,12 @@ class DrawerListView extends StatelessWidget {
                   ),
                   const SizedBox(width: 16),
                   // Leyenda "Disponible" y "Ubicación"
-                const Expanded(
+                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [ // Añadido `const` aquí
                       Text(
-                        'Disponible', // Leyenda "Disponible"
+                        user!.disponibility ? "Disponible" : "No disponible", // Personaliza el texto
                         style: TextStyle(
                           color: Colors.green,
                           fontWeight: FontWeight.bold,
@@ -52,7 +52,7 @@ class DrawerListView extends StatelessWidget {
                       ),
                       SizedBox(height: 8),
                       Text(
-                        'Ubicación: Salón 104', // Leyenda de ubicación
+                        user!.location, // Leyenda de ubicación
                         style: TextStyle(
                           color: Colors.white70,
                           fontSize: 14,
@@ -73,7 +73,7 @@ class DrawerListView extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => SecondScreen()),
+                            builder: (context) => ChangeAvailability()),
                       );
                     },
                   ),
