@@ -26,6 +26,7 @@ abstract class ProductEvent extends Equatable {
 
 class FetchProducts extends ProductEvent {}
 
+
 class ProductBloc extends Bloc<ProductEvent, ProductState> {
   final GetProducts getProducts;
 
