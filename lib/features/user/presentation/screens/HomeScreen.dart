@@ -16,6 +16,15 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+
+//@override
+//void initState() {
+  /* super.initState();
+    context.read<AvailabilityBloc>().add(AvailabilityButtonPressed(
+              userId: "4"),
+      );
+  }*/
+
   @override
   Widget build(BuildContext context) {
     return Provider<ProductBloc>(

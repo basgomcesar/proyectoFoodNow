@@ -23,6 +23,9 @@ abstract class UserRemoteDataSource {
       bool disponibility,
     );
   Future<UserModel> authenticateUser(String email, String password);
+
+  Future<UserModel> updateAvailability(bool availability, String location);
+  
 }
  
 class UserRemoteDataSourceImpl implements UserRemoteDataSource {
@@ -54,7 +57,8 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
           password: response.data['contrasenia'],
           userType: response.data['tipo'],
           photo: Uint8List.fromList(List<int>.from(response.data['foto']['data'])), // Convierte la foto a Uint8List si es un arreglo de bytes
-          disponibility: response.data['disponibilidad'] == 'true',
+          disponibility: response.data['disponibilidad'] == 1, 
+          location: response.data['ubicacion'],
         );
         session.startSession(userId: idUsuario.toString(), token: token, user: userAuth);
         return userAuth;
@@ -90,7 +94,7 @@ Future<UserModel> createUser(String name, String email, String password, String 
         password: response.data['contrasenia'],
         userType: response.data['tipo'],
         photo: Uint8List.fromList(List<int>.from(response.data['foto']['data'])),
-        disponibility: response.data['disponibilidad'] == 'true',
+        disponibility: response.data['disponibilidad'] == 'true', location: '',
       );
     } catch (e) {
       throw Exception('Failed to register user1');
@@ -134,7 +138,7 @@ Future<UserModel> createUser(String name, String email, String password, String 
           password: response.data['contrasenia'],
           userType: response.data['tipo'],
           photo: Uint8List.fromList(List<int>.from(response.data['foto']['data'])),
-          disponibility: response.data['disponibilidad'] == 'true',
+          disponibility: response.data['disponibilidad'] == 'true', location: '',
         );
       } else if (response.statusCode == 400) {
         throw Exception('Invalid data provided');
@@ -190,7 +194,54 @@ Future<UserModel> createUser(String name, String email, String password, String 
       throw Exception('Failed to get user');
     }
   }
+
+  @override
+  Future<UserModel> updateAvailability(bool availability, String location) async {
+    // Asegúrate de que tienes el idUsuario en la sesión
+    String? userId = session.userId;  // Esto es obtenido desde tu singleton Session
+    if (userId == null) {
+      throw Exception('User ID is not available');
+    }
+    try{
+      final response = await client.put(
+        '$apiUrl/usuarios/availability/$userId',
+        data: {
+          'disponibilidad': availability,
+          'ubicacion': location
+        },
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json',
+            'x-token': session.token,
+          },
+        ),
+      );    
  
- 
+      if (response.statusCode == 200) {
+        print('Response data: ${response.data}');
+
+        return UserModel(
+          name: response.data['nombre'],
+          email: response.data['correo'],
+          password: response.data['contrasenia'],
+          userType: response.data['tipo'],
+          photo: Uint8List.fromList(List<int>.from(response.data['foto']['data'])),
+          disponibility: response.data['disponibilidad'] == 1, location: '',
+        );
+
+        
+      } else if (response.statusCode == 400) {
+        throw Exception('Invalid data provided');
+      } else if (response.statusCode == 404) {
+        throw Exception('User not found');
+      } else if (response.statusCode == 500) {
+        throw Exception('Server error');
+      } else {
+        throw Exception('Failed to update user with status code ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Failed to update user: $e');
+    }
+  }
+  
 }
- 
