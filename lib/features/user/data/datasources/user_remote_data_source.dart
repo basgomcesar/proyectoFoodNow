@@ -3,7 +3,6 @@ import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:loging_app/features/user/data/models/user_model.dart';
 import 'package:loging_app/core/utils/session.dart';
-import 'package:loging_app/features/user/domain/entities/user.dart';
  
 abstract class UserRemoteDataSource {
   Future<UserModel> getUser(String userId);

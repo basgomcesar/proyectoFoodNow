@@ -69,7 +69,6 @@ class UserRepositoryImpl implements UserRepository {
     throw UnimplementedError();
   }
 
-  
   @override
   Future<Either<Failure, User>> updateAvailability(bool availability, String location) async {
     try {
@@ -83,9 +82,4 @@ class UserRepositoryImpl implements UserRepository {
           return Left(ServerFailure('Update user failed'));
     }
   }
-  
-  
-  
-
-  
 }
