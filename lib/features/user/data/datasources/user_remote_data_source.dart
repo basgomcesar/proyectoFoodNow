@@ -58,90 +58,90 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
           userType: response.data['tipo'],
           photo: Uint8List.fromList(List<int>.from(response.data['foto']['data'])), // Convierte la foto a Uint8List si es un arreglo de bytes
           disponibility: response.data['disponibilidad'] == 1, 
-          location: response.data['ubicacion'],
-        );
-        session.startSession(userId: idUsuario.toString(), token: token, user: userAuth);
-        return userAuth;
-      } catch (e) {
-        throw Exception('Failed to authenticate user');
-      }
-    } else {
-      throw Exception('Failed to authenticate user');
-    }
-  }
- 
-@override
-Future<UserModel> createUser(String name, String email, String password, String userType, Uint8List photo, bool disponibility) async {
-   FormData formData = FormData.fromMap({
-        'nombre': name,
-        'correo': email,
-        'contrasenia': password,
-        'tipo': userType,
-        'foto': MultipartFile.fromBytes(photo, filename: 'photo.jpg'),  // Convierte la foto a MultipartFile
-        'disponibilidad': disponibility,
-      });
-  final response = await client.post(
-        '$apiUrl/usuarios',
-        data: formData,  
-      );
- 
-  if (response.statusCode == 201) {
-    try {
- 
-      return UserModel(
-        name: response.data['nombre'],
-        email: response.data['correo'],
-        password: response.data['contrasenia'],
-        userType: response.data['tipo'],
-        photo: Uint8List.fromList(List<int>.from(response.data['foto']['data'])),
-        disponibility: response.data['disponibilidad'] == 'true', location: '',
-      );
-    } catch (e) {
-      throw Exception('Failed to register user1');
-    }
-  } else {
-    print('Error en la respuesta: ${response.statusCode}');
-    throw Exception('Failed to register user2');
-  }
-}
- 
- 
-@override
-  Future<UserModel> updateUser(String name, String email, String password, Uint8List photo) async {
-    FormData formData = FormData.fromMap({
-        'nombre': name,
-        'correo': email,
-        'contrasenia': password,
-        'foto': MultipartFile.fromBytes(photo, filename: 'photo.jpg'),  // Convierte la foto a MultipartFile
-      });
-
-    String? userId = session.userId;  
-    if (userId == null) {
-      throw Exception('User ID is not available');
-    }
-  try{
-      final response = await client.put(
-        '$apiUrl/usuarios/$userId',
-        data: formData,
-        options: Options(
-          headers: {
-            'Content-Type': 'multipart/form-data',
-            'x-token': session.token,
-          },
-        ),
-      );    
- 
-      if (response.statusCode == 200) {
-        return UserModel(
+            location: response.data['ubicacion'] ?? '',
+          );
+          session.startSession(userId: idUsuario.toString(), token: token, user: userAuth);
+          return userAuth;
+          } catch (e) {
+          throw Exception('Failed to authenticate user');
+          }
+        } else {
+          throw Exception('Failed to authenticate user');
+        }
+        }
+       
+      @override
+      Future<UserModel> createUser(String name, String email, String password, String userType, Uint8List photo, bool disponibility) async {
+         FormData formData = FormData.fromMap({
+          'nombre': name,
+          'correo': email,
+          'contrasenia': password,
+          'tipo': userType,
+          'foto': MultipartFile.fromBytes(photo, filename: 'photo.jpg'),  // Convierte la foto a MultipartFile
+          'disponibilidad': disponibility,
+          });
+        final response = await client.post(
+          '$apiUrl/usuarios',
+          data: formData,  
+          );
+       
+        if (response.statusCode == 201) {
+        try {
+       
+          return UserModel(
           name: response.data['nombre'],
           email: response.data['correo'],
           password: response.data['contrasenia'],
           userType: response.data['tipo'],
           photo: Uint8List.fromList(List<int>.from(response.data['foto']['data'])),
           disponibility: response.data['disponibilidad'] == 'true', location: '',
-        );
-      } else if (response.statusCode == 400) {
-        throw Exception('Invalid data provided');
+          );
+        } catch (e) {
+          throw Exception('Failed to register user1');
+        }
+        } else {
+        print('Error en la respuesta: ${response.statusCode}');
+        throw Exception('Failed to register user2');
+        }
+      }
+       
+       
+      @override
+        Future<UserModel> updateUser(String name, String email, String password, Uint8List photo) async {
+        FormData formData = FormData.fromMap({
+          'nombre': name,
+          'correo': email,
+          'contrasenia': password,
+          'foto': MultipartFile.fromBytes(photo, filename: 'photo.jpg'),  // Convierte la foto a MultipartFile
+          });
+
+        String? userId = session.userId;  
+        if (userId == null) {
+          throw Exception('User ID is not available');
+        }
+        try{
+          final response = await client.put(
+          '$apiUrl/usuarios/$userId',
+          data: formData,
+          options: Options(
+            headers: {
+            'Content-Type': 'multipart/form-data',
+            'x-token': session.token,
+            },
+          ),
+          );    
+       
+          if (response.statusCode == 200) {
+          return UserModel(
+            name: response.data['nombre'],
+            email: response.data['correo'],
+            password: response.data['contrasenia'],
+            userType: response.data['tipo'],
+            photo: Uint8List.fromList(List<int>.from(response.data['foto']['data'])),
+            disponibility: response.data['disponibilidad'] == 'true', location: '',
+          );
+          } else if (response.statusCode == 400) {
+          throw Exception('Invalid data provided');
       } else if (response.statusCode == 404) {
         throw Exception('User not found');
       } else {
