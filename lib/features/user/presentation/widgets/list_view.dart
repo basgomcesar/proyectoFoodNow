@@ -20,7 +20,7 @@ class DrawerListView extends StatelessWidget {
         // Cabecera del Drawer con información del usuario
         UserAccountsDrawerHeader(
           decoration: const BoxDecoration(
-            color: Colors.deepPurple,
+            color: Color.fromRGBO(220, 107, 39, 1),
           ),
           accountName: Text(user!.name), // Mostrar el nombre pasado
           accountEmail: Text(user!.email), // Mostrar el correo electrónico pasado
@@ -74,14 +74,39 @@ class DrawerListView extends StatelessWidget {
         ),
         const Divider(),
         ListTile(
-          leading: const Icon(Icons.logout),
-          title: const Text('Cerrar Sesión'),
-          onTap: () {
-            Navigator.pop(context);
-            // Navegar de regreso al LoginScreen y reemplazar la pila de navegación
-            Navigator.pushReplacementNamed(context, '/');
-          },
-        ),
+  leading: const Icon(Icons.logout),
+  title: const Text('Cerrar Sesión'),
+  onTap: () {
+    // Mostrar un diálogo de confirmación antes de cerrar sesión
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Cerrar Sesión'),
+        content: const Text('¿Estás seguro de que deseas cerrar sesión?'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context); // Cerrar el diálogo sin hacer nada
+            },
+            child: const Text('Cancelar'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context); 
+              Session.instance.endSession();
+              Navigator.pushReplacementNamed(context, '/login');
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Sesión cerrada correctamente')),
+              );
+            },
+            child: const Text('Cerrar Sesión'),
+          ),
+        ],
+      ),
+    );
+  },
+),
+
       ],
     );
   }
