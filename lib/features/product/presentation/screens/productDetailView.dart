@@ -18,6 +18,11 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   int currentValue = 1;
 
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final product = widget.product;
 
@@ -81,7 +86,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
               minValue: 1,
               maxValue: product.quantityAvailable,
               axis: Axis.horizontal,
-              itemWidth: 50, // Valor ajustado para mejor usabilidad
+                itemWidth: MediaQuery.of(context).size.width / 3, 
               onChanged: (value) {
                 setState(() {
                   currentValue = value;
@@ -116,9 +121,38 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                 ),
               ],
             ),
+            ButtonsOptions()
+
           ],
         ),
       ),
+    );
+  }
+
+  Widget ButtonsOptions() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+              side: const BorderSide(color: Color.fromARGB(255, 255, 0, 0)),
+            ),
+          ),
+          onPressed: () {
+            // Add to cart
+          },
+          child: const Text('Cancelar'),
+        ),
+        ElevatedButton(
+          onPressed: () {
+            // Buy now
+          },
+          child: const Text('Pedir producto'),
+        ),
+      ],
     );
   }
 }
