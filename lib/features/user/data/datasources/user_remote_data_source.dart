@@ -160,7 +160,7 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
     }
     try{
         final response = await client.delete(
-          '$apiUrl/usuarios/$userId', 
+          '$apiUrl/usuarios', 
           options: Options(
             headers: {
               'Content-Type': 'multipart/form-data',
