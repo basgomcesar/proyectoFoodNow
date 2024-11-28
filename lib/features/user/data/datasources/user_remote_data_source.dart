@@ -156,7 +156,7 @@ Future<UserModel> createUser(String name, String email, String password, String 
     }
     try{
         final response = await client.delete(
-          '$apiUrl/usuarios/$userId', 
+          '$apiUrl/usuarios', 
           options: Options(
             headers: {
               'Content-Type': 'multipart/form-data',
