@@ -88,12 +88,18 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
       final response = await client.post(
         '$apiUrl/usuarios',
         data: formData,
+        options: Options(
+          validateStatus: (status) {
+            return status! <
+                500; // Considera válidos todos los códigos menores a 500
+          },
+        ),
       );
       print('Response STATUS CODE  1: ${response}');
       print('Response STATUS CODE:  2${response.statusCode}');
       switch (response.statusCode) {
         case 201:
-         return true; // Usuario creado
+          return true; // Usuario creado
         case 409: // Correo duplicado
           throw DuplicateEmailFailure('El correo ya está registrado.');
         case 400: // Datos inválidos
@@ -106,8 +112,8 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
           );
       }
     } catch (e) {
-      print('Error durante el registro: $e');
-      throw ConnectionFailure('Error de conexión: $e');
+      print('Error: $e');
+      rethrow;
     }
   }
 
