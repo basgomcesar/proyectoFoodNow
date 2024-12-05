@@ -26,18 +26,19 @@ class UserRepositoryImpl implements UserRepository {
   }
  
   @override
-  Future<Either<Failure, User>> createUser(String name, String email, String password, String userType, Uint8List profileImage, bool disponibility ) async {
+  Future<Either<Failure, bool>> createUser(String name, String email, String password, String userType, Uint8List profileImage, bool disponibility ) async {
     try {
       print('name: $name');
       print('email: $email');
       print('password: $password');
       print('userType: $userType');
       print('email: $disponibility');
-      final User user = await userRemoteDataSource.createUser(name, email, password, userType, profileImage, disponibility);// Aquí se hace la petición al servidor
+      final bool user = await userRemoteDataSource.createUser(name, email, password, userType, profileImage, disponibility);// Aquí se hace la petición al servidor
       print('Usuario creado correctamente en el datasource');
       return Right(user);
     } catch (e) {
       print('Error en createUser en UserRepositoryImpl: $e');
+      
       return Left(ServerFailure('Create user failed'));
     }
   }

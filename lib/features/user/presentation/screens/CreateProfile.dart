@@ -88,12 +88,23 @@ Widget build(BuildContext context) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Perfil creado correctamente')),
         );     
-      } else if (state is CreateProfileStateFailure) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(state.error)),
-        );
+      } else if (state is CreateProfileStateFailureState) {
+      String errorMessage = state.error;
+      
+      // Si es un error de duplicado de email, muestra un mensaje más claro
+      if (state is DuplicateEmailFailureState) {
+        errorMessage = 'El correo electrónico ya está en uso.';
       }
-    },
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(errorMessage)),
+      );
+    } else if (state is InvalidDataFailureState) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Los datos ingresados no son válidos. Intenta nuevamente.')),
+      );
+    }
+  },
     child: Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(16.0),
