@@ -9,7 +9,7 @@ import 'package:loging_app/features/user/domain/entities/user.dart';
 
 abstract class UserRemoteDataSource {
   Future<UserModel> getUser(String userId);
-  Future<UserModel> updateUser(
+  Future<bool> updateUser(
     String name,
     String email,
     String password,
@@ -118,25 +118,28 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
   }
 
   @override
-  Future<UserModel> updateUser(
+  Future<bool> updateUser(
       String name, String email, String password, Uint8List photo) async {
-    FormData formData = FormData.fromMap({
+    final formData = FormData.fromMap({
       'nombre': name,
       'correo': email,
       'contrasenia': password,
-      'foto': MultipartFile.fromBytes(photo,
-          filename: 'photo.jpg'), // Convierte la foto a MultipartFile
+      'foto': MultipartFile.fromBytes(photo, filename: 'photo.jpg'),
     });
 
     String? userId = session.userId;
     if (userId == null) {
       throw Exception('User ID is not available');
     }
+
     try {
       final response = await client.put(
         '$apiUrl/usuarios/$userId',
         data: formData,
         options: Options(
+          validateStatus: (status) {
+            return status! < 500; // Considera válidos todos los códigos menores a 500
+          },
           headers: {
             'Content-Type': 'multipart/form-data',
             'x-token': session.token,
@@ -144,29 +147,30 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
         ),
       );
 
-      if (response.statusCode == 200) {
-        return UserModel(
-          name: response.data['nombre'],
-          email: response.data['correo'],
-          password: response.data['contrasenia'],
-          userType: response.data['tipo'],
-          photo:
-              Uint8List.fromList(List<int>.from(response.data['foto']['data'])),
-          disponibility: response.data['disponibilidad'] == 'true',
-          location: '',
-        );
-      } else if (response.statusCode == 400) {
-        throw Exception('Invalid data provided');
-      } else if (response.statusCode == 404) {
-        throw Exception('User not found');
-      } else {
-        throw Exception(
-            'Failed to update user with status code ${response.statusCode}');
+      print('Response STATUS CODE: ${response.statusCode}');
+
+      switch (response.statusCode) {
+        case 200:
+          return true; // Usuario actualizado correctamente
+        case 400:
+          throw InvalidDataFailure('No se ha proporcionado ningún dato para actualizar');
+        case 404:
+          throw UserNotFoundFailure('Usuario no encontrado.');
+        case 409:
+          throw DuplicateEmailFailure('El correo ya está registrado por otro usuario.');
+        case 500:
+          throw ServerFailure('Error en el servidor. Inténtalo más tarde.');
+        default:
+          throw UnknownFailure(
+            'Error desconocido: ${response.statusCode}',
+          );
       }
     } catch (e) {
-      throw Exception('Failed to update user: $e');
+      print('Error: $e');
+      rethrow;
     }
   }
+
 
   @override
   Future<bool> deleteUser() async {

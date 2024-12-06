@@ -53,14 +53,28 @@ Future<Either<Failure, bool>> createUser(String name, String email, String passw
 
 
 @override
-  Future<Either<Failure, User>> updateUser(String name, String email, String password, Uint8List profileImage)async{
+  Future<Either<Failure, bool>> updateUser(String name, String email, String password, Uint8List profileImage)async{
     try {
-          print('name: $name');
-          print('email: $email');
-          print('password: $password');
-          final User user = await userRemoteDataSource.updateUser(name, email, password, profileImage);// Aquí se hace la petición al servidor
+          print('Datos enviados: name=$name, email=$email, password=$password');
+          final bool user = await userRemoteDataSource.updateUser(name, email, password, profileImage);
           return Right(user);
-    } catch (e) {
+    } on InvalidDataFailure catch (e) {
+      print('Error en editUser (Sin datos): ${e.message}');
+      return Left(InvalidDataFailure(e.message));
+
+    } on UserNotFoundFailure catch (e) {
+      print('Error en editUser (usuarioNoEncontrado): ${e.message}');
+      return Left(UserNotFoundFailure(e.message));
+
+    } on DuplicateEmailFailure catch (e) {
+      print('Error en editUser (Correo duplicado): ${e.message}');
+      return Left(DuplicateEmailFailure(e.message));
+
+    }on ServerFailure catch (e) {
+      print('Error en editUser (Error en servidor): ${e.message}');
+      return Left(ServerFailure(e.message));
+      
+    } catch (e) {     
           return Left(ServerFailure('Update user failed'));
     }
   }
