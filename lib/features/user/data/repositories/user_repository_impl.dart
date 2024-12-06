@@ -1,13 +1,8 @@
-
 import 'dart:typed_data';
-
 import 'package:dartz/dartz.dart';
-
 import 'package:loging_app/core/error/failure.dart';
 import 'package:loging_app/features/user/data/datasources/user_remote_data_source.dart';
-
 import 'package:loging_app/features/user/domain/entities/user.dart';
-
 import '../../domain/repositories/user_repository.dart';
 
 class UserRepositoryImpl implements UserRepository {
@@ -80,5 +75,22 @@ class UserRepositoryImpl implements UserRepository {
   }
 
   
+  @override
+  Future<Either<Failure, User>> updateAvailability(bool availability, String location) async {
+    try {
+          print('disponibilidad: $availability');
+          print('location: $location');
+          final User user = await userRemoteDataSource.updateAvailability(availability, location);// Aquí se hace la petición al servidor
+          print('Usuario actualizado correctamente en el datasource');
+          return Right(user);
+    } catch (e) {
+          print('Error en updateUser en UserRepositoryImpl: $e');
+          return Left(ServerFailure('Update user failed'));
+    }
+  }
+  
+  
+  
 
+  
 }
