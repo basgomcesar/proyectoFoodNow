@@ -83,17 +83,29 @@ Widget build(BuildContext context) {
   // BlocListener escucha el estado del BLoC y muestra un mensaje de error o éxito 
   return BlocListener<CreateProfileBloc, CreateProfileState>(
     listener: (context, state) {
-      if (state is CreateProfileStateSucess) {
-        //Muestra mensaje de éxito   
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Perfil creado correctamente')),
-        );     
-      } else if (state is CreateProfileStateFailure) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(state.error)),
-        );
-      }
-    },
+  if (state is CreateProfileStateSucess) {
+    // Muestra mensaje de éxito
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Perfil creado correctamente')),
+    );
+  } else if (state is DuplicateEmailFailureState) {
+    // Manejo de correo duplicado
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('El correo electrónico ya está en uso.')),
+    );
+  } else if (state is InvalidDataFailureState) {
+    // Manejo de datos inválidos
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Los datos ingresados no son válidos. Intenta nuevamente.')),
+    );
+  } else if (state is CreateProfileStateFailureState) {
+    // Manejo de errores generales
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(state.error)),
+    );
+  }
+}
+,
     child: Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(16.0),

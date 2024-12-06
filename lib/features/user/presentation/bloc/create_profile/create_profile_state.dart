@@ -16,12 +16,18 @@ class CreateProfileStateLoading extends CreateProfileState {
 class CreateProfileStateSucess extends CreateProfileState {
   
 }
-
-class CreateProfileStateFailure extends CreateProfileState {
+//
+class DuplicateEmailFailureState extends CreateProfileState {
   final String error;
+  DuplicateEmailFailureState({required this.error});
+}
 
-  CreateProfileStateFailure({required this.error});
+class CreateProfileStateFailureState extends CreateProfileState {
+  final String error;
+  CreateProfileStateFailureState({required this.error});
+}
 
-  @override
-  List<Object> get props => [error];
+class InvalidDataFailureState extends CreateProfileState {
+  final String error;
+  InvalidDataFailureState({required this.error});
 }

@@ -25,34 +25,56 @@ class UserRepositoryImpl implements UserRepository {
     }
   }
  
-  @override
-  Future<Either<Failure, User>> createUser(String name, String email, String password, String userType, Uint8List profileImage, bool disponibility ) async {
-    try {
-      print('name: $name');
-      print('email: $email');
-      print('password: $password');
-      print('userType: $userType');
-      print('email: $disponibility');
-      final User user = await userRemoteDataSource.createUser(name, email, password, userType, profileImage, disponibility);// Aquí se hace la petición al servidor
-      print('Usuario creado correctamente en el datasource');
-      return Right(user);
-    } catch (e) {
-      print('Error en createUser en UserRepositoryImpl: $e');
-      return Left(ServerFailure('Create user failed'));
-    }
+@override
+Future<Either<Failure, bool>> createUser(String name, String email, String password, String userType, Uint8List profileImage, bool disponibility) async {
+  try {
+    print('Datos enviados: name=$name, email=$email, password=$password, userType=$userType, disponibility=$disponibility');
+    final bool user = await userRemoteDataSource.createUser(name, email, password, userType, profileImage, disponibility);
+    print('Usuario creado correctamente en el datasource');
+    return Right(user);
+  } on DuplicateEmailFailure catch (e) {
+    print('Error en createUser (Correo duplicado): ${e.message}');
+    return Left(DuplicateEmailFailure(e.message));
+  } on InvalidDataFailure catch (e) {
+    print('Error en createUser (Datos inválidos): ${e.message}');
+    return Left(InvalidDataFailure(e.message));
+  } on ServerFailure catch (e) {
+    print('Error en createUser (Error del servidor): ${e.message}');
+    return Left(ServerFailure(e.message));
+  } on UnknownFailure catch (e) {
+    print('Error en createUser (Error desconocido): ${e.message}');
+    return Left(UnknownFailure(e.message));
+  } catch (e, stackTrace) {
+    print('Error inesperado en createUser: $e');
+    print('StackTrace: $stackTrace');
+    return Left(UnknownFailure('Ocurrió un error inesperado.'));
   }
+}
+
 
 @override
-  Future<Either<Failure, User>> updateUser(String name, String email, String password, Uint8List profileImage)async{
+  Future<Either<Failure, bool>> updateUser(String name, String email, String password, Uint8List profileImage)async{
     try {
-          print('name: $name');
-          print('email: $email');
-          print('password: $password');
-          final User user = await userRemoteDataSource.updateUser(name, email, password, profileImage);// Aquí se hace la petición al servidor
-          print('Usuario actualizado correctamente en el datasource');
+          print('Datos enviados: name=$name, email=$email, password=$password');
+          final bool user = await userRemoteDataSource.updateUser(name, email, password, profileImage);
           return Right(user);
-    } catch (e) {
-          print('Error en updateUser en UserRepositoryImpl: $e');
+    } on InvalidDataFailure catch (e) {
+      print('Error en editUser (Sin datos): ${e.message}');
+      return Left(InvalidDataFailure(e.message));
+
+    } on UserNotFoundFailure catch (e) {
+      print('Error en editUser (usuarioNoEncontrado): ${e.message}');
+      return Left(UserNotFoundFailure(e.message));
+
+    } on DuplicateEmailFailure catch (e) {
+      print('Error en editUser (Correo duplicado): ${e.message}');
+      return Left(DuplicateEmailFailure(e.message));
+
+    }on ServerFailure catch (e) {
+      print('Error en editUser (Error en servidor): ${e.message}');
+      return Left(ServerFailure(e.message));
+      
+    } catch (e) {     
           return Left(ServerFailure('Update user failed'));
     }
   }

@@ -11,7 +11,7 @@ class EditProfileUseCase {
 
   EditProfileUseCase({required this.repository});
 
-  Future<Either<Failure, User>> call(String name, String email, String password, Uint8List profileImage) async {      
+  Future<Either<Failure, bool>> call(String name, String email, String password, Uint8List profileImage) async {      
     return await repository.updateUser(name, email, password, profileImage);      
   }  
   
