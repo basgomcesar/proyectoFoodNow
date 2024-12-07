@@ -17,8 +17,8 @@ import 'dart:typed_data';
 
 import 'package:loging_app/injection_container.dart'; // Para trabajar con Uint8List
 
-class CreateProfile extends StatelessWidget  {
-  const CreateProfile({super.key});
+class CreateProfileScreen extends StatelessWidget  {
+  const CreateProfileScreen({super.key});
 
  
 //escucha pantalla
@@ -240,6 +240,10 @@ Widget build(BuildContext context) {
       }
     },
     child: const Text('Crear Perfil'),
+    style: ElevatedButton.styleFrom(
+      backgroundColor: Color(0xFFDC6B27),  // Color de fondo del botón
+      foregroundColor: Colors.white,
+    ),
   );
 }
 
