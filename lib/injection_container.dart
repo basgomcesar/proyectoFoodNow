@@ -3,6 +3,7 @@ import 'package:grpc/grpc.dart';
 import 'package:loging_app/features/product/data/datasources/product_remote_data_source.dart';
 import 'package:loging_app/features/product/data/repositories/product_repository_impl.dart';
 import 'package:loging_app/features/product/domain/repositories/product_repository.dart';
+import 'package:loging_app/features/product/domain/use_cases/add_product_use_case.dart';
 import 'package:loging_app/features/product/domain/use_cases/get_products.dart';
 import 'package:loging_app/features/user/data/datasources/user_remote_data_source.dart';
 import 'package:loging_app/features/user/data/repositories/user_repository_impl.dart';
@@ -63,5 +64,9 @@ void initInjections() {
 
   serviceLocator.registerLazySingleton<UpdateAvailabilityUseCase>(
     () => UpdateAvailabilityUseCase(repository: serviceLocator())
+  );
+
+  serviceLocator.registerLazySingleton<AddProductUseCase>(
+    () => AddProductUseCase(repository: serviceLocator())
   );
 }
