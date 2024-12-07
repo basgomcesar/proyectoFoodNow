@@ -79,7 +79,7 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
       }
     } catch (e) {
       print('Error: $e');
-      rethrow; // Rethrow para que el error se maneje en otro nivel
+      rethrow;
     }
   }
 

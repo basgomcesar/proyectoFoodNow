@@ -5,7 +5,6 @@ import 'package:loging_app/core/error/failure.dart';
 import 'package:dio/dio.dart';
 import 'package:loging_app/features/user/data/models/user_model.dart';
 import 'package:loging_app/core/utils/session.dart';
-import 'package:loging_app/features/user/domain/entities/user.dart';
 
 abstract class UserRemoteDataSource {
   Future<UserModel> getUser(String userId);
@@ -16,21 +15,14 @@ abstract class UserRemoteDataSource {
     Uint8List photo,
   );
   Future<bool> deleteUser();
-  Future<bool> createUser(
-    String name,
-    String email,
-    String password,
-    String userType,
-    Uint8List photo,
-    bool disponibility,
-  );
+  Future<bool> createUser(UserModel userModel);
   Future<UserModel> authenticateUser(String email, String password);
 
   Future<UserModel> updateAvailability(bool availability, String location);
 }
 
 class UserRemoteDataSourceImpl implements UserRemoteDataSource {
-  final Dio client = Dio();
+  final Dio dioClient = Dio();
   final String apiUrl = 'http://localhost:3000'; // URL de tu API
   final Session session = Session.instance;
 
@@ -38,7 +30,7 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
 
   @override
   Future<UserModel> authenticateUser(String correo, String password) async {
-    final Response response = await client.post(
+    final Response response = await dioClient.post(
       '$apiUrl/auth/login',
       data: {
         'correo': correo,
@@ -52,6 +44,8 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
         final idUsuario = response.data['idUsuario'];
         final token = response.headers['x-token']?.first ?? '';
         UserModel userAuth = UserModel(
+          //Se agreg[o el idUsuario]
+          id: response.data['idUsuario'],
           name: response.data['nombre'],
           email: response.data['correo'],
           password: response.data['contrasenia'],
@@ -65,48 +59,35 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
             userId: idUsuario.toString(), token: token, user: userAuth);
         return userAuth;
       } catch (e) {
-        throw Exception('Failed to authenticate user');
+        throw Exception('Failed to authenticate user1');
       }
     } else {
-      throw Exception('Failed to authenticate user');
+      throw Exception('Failed to authenticate user2');
     }
   }
 
   @override
-  Future<bool> createUser(String name, String email, String password,
-      String userType, Uint8List photo, bool disponibility) async {
-    final formData = FormData.fromMap({
-      'nombre': name,
-      'correo': email,
-      'contrasenia': password,
-      'tipo': userType,
-      'foto': MultipartFile.fromBytes(photo, filename: 'photo.jpg'),
-      'disponibilidad': disponibility,
-    });
+  Future<bool> createUser(UserModel userModel) async {
 
     try {
-      final response = await client.post(
+      final response = await dioClient.post(
         '$apiUrl/usuarios',
-        data: formData,
+        data: userModel.toFormData(),
         options: Options(
-          validateStatus: (status) {
-            return status! <
-                500; // Considera válidos todos los códigos menores a 500
-          },
+          validateStatus: (status) => status! < 500,
         ),
       );
-      print('Response STATUS CODE  1: ${response}');
-      print('Response STATUS CODE:  2${response.statusCode}');
+      
       switch (response.statusCode) {
         case 201:
-          return true; // Usuario creado
-        case 409: // Correo duplicado
+          return true; 
+        case 409: 
           throw DuplicateEmailFailure('El correo ya está registrado.');
-        case 400: // Datos inválidos
+        case 400: 
           throw InvalidDataFailure('Datos inválidos enviados al servidor.');
-        case 500: // Error interno del servidor
+        case 500: 
           throw ServerFailure('Error en el servidor. Inténtalo más tarde.');
-        default: // Otros errores
+        default:
           throw UnknownFailure(
             'Error desconocido: ${response.statusCode}',
           );
@@ -133,7 +114,7 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
     }
 
     try {
-      final response = await client.put(
+      final response = await dioClient.put(
         '$apiUrl/usuarios/$userId',
         data: formData,
         options: Options(
@@ -179,7 +160,7 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
       throw Exception('User ID is not available');
     }
     try {
-      final response = await client.delete(
+      final response = await dioClient.delete(
         '$apiUrl/usuarios',
         options: Options(
           headers: {
@@ -206,7 +187,7 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
 
   @override
   Future<UserModel> getUser(String userId) async {
-    final response = await client.get('$apiUrl/$userId');
+    final response = await dioClient.get('$apiUrl/$userId');
 
     if (response.statusCode == 200) {
       return UserModel.fromJson(response.data);
@@ -225,7 +206,7 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
       throw Exception('User ID is not available');
     }
     try {
-      final response = await client.put(
+      final response = await dioClient.put(
         '$apiUrl/usuarios/availability/$userId',
         data: {'disponibilidad': availability, 'ubicacion': location},
         options: Options(
@@ -240,6 +221,8 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
         print('Response data: ${response.data}');
 
         return UserModel(
+          //Se agreg[o el idUsuario]
+          id: response.data['idUsuario'],
           name: response.data['nombre'],
           email: response.data['correo'],
           password: response.data['contrasenia'],

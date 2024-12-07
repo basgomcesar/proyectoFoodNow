@@ -25,31 +25,28 @@ class ProductRepositoryImpl implements ProductRepository {
   }
 
    @override
-  Future<Either<Failure, bool>> addProduct(Product product) async {
-    try {
-      final addedProduct = await remoteDataSource.addProduct(ProductModel.fromEntity(product));
-      return Right(addedProduct);
+    Future<Either<Failure, bool>> addProduct(Product product) async {
+      try {
+        final addedProduct = await remoteDataSource.addProduct(ProductModel.fromEntity(product));
+        return Right(addedProduct);
 
-    } on DuplicateProductFailure catch (e) {
-      return Left(DuplicateProductFailure(e.message));
+      } on DuplicateProductFailure catch (e) {
+        return Left(DuplicateProductFailure(e.message));
 
-    }on InvalidDataFailure catch (e) {
-    print('Error en createUser (Datos inválidos): ${e.message}');
-    return Left(InvalidDataFailure(e.message));
+      }on InvalidDataFailure catch (e) {
+      return Left(InvalidDataFailure(e.message));
 
-    } on InvalidPriceFailure catch (e) {
-      print('Error en createUser (Error del servidor): ${e.message}');
-      return Left(InvalidPriceFailure(e.message));
+      } on InvalidPriceFailure catch (e) {
+        return Left(InvalidPriceFailure(e.message));
 
-    } on UnknownFailure catch (e) {
-      print('Error en createUser (Error desconocido): ${e.message}');
-      return Left(UnknownFailure(e.message));
+      } on UnknownFailure catch (e) {
+        return Left(UnknownFailure(e.message));
 
-    } catch (e, stackTrace) {
-      print('Error inesperado en addProduct: $e');
-      print('StackTrace: $stackTrace');
-      return Left(UnknownFailure('Ocurrió un error inesperado.'));
+      } catch (e, stackTrace) {
+        
+        return Left(UnknownFailure('Ocurrió un error inesperado.'));
+      }
     }
-    }
+
   }
 

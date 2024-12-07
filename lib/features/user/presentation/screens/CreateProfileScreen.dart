@@ -84,10 +84,21 @@ Widget build(BuildContext context) {
   return BlocListener<CreateProfileBloc, CreateProfileState>(
     listener: (context, state) {
   if (state is CreateProfileStateSucess) {
-    // Muestra mensaje de éxito
+    
+    Navigator.of(context, rootNavigator: true).pop();
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Perfil creado correctamente')),
     );
+
+    // Limpia los campos después de enviar
+    _nameController.clear();
+    _emailController.clear();
+    _passwordController.clear();
+    setState(() {
+      _selectedUserType = null;
+      _profileImageBytes = null;
+    });
+
   } else if (state is DuplicateEmailFailureState) {
     // Manejo de correo duplicado
     ScaffoldMessenger.of(context).showSnackBar(
@@ -224,19 +235,11 @@ Widget build(BuildContext context) {
             email: _emailController.text,
             password: _passwordController.text,
             userType: _selectedUserType!,
-            profileImage: _profileImageBytes!,  // Aquí enviamos la imagen en base64       
+            photo: _profileImageBytes!,  // Aquí enviamos la imagen en base64       
              disponibility: _isAvailable,     
+             location: '',  
           ),          
-        );
-
-        // Limpia los campos después de enviar
-        _nameController.clear();
-        _emailController.clear();
-        _passwordController.clear();
-        setState(() {
-          _selectedUserType = null;
-          _profileImageBytes = null;
-        });
+        );        
       }
     },
     child: const Text('Crear Perfil'),
