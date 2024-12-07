@@ -5,8 +5,7 @@ import 'package:loging_app/features/order/domain/repositories/products_order_rep
 
 class GetPendingOrders {
   final ProductsOrderRepository orderRepository;
-
-  GetPendingOrders({required this.orderRepository});
+  const GetPendingOrders(this.orderRepository);
 
   Stream<Either<Failure, ProductsOrder>> call() {
     return orderRepository.getPendingOrders();

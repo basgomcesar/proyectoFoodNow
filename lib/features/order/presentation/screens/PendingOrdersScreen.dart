@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:loging_app/features/order/presentation/screens/detallespedidoscreen.dart';
+import 'package:loging_app/features/order/presentation/screens/OrderDetailsScreen.dart';
 import 'package:loging_app/features/user/presentation/widgets/header_logo.dart';
 import 'package:loging_app/features/order/presentation/widgets/pending_order_item.dart';
 

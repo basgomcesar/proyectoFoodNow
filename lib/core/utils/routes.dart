@@ -6,7 +6,7 @@ import 'package:loging_app/features/user/presentation/screens/CreateProfileScree
 import 'package:loging_app/features/user/presentation/screens/EditProfileScreen.dart';
 import 'package:loging_app/features/product/presentation/screens/AddProductScreen.dart';
 
-import '../../features/order/presentation/screens/pedidosaentregarscreen.dart';
+import '../../features/order/presentation/screens/PendingOrdersScreen.dart';
 
 class AppRoutes {
   static const String login = '/login';
