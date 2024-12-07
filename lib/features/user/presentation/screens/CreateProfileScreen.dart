@@ -240,6 +240,10 @@ Widget build(BuildContext context) {
       }
     },
     child: const Text('Crear Perfil'),
+    style: ElevatedButton.styleFrom(
+      backgroundColor: Color(0xFFDC6B27),  // Color de fondo del botón
+      foregroundColor: Colors.white,
+    ),
   );
 }
 

@@ -4,7 +4,7 @@ import 'package:loging_app/features/user/presentation/screens/HomeScreen.dart';
 import 'package:loging_app/features/user/presentation/screens/LoginScreen.dart';
 import 'package:loging_app/features/user/presentation/screens/CreateProfileScreen.dart';
 import 'package:loging_app/features/user/presentation/screens/EditProfileScreen.dart';
-import 'package:loging_app/features/user/presentation/screens/AddProductScreen.dart';
+import 'package:loging_app/features/product/presentation/screens/AddProductScreen.dart';
 
 class AppRoutes {
   static const String login = '/login';

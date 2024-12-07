@@ -1,13 +1,15 @@
 // create_profile_bloc.dart
 import 'package:bloc/bloc.dart';
 import 'package:loging_app/core/error/failure.dart';
+import 'package:loging_app/features/product/domain/entities/product.dart';
 import 'add_product_event.dart';
 import 'add_product_state.dart';
-import 'package:loging_app/features/user/domain/use_cases/add_product_use_case.dart';
+import 'package:loging_app/features/product/domain/use_cases/add_product_use_case.dart';
 
 
 class AddProductBloc extends Bloc<AddProductEvent, AddProductState> {
   final AddProductUseCase addProductUseCase;
+  
 
   AddProductBloc({required this.addProductUseCase})
      : super(AddProductStateInitial()) {
@@ -15,17 +17,24 @@ class AddProductBloc extends Bloc<AddProductEvent, AddProductState> {
       if (event is AddProductButtonPressed) {
         try{
           emit(AddProductStateLoading());
-        
+          // Simular un retraso de 2 segundos
+          await Future.delayed(const Duration(seconds: 2));
+          print('categoria desde bloc: ${event.category}');
 
-        final failureOrProduct = await addProductUseCase(
-          event.name, 
-          event.description,
-          event.price,
-          event.photo,
-          event.availableQuantity,
-          event.disponibility,
-          event.category
-        );
+          final Product product = Product(
+            id: '',
+            userId: '',
+            name: event.name,
+            description: event.description,
+            price: event.price,
+            photo: event.photo,
+            quantityAvailable: event.availableQuantity,
+            available: event.disponibility,
+            category: event.category,
+          );
+
+        final failureOrProduct = await addProductUseCase(product);
+           
 
            failureOrProduct.fold(
             (failure) {
@@ -44,6 +53,7 @@ class AddProductBloc extends Bloc<AddProductEvent, AddProductState> {
               }
             },
             (bool) => emit(AddProductStateSucess()),
+            
           );
         } catch (e) {
           emit(AddProdudctStateFailurre(error: 'Error inesperado: ${e.toString()}'));

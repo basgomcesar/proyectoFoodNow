@@ -264,63 +264,6 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
     }
   }
 
-@override
-Future<bool> addProduct({
-  required String name,
-  required String description,
-  required double price,
-  required int availableQuantity,
-  required bool available,
-  required String category,
-  required Uint8List photo,
-}) async {
-  final formData = FormData.fromMap({
-    'nombre': name,
-    'descripcion': description,
-    'precio': price,
-    'cantidadDisponible': availableQuantity,
-    'disponible': available ? 'true' : 'false',
-    'categoria': category,
-    'foto': MultipartFile.fromBytes(photo, filename: 'product_photo.jpg'),
-  });
-
-  try {
-    final response = await client.post(
-      '$apiUrl/productos',
-      data: formData,
-      options: Options(
-        headers: {
-          'x-token': session.token, // Enviar el token en los headers
-        },
-        validateStatus: (status) => status! < 500, // Manejar errores del servidor
-      ),
-    );
-
-    switch (response.statusCode) {
-      case 201:
-        return true; // Producto creado exitosamente
-      case 409:
-        throw DuplicateProductFailure(
-            'Ya tienes un producto con este nombre registrado.');
-      case 400:
-        throw InvalidDataFailure('Datos inválidos enviados al servidor.');
-      case 422:
-        throw InvalidPriceFailure('Precio inválido, se acepta hasta 2 decimales.');
-      case 500:
-        throw ServerFailure('Error en el servidor. Inténtalo más tarde.');
-      default:
-        throw UnknownFailure(
-          'Error desconocido: ${response.statusCode}',
-        );
-    }
-  } catch (e) {
-    print('Error: $e');
-    rethrow; // Rethrow para que el error se maneje en otro nivel
-  }
-}
-
-
-
 
 
 }

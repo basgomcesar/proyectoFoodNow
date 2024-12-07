@@ -124,14 +124,6 @@ class DrawerListView extends StatelessWidget {
           },
         ),
         ListTile(
-          leading: const Icon(Icons.add),
-          title: const Text('Nuevo producto'),
-          onTap: () {
-            Navigator.pop(context);
-            Navigator.pushNamed(context, '/addProduct');
-          },
-        ),
-        ListTile(
           leading: const Icon(Icons.directions_run),
           title: const Text('Pedidos a recoger'),
           onTap: () {

@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:loging_app/features/user/domain/use_cases/add_product_use_case.dart';
-import 'package:loging_app/features/user/presentation/bloc/add_product/add_product_bloc.dart';
-import 'package:loging_app/features/user/presentation/bloc/add_product/add_product_event.dart';
-import 'package:loging_app/features/user/presentation/bloc/create_profile/create_profile_bloc.dart';
-import 'package:loging_app/features/user/presentation/bloc/create_profile/create_profile_state.dart';
+import 'package:loging_app/features/product/domain/use_cases/add_product_use_case.dart';
+import 'package:loging_app/features/product/presentation/bloc/add_product/add_product_bloc.dart';
+import 'package:loging_app/features/product/presentation/bloc/add_product/add_product_event.dart';
+import 'package:loging_app/features/product/presentation/bloc/add_product/add_product_state.dart';
 import 'package:loging_app/features/user/presentation/widgets/custom_text_field.dart';
 import 'package:loging_app/features/user/presentation/widgets/header_logo.dart';
 import 'package:loging_app/features/user/presentation/widgets/custom_dropdown_field.dart';
@@ -83,31 +82,53 @@ void dispose() {
   @override
 Widget build(BuildContext context) {
   // BlocListener escucha el estado del BLoC y muestra un mensaje de error o éxito 
-  return BlocListener<CreateProfileBloc, CreateProfileState>(
-    listener: (context, state) {
-  if (state is CreateProfileStateSucess) {
-    // Muestra mensaje de éxito
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Perfil creado correctamente')),
-    );
-  } else if (state is DuplicateEmailFailureState) {
-    // Manejo de correo duplicado
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('El correo electrónico ya está en uso.')),
-    );
-  } else if (state is InvalidDataFailureState) {
-    // Manejo de datos inválidos
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Los datos ingresados no son válidos. Intenta nuevamente.')),
-    );
-  } else if (state is CreateProfileStateFailureState) {
-    // Manejo de errores generales
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(state.error)),
-    );
-  }
-}
-,
+  return BlocListener<AddProductBloc, AddProductState>(
+  listener: (context, state) {
+    if (state is AddProductStateSucess) {
+      Navigator.of(context, rootNavigator: true).pop(); // Cierra el diálogo de carga si está abierto
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Producto creado correctamente')),
+      );
+
+      _nameController.clear();
+      _descriptionController.clear();
+      _priceController.clear();
+      _availableQuantityController.clear();
+      setState(() {
+        _selectedProductType = null;
+        _ProductImageBytes = null;
+      });
+
+    } else if (state is DuplicateProductFailureState) {
+      Navigator.of(context, rootNavigator: true).pop(); // Cierra el diálogo
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Ya tienes un producto con este nombre')),
+      );
+
+    } else if (state is InvalidPriceFailureState) {
+      Navigator.of(context, rootNavigator: true).pop(); // Cierra el diálogo
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text(
+            'El precio ingresado es inválido. Debe ser un número con hasta 2 decimales.')),
+      );
+    } else if (state is InvalidDataFailureState) {
+      Navigator.of(context, rootNavigator: true).pop(); // Cierra el diálogo
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(state.error)),
+      );
+    } else if (state is AddProductStateLoading) {
+      // Mostrar diálogo de carga
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        },
+      );
+    }
+  },
     child: Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -136,7 +157,7 @@ Widget build(BuildContext context) {
 
                 CustomTextField(
                   controller: _nameController,
-                  labelText: 'Nombre',
+                  labelText: 'Nombre del producto',
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Por favor, ingresa un nombre ';
@@ -258,18 +279,13 @@ Widget build(BuildContext context) {
           ),          
         );
 
-        // Limpia los campos después de enviar
-        _nameController.clear();
-        _descriptionController.clear();
-        _priceController.clear();
-        _availableQuantityController.clear();
-        setState(() {
-          _selectedProductType = null;
-          _ProductImageBytes = null;
-        });
       }
     },
-    child: const Text('Crear Perfil'),
+    child: const Text('Crear Producto'),
+    style: ElevatedButton.styleFrom(
+      backgroundColor: Color(0xFFDC6B27),  // Color de fondo del botón
+      foregroundColor: Colors.white,
+    ),
   );
 }
 
