@@ -45,3 +45,15 @@ class InternalErrorFailure extends Failure {
 class UserNotFoundFailure extends Failure {
   UserNotFoundFailure(super.message);
 }
+
+//AddProductFailure
+class DuplicateProductFailure extends Failure {
+  DuplicateProductFailure(super.message);
+}
+class InvalidPriceFailure extends Failure {
+  InvalidPriceFailure(super.message);
+}
+
+
+
+

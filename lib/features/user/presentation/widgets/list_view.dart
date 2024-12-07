@@ -124,6 +124,14 @@ class DrawerListView extends StatelessWidget {
           },
         ),
         ListTile(
+          leading: const Icon(Icons.add),
+          title: const Text('Nuevo producto'),
+          onTap: () {
+            Navigator.pop(context);
+            Navigator.pushNamed(context, '/addProduct');
+          },
+        ),
+        ListTile(
           leading: const Icon(Icons.directions_run),
           title: const Text('Pedidos a recoger'),
           onTap: () {
@@ -146,38 +154,38 @@ class DrawerListView extends StatelessWidget {
         ),
         const Divider(),
         ListTile(
-  leading: const Icon(Icons.logout),
-  title: const Text('Cerrar Sesión'),
-  onTap: () {
-    // Mostrar un diálogo de confirmación antes de cerrar sesión
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
+        leading: const Icon(Icons.logout),
         title: const Text('Cerrar Sesión'),
-        content: const Text('¿Estás seguro de que deseas cerrar sesión?'),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context); // Cerrar el diálogo sin hacer nada
-            },
-            child: const Text('Cancelar'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context); 
-              Session.instance.endSession();
-              Navigator.pushReplacementNamed(context, '/login');
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Sesión cerrada correctamente')),
-              );
-            },
-            child: const Text('Cerrar Sesión'),
-          ),
-        ],
+        onTap: () {
+          // Mostrar un diálogo de confirmación antes de cerrar sesión
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('Cerrar Sesión'),
+              content: const Text('¿Estás seguro de que deseas cerrar sesión?'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context); // Cerrar el diálogo sin hacer nada
+                  },
+                  child: const Text('Cancelar'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context); 
+                    Session.instance.endSession();
+                    Navigator.pushReplacementNamed(context, '/login');
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Sesión cerrada correctamente')),
+                    );
+                  },
+                  child: const Text('Cerrar Sesión'),
+                ),
+              ],
+            ),
+          );
+        },
       ),
-    );
-  },
-),
 
       ],
     );

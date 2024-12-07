@@ -17,8 +17,8 @@ import 'package:loging_app/features/user/presentation/widgets/image_display.dart
 import 'package:loging_app/features/user/presentation/widgets/image_picker_button.dart';
 import 'package:loging_app/injection_container.dart';
 
-class EditProfile extends StatelessWidget {
-  const EditProfile({super.key});
+class EditProfileScreen extends StatelessWidget {
+  const EditProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -21,4 +21,9 @@ class ProductRepositoryImpl implements ProductRepository {
       yield Left(ServerFailure('An error occurred while fetching products'));
     }
   }
+
+  @override
+  Stream<Either<Failure, bool>> addProduct() {
+    throw UnimplementedError();
+  }
 }

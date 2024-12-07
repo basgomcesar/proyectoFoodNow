@@ -11,4 +11,8 @@ class GetProducts {
   Stream<Either<Failure, Product>> call() {
     return repository.getProducts();
   }
+
+  Stream<Either<Failure, bool>> addProduct() {
+    return repository.addProduct();
+  }
 }

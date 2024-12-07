@@ -7,6 +7,7 @@ import 'package:loging_app/features/product/domain/use_cases/get_products.dart';
 import 'package:loging_app/features/user/data/datasources/user_remote_data_source.dart';
 import 'package:loging_app/features/user/data/repositories/user_repository_impl.dart';
 import 'package:loging_app/features/user/domain/repositories/user_repository.dart';
+import 'package:loging_app/features/user/domain/use_cases/add_product_use_case.dart';
 import 'package:loging_app/features/user/domain/use_cases/create_profile_use_case.dart';
 import 'package:loging_app/features/user/domain/use_cases/edit_profile_use_case.dart';
 import 'package:loging_app/features/user/domain/use_cases/login_user_use_case.dart';
@@ -63,5 +64,9 @@ void initInjections() {
 
   serviceLocator.registerLazySingleton<UpdateAvailabilityUseCase>(
     () => UpdateAvailabilityUseCase(repository: serviceLocator())
+  );
+
+  serviceLocator.registerLazySingleton<AddProductUseCase>(
+    () => AddProductUseCase(repository: serviceLocator())
   );
 }
