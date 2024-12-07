@@ -76,8 +76,6 @@ class ProductModel extends Product {
     });
   }
 
-
-
   /// Convierte un `ProductModel` en una entidad del dominio `Product`
   Product toDomain() {
     return Product(
