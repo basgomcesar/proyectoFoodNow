@@ -45,7 +45,6 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
         final token = response.headers['x-token']?.first ?? '';
         UserModel userAuth = UserModel(
           //Se agreg[o el idUsuario]
-          id: response.data['idUsuario'],
           name: response.data['nombre'],
           email: response.data['correo'],
           password: response.data['contrasenia'],
@@ -222,7 +221,6 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
 
         return UserModel(
           //Se agreg[o el idUsuario]
-          id: response.data['idUsuario'],
           name: response.data['nombre'],
           email: response.data['correo'],
           password: response.data['contrasenia'],

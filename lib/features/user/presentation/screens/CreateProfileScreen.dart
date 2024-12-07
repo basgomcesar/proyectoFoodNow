@@ -84,7 +84,7 @@ Widget build(BuildContext context) {
   return BlocListener<CreateProfileBloc, CreateProfileState>(
     listener: (context, state) {
   if (state is CreateProfileStateSucess) {
-    
+
     Navigator.of(context, rootNavigator: true).pop();
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Perfil creado correctamente')),
@@ -114,7 +114,18 @@ Widget build(BuildContext context) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(state.error)),
     );
-  }
+  }else if (state is CreateProfileStateLoading) {
+      // Mostrar diálogo de carga
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        },
+      );
+    }
 }
 ,
     child: Scaffold(

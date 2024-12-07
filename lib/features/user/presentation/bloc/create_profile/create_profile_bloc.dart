@@ -21,7 +21,6 @@ class CreateProfileBloc extends Bloc<CreateProfileEvent, CreateProfileState> {
 
 
         final User user = User(
-          id: '',
           name: event.name,
           email: event.email,
           password: event.password,
