@@ -19,7 +19,6 @@ class AddProductBloc extends Bloc<AddProductEvent, AddProductState> {
           emit(AddProductStateLoading());
           // Simular un retraso de 2 segundos
           await Future.delayed(const Duration(seconds: 2));
-          print('categoria desde bloc: ${event.category}');
 
           final Product product = Product(
             id: '',

@@ -1,7 +1,10 @@
 import 'dart:typed_data';
 import 'package:dartz/dartz.dart';
+import 'package:dio/dio.dart';
 import 'package:loging_app/core/error/failure.dart';
+import 'package:loging_app/core/utils/session.dart';
 import 'package:loging_app/features/user/data/datasources/user_remote_data_source.dart';
+import 'package:loging_app/features/user/data/models/user_model.dart';
 import 'package:loging_app/features/user/domain/entities/user.dart';
 import '../../domain/repositories/user_repository.dart';
 
@@ -10,6 +13,10 @@ class UserRepositoryImpl implements UserRepository {
   final UserRemoteDataSource userRemoteDataSource;
 
   UserRepositoryImpl(this.userRemoteDataSource);
+
+  final Dio dioClient = Dio();
+  final String apiUrl = 'http://localhost:3000'; // URL de tu API
+  final Session session = Session.instance;
 
   @override
   Future<Either<Failure, User>> authenticateUser(String email, String password) async {
@@ -26,24 +33,29 @@ class UserRepositoryImpl implements UserRepository {
   }
  
 @override
-Future<Either<Failure, bool>> createUser(String name, String email, String password, String userType, Uint8List profileImage, bool disponibility) async {
+Future<Either<Failure, bool>> createUser(User user) async {
+
   try {
-    print('Datos enviados: name=$name, email=$email, password=$password, userType=$userType, disponibility=$disponibility');
-    final bool user = await userRemoteDataSource.createUser(name, email, password, userType, profileImage, disponibility);
-    print('Usuario creado correctamente en el datasource');
-    return Right(user);
+    final createdUser = await userRemoteDataSource.createUser(UserModel.fromEntity(user));
+
+    return Right(createdUser);
+    
   } on DuplicateEmailFailure catch (e) {
     print('Error en createUser (Correo duplicado): ${e.message}');
     return Left(DuplicateEmailFailure(e.message));
+
   } on InvalidDataFailure catch (e) {
     print('Error en createUser (Datos inválidos): ${e.message}');
     return Left(InvalidDataFailure(e.message));
+
   } on ServerFailure catch (e) {
     print('Error en createUser (Error del servidor): ${e.message}');
     return Left(ServerFailure(e.message));
+
   } on UnknownFailure catch (e) {
     print('Error en createUser (Error desconocido): ${e.message}');
     return Left(UnknownFailure(e.message));
+    
   } catch (e, stackTrace) {
     print('Error inesperado en createUser: $e');
     print('StackTrace: $stackTrace');
