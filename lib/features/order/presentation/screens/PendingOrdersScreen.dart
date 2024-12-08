@@ -39,7 +39,7 @@ class Pedidosaentregarscreen extends StatelessWidget {
                         itemBuilder: (context, index) {
                           final pedido = pedidos[index];
                           return PendingOrderItem(
-                            pedido: pedido.toString(),
+                            pedido: pedido.fechaPedido.toString(),
                             onTap: () {
                               Navigator.push(
                                 context,

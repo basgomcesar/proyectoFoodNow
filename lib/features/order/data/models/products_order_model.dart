@@ -9,20 +9,20 @@ class ProductsOrderModel extends ProductsOrder {
     required super.entregado,
     required super.fechaPedido,
     required super.idUsuario,
-    required super.idProductos,
+    required super.idProducto,
   });
 
   /// Crea una instancia de `ProductsOrderModel` desde un JSON
   factory ProductsOrderModel.fromJson(Map<String, dynamic> json) {
-    return ProductsOrderModel(
-      idPedido: json['idPedido'] as int,
-      estado: json['estado'] as String,
-      entregado: json['entregado'] as bool,
-      fechaPedido: DateTime.parse(json['fechaPedido'] as String),
-      idUsuario: json['idUsuario'] as int,
-      idProductos: List<int>.from(json['idProductos'] as List<dynamic>),
-    );
-  }
+  return ProductsOrderModel(
+    idPedido: json['idPedido'] as int,
+    estado: json['estado'] as String,
+    entregado: (json['entregado'] as int) == 1, // Conversión de 1/0 a bool
+    fechaPedido: DateTime.parse(json['fechaPedido'] as String),
+    idUsuario: json['idUsuario'] as int,
+    idProducto: json['idProducto'] as int,
+  );
+}
 
   /// Convierte un `ProductsOrderModel` en un mapa JSON
   Map<String, dynamic> toJson() {
@@ -32,7 +32,7 @@ class ProductsOrderModel extends ProductsOrder {
       'entregado': entregado,
       'fechaPedido': fechaPedido.toIso8601String(),
       'idUsuario': idUsuario,
-      'idProductos': idProductos,
+      'idProductos': idProducto,
     };
   }
 
@@ -44,7 +44,7 @@ class ProductsOrderModel extends ProductsOrder {
       'entregado': entregado,
       'fechaPedido': fechaPedido.toIso8601String(),
       'idUsuario': idUsuario,
-      'idProductos': idProductos,
+      'idProductos': idProducto,
     });
   }
 
@@ -56,7 +56,7 @@ class ProductsOrderModel extends ProductsOrder {
       entregado: entregado,
       fechaPedido: fechaPedido,
       idUsuario: idUsuario,
-      idProductos: idProductos,
+      idProducto: idProducto,
     );
   }
 
@@ -68,7 +68,7 @@ class ProductsOrderModel extends ProductsOrder {
       entregado: order.entregado,
       fechaPedido: order.fechaPedido,
       idUsuario: order.idUsuario,
-      idProductos: order.idProductos,
+      idProducto: order.idProducto,
     );
   }
 }

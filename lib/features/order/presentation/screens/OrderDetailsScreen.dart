@@ -36,7 +36,7 @@ class _DetallesPedidoScreenState extends State<DetallesPedidoScreen> {
             ),
             const SizedBox(height: 8),
             Text(
-              widget.pedido, // Muestra los datos del pedido seleccionado.
+              widget.pedido.toString(), // Muestra los datos del pedido seleccionado.
               style: const TextStyle(fontSize: 16),
             ),
           ],

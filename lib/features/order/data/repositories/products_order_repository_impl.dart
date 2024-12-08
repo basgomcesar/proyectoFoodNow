@@ -12,7 +12,7 @@ class ProductsOrderRepositoryImpl implements ProductsOrderRepository {
   @override
   Future<Either<Failure, List<ProductsOrder>>> getPendingOrders() async {
     try {
-      final orders = await remoteDataSource.getPendingOrders(); // Supongamos que retorna List<ProductsOrder>
+      final orders = await remoteDataSource.getPendingOrders();
       if (orders.isNotEmpty) {
         return Right(orders);
       } else {

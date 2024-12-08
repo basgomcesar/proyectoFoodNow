@@ -4,7 +4,7 @@ class ProductsOrder {
   final bool entregado;
   final DateTime fechaPedido;
   final int idUsuario;
-  final List<int> idProductos;
+  final int idProducto;
   
   ProductsOrder({
     required this.idPedido,
@@ -12,6 +12,6 @@ class ProductsOrder {
     required this.entregado,
     required this.fechaPedido,
     required this.idUsuario,
-    required this.idProductos,
+    required this.idProducto,
   });
 }

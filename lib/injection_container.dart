@@ -1,5 +1,9 @@
 import 'package:get_it/get_it.dart';
 import 'package:grpc/grpc.dart';
+import 'package:loging_app/features/order/data/datasources/order_remote_data_source.dart';
+import 'package:loging_app/features/order/data/repositories/products_order_repository_impl.dart';
+import 'package:loging_app/features/order/domain/repositories/products_order_repository.dart';
+import 'package:loging_app/features/order/domain/use_cases/get_pending_orders.dart';
 import 'package:loging_app/features/product/data/datasources/product_remote_data_source.dart';
 import 'package:loging_app/features/product/data/repositories/product_repository_impl.dart';
 import 'package:loging_app/features/product/domain/repositories/product_repository.dart';
@@ -42,6 +46,10 @@ void initInjections() {
     () => UserRemoteDataSourceImpl()
   );
 
+  serviceLocator.registerLazySingleton<OrderRemoteDataSource>(
+    () => OrderRemoteDataSourceImpl()
+  );
+
   serviceLocator.registerLazySingleton<LoginUserUseCase>(
     () => LoginUserUseCase(repository: serviceLocator())
   );
@@ -68,5 +76,13 @@ void initInjections() {
 
   serviceLocator.registerLazySingleton<AddProductUseCase>(
     () => AddProductUseCase(repository: serviceLocator())
+  );
+
+  serviceLocator.registerLazySingleton<ProductsOrderRepository>(
+    () => ProductsOrderRepositoryImpl(serviceLocator())
+  );
+
+  serviceLocator.registerLazySingleton<GetPendingOrders>(
+    () => GetPendingOrders(serviceLocator<ProductsOrderRepository>()),
   );
 }
