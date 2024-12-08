@@ -10,21 +10,24 @@ class ProductsOrderRepositoryImpl implements ProductsOrderRepository {
   ProductsOrderRepositoryImpl(this.remoteDataSource);
 
   @override
-  Stream<Either<Failure, ProductsOrder>> getPendingOrders() async* {
+  Future<Either<Failure, List<ProductsOrder>>> getPendingOrders() async {
     try {
-      await for (final order in remoteDataSource.getPendingOrders()) {
-        yield Right(order);
+      final orders = await remoteDataSource.getPendingOrders(); // Supongamos que retorna List<ProductsOrder>
+      if (orders.isNotEmpty) {
+        return Right(orders);
+      } else {
+        return Left(UnknownFailure('No hay órdenes pendientes.'));
       }
     } on ServerFailure catch (e) {
       print('Error en el repositorio: ${e.message}');
-      yield Left(ServerFailure(e.message));
+      return Left(ServerFailure(e.message));
     } on UnknownFailure catch (e) {
       print('Error desconocido en el repositorio: ${e.message}');
-      yield Left(UnknownFailure(e.message));
+      return Left(UnknownFailure(e.message));
     } catch (e, stackTrace) {
       print('Error inesperado en getPendingOrders: $e');
       print('StackTrace: $stackTrace');
-      yield Left(UnknownFailure('Ocurrió un error inesperado.'));
+      return Left(UnknownFailure('Ocurrió un error inesperado.'));
     }
   }
 }

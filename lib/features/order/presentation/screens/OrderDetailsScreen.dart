@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:loging_app/features/order/domain/entities/products_order.dart';
 import 'package:loging_app/features/user/presentation/widgets/header_logo.dart';
 
 class DetallesPedidoScreen extends StatefulWidget {
-  final String pedido;
+  final ProductsOrder pedido;
 
   const DetallesPedidoScreen({
     super.key,

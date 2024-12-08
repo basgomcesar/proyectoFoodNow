@@ -6,8 +6,8 @@ import 'package:loging_app/features/order/domain/entities/products_order.dart';
 import 'package:loging_app/features/order/data/models/products_order_model.dart';
 
 abstract interface class OrderRemoteDataSource {
-  /// Recupera una lista de pedidos pendientes desde el servidor como un flujo de datos
-  Stream<ProductsOrder> getPendingOrders();
+  /// Recupera una lista de pedidos pendientes desde el servidor
+  Future<List<ProductsOrder>> getPendingOrders();
 }
 
 class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
@@ -16,7 +16,7 @@ class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
   final Session session = Session.instance;
 
   @override
-  Stream<ProductsOrder> getPendingOrders() async* {
+  Future<List<ProductsOrder>> getPendingOrders() async {
     try {
       print('Fetching pending orders from the server...');
       final response = await dioClient.get(
@@ -32,9 +32,10 @@ class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
         // Suponiendo que la respuesta es una lista de pedidos en formato JSON
         final List<dynamic> ordersJson = response.data as List<dynamic>;
 
-        for (var orderJson in ordersJson) {
-          yield ProductsOrderModel.fromJson(orderJson).toDomain();
-        }
+        // Mapea los datos JSON a una lista de entidades de dominio
+        return ordersJson
+            .map((orderJson) => ProductsOrderModel.fromJson(orderJson).toDomain())
+            .toList();
       } else {
         throw ServerFailure(
           'Error al obtener pedidos pendientes. Código: ${response.statusCode}',
@@ -43,9 +44,6 @@ class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
     } on DioException catch (dioError) {
       print('Error al conectar con el servidor: ${dioError.message}');
       throw ServerFailure('Error al conectar con el servidor.');
-    } catch (e) {
-      print('Error desconocido: $e');
-      throw UnknownFailure('Error desconocido: $e');
     }
   }
 }
