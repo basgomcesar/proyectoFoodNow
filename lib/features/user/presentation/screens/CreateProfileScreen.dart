@@ -116,7 +116,7 @@ Widget build(BuildContext context) {
     );
   }else if (state is CreateProfileStateLoading) {
       // Mostrar diálogo de carga
-      showDialog(
+    showDialog(
         context: context,
         barrierDismissible: false,
         builder: (BuildContext context) {
