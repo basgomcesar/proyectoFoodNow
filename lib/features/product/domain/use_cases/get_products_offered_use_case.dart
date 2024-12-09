@@ -1,14 +1,15 @@
 import 'package:dartz/dartz.dart';
-import '../entities/product.dart';
-import '../repositories/product_repository.dart';
 import '../../../../core/error/failure.dart';
+import '../entities/product_graph.dart';
+import '../repositories/product_rest_repository.dart';
 
 class GetProductsOfferedUseCase {
-  final ProductRepository repository;
+  final ProductRestRepository repositoryProduct;
 
-  GetProductsOfferedUseCase({required this.repository});
+  GetProductsOfferedUseCase({required this.repositoryProduct});
 
-  Future<Either<Failure, List<Product>>> call(String userId) async {      
-    return await repository.getProductsOffered(userId);   
+  Future<Either<Failure, List<ProductGraph>>> call(
+      String userId, String anio, String mes) async {
+    return await repositoryProduct.getProductsOffered(userId, anio, mes);
   }
 }
