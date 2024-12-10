@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:loging_app/features/user/presentation/widgets/add_product_buttom.dart';
 import 'package:loging_app/features/user/presentation/widgets/header_logo.dart';
 import 'package:loging_app/features/user/presentation/widgets/list_view.dart';
 import 'package:provider/provider.dart';
 import 'package:loging_app/features/product/presentation/bloc/product_bloc.dart';
 import 'package:loging_app/features/product/presentation/screens/ProductListView.dart';
 import 'package:loging_app/injection_container.dart' as di;
+
 
 class HomeScreen extends StatefulWidget {
   final String email;
@@ -39,7 +41,18 @@ class _HomeScreenState extends State<HomeScreen> {
           child: DrawerListView(email: widget.email),
         ),
         body: const ProductListScreen(),
-      ),
+        bottomNavigationBar: BottomAppBar(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                AddProductButtom(),                
+              ],
+            ),
+          ),
+        ),
+      ),    
 
     );
   }

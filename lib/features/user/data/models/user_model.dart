@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:loging_app/features/user/domain/entities/user.dart';
 
 class UserModel extends User {
@@ -8,7 +9,8 @@ class UserModel extends User {
     required super.password,
     required super.photo,
     required super.userType,
-    required super.disponibility, required super.location,
+    required super.disponibility,
+    required super.location,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -40,10 +42,24 @@ class UserModel extends User {
       photo: user.photo,
       password: user.password,
       userType: user.userType,
-      disponibility: user.disponibility, location: '',
+      disponibility: user.disponibility,
+      location: '',
     );
   }
 
-  get id => null;
+
+  FormData toFormData() {
+    return FormData.fromMap({
+      'nombre': name,
+      'correo': email,
+      'contrasenia': password,
+      'tipo': userType,
+      'disponibilidad': disponibility,
+      'foto': MultipartFile.fromBytes(photo, filename: 'photo.jpg'),
+      'ubicación': location,
+    });
+  }
+
+//  get id => null;
   
 }
