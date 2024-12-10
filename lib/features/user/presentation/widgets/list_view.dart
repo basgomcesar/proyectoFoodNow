@@ -2,15 +2,41 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:loging_app/core/utils/session.dart';
 import 'package:loging_app/features/user/presentation/screens/ChangeAvailabilityScreen.dart';
+import '../../../product/presentation/screens/ProductsOfferedView.dart';
+import '../../../product/presentation/screens/ProductsChartView.dart';
 
-class DrawerListView extends StatelessWidget {
+class DrawerListView extends StatefulWidget {
   final String email;
-  final user = Session.instance.user;
-  final Uint8List? image = Session.instance.user?.photo != null
-      ? Uint8List.fromList(Session.instance.user!.photo)
-      : null;
 
-  DrawerListView({super.key, required this.email});
+  const DrawerListView({super.key, required this.email});
+
+  @override
+  _DrawerListViewState createState() => _DrawerListViewState();
+}
+
+class _DrawerListViewState extends State<DrawerListView> {
+  late Uint8List? image;
+  late String userName;
+  late String userEmail;
+  late bool userDisponibility;
+  late String userLocation;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+  }
+
+  void _loadUserData() {
+    final user = Session.instance.user;
+    if (user != null) {
+      image = user.photo != null ? Uint8List.fromList(user.photo) : null;
+      userName = user.name;
+      userEmail = user.email;
+      userDisponibility = user.disponibility;
+      userLocation = user.location;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,29 +64,29 @@ class DrawerListView extends StatelessWidget {
                   ),
                   const SizedBox(width: 16),
                   // Leyenda "Disponible" y "Ubicación"
-                 Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [ // Añadido `const` aquí
-                      Text(
-                        user!.disponibility ? "Disponible" : "No disponible", // Personaliza el texto
-                        style: const TextStyle(
-                          color: Colors.green,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          userDisponibility ? "Disponible" : "No disponible",
+                          style: const TextStyle(
+                            color: Colors.green,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        user!.location, // Leyenda de ubicación
-                        style: const TextStyle(
-                          color: Colors.white70,
-                          fontSize: 14,
+                        const SizedBox(height: 8),
+                        Text(
+                          userLocation,
+                          style: const TextStyle(
+                            color: Colors.white70,
+                            fontSize: 14,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
 
                   // Ícono ">"
                   IconButton(
@@ -73,21 +99,26 @@ class DrawerListView extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => ChangeAvailability()),
-                      );
+                          builder: (context) => const ChangeAvailability(),
+                        ),
+                      ).then((_) {
+                        // Recargar datos del usuario al regresar
+                        setState(() {
+                          _loadUserData();
+                        });
+                      });
                     },
                   ),
                 ],
               ),
               const SizedBox(height: 16),
-              // Información del usuario (centrada hacia la izquierda)
               Align(
                 alignment: Alignment.centerLeft,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      user!.name,
+                      userName,
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 18,
@@ -95,7 +126,7 @@ class DrawerListView extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      user!.email,
+                      userEmail,
                       style: const TextStyle(
                         color: Colors.white70,
                         fontSize: 14,
@@ -118,9 +149,15 @@ class DrawerListView extends StatelessWidget {
         ),
         ListTile(
           leading: const Icon(Icons.gite_rounded),
-          title: const Text('Productos'),
+          title: const Text('Productos vendedor'),
           onTap: () {
-            Navigator.pop(context);
+            Navigator.pop(context); // Cierra el Drawer
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const ProductsOfferedScreen(),
+              ),
+            );
           },
         ),
         ListTile(
@@ -138,6 +175,19 @@ class DrawerListView extends StatelessWidget {
           },
         ),
         ListTile(
+          leading: const Icon(Icons.hiking_rounded),
+          title: const Text('Estadísticas'),
+          onTap: () {
+            Navigator.pop(context); // Cierra el Drawer
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const ProductsChartView(),
+              ),
+            );
+          },
+        ),
+        ListTile(
           leading: const Icon(Icons.info),
           title: const Text('Acerca de'),
           onTap: () {
@@ -146,38 +196,38 @@ class DrawerListView extends StatelessWidget {
         ),
         const Divider(),
         ListTile(
-        leading: const Icon(Icons.logout),
-        title: const Text('Cerrar Sesión'),
-        onTap: () {
-          // Mostrar un diálogo de confirmación antes de cerrar sesión
-          showDialog(
-            context: context,
-            builder: (context) => AlertDialog(
-              title: const Text('Cerrar Sesión'),
-              content: const Text('¿Estás seguro de que deseas cerrar sesión?'),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.pop(context); // Cerrar el diálogo sin hacer nada
-                  },
-                  child: const Text('Cancelar'),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(context); 
-                    Session.instance.endSession();
-                    Navigator.pushReplacementNamed(context, '/login');
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Sesión cerrada correctamente')),
-                    );
-                  },
-                  child: const Text('Cerrar Sesión'),
-                ),
-              ],
-            ),
-          );
-        },
-      ),
+          leading: const Icon(Icons.logout),
+          title: const Text('Cerrar Sesión'),
+          onTap: () {
+            // Mostrar un diálogo de confirmación antes de cerrar sesión
+            showDialog(
+              context: context,
+              builder: (context) => AlertDialog(
+                title: const Text('Cerrar Sesión'),
+                content: const Text('¿Estás seguro de que deseas cerrar sesión?'),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pop(context); // Cerrar el diálogo sin hacer nada
+                    },
+                    child: const Text('Cancelar'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      Session.instance.endSession();
+                      Navigator.pushReplacementNamed(context, '/login');
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Sesión cerrada correctamente')),
+                      );
+                    },
+                    child: const Text('Cerrar Sesión'),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
 
       ],
     );
