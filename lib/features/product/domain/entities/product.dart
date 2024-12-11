@@ -4,6 +4,7 @@ import 'dart:typed_data';
 class Product {
   final String id;
   final String name;
+  final String? category;
   final bool available;
   final String? description;
   final double price;
@@ -14,6 +15,7 @@ class Product {
   Product({
     required this.id,
     required this.name,
+    this.category,
     required this.available,
     this.description,
     required this.price,

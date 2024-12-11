@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:loging_app/core/utils/routes.dart';
 import 'package:loging_app/features/product/presentation/bloc/product_bloc.dart';
+import 'package:loging_app/features/product/presentation/bloc/add_product/add_product_bloc.dart';
 import 'package:loging_app/features/user/presentation/bloc/create_profile/create_profile_bloc.dart';
 import 'package:loging_app/injection_container.dart' as di;
 import 'package:loging_app/features/user/presentation/bloc/edit_profile/edit_profile_bloc.dart';

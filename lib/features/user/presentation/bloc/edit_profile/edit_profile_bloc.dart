@@ -1,5 +1,6 @@
 // create_profile_bloc.dart
 import 'package:bloc/bloc.dart';
+import 'package:loging_app/core/error/failure.dart';
 import 'edit_profile_event.dart';
 import 'edit_profile_state.dart';
 import 'package:loging_app/features/user/domain/use_cases/edit_profile_use_case.dart';
@@ -23,15 +24,23 @@ class EditProfileBloc extends Bloc<EditProfileEvent, EditProfileState> {
 
         failureOrUser.fold(
           (failure) {
+            if (failure is InvalidDataFailure) {
+              emit(InvalidDataFailureState(error: 'No hay datos a actualizar'));
+
+            } else if(failure is UserNotFoundFailure) {
+              emit(UserNotFoundFailureState(error: 'Usuario no encontrado'));
+
+            } else if(failure is DuplicateEmailFailure) {
+              emit(DuplicateEmailFailureState(error: 'El correo electrónico ya está en uso.'));
+              
+            } else if(failure is ServerFailure) {
+              emit(EditProfileStateFailure(error: 'Ocurrió un error al actualizar el perfil.'));
+            } 
             emit(EditProfileStateFailure(error: failure.message));
           },
-          (user) => emit(EditProfileStateSucess()),
+          (bool) => emit(EditProfileStateSucess()),
         );
-        // Verifica que el evento ha llegado al Bloc
-        print('Datos dentro del bloc update:');
-        print('Nombre: ${event.name}');
-        print('Correo: ${event.email}');
-        print('Contraseña: ${event.password}');
+        
         } catch (e) {
           emit(EditProfileStateFailure(error: e.toString()));
         }
