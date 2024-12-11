@@ -18,11 +18,6 @@ abstract class ProductRemoteDataSource {
 
 class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
 
-  final Dio productsSeller = Dio();
-  // Eliminar la referencia a FirebaseFirestore
-  final String apiUrl = 'http://localhost:3000'; // URL de tu API
-  final Session session = Session.instance;
-
   final ClientChannel channel;
   late final ProductServiceClient client;
   final Dio dioClient = Dio();
