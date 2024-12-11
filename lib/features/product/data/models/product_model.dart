@@ -78,6 +78,20 @@ class ProductModel extends Product {
 
 
 
+  // Método para mapear desde JSON
+  factory ProductModel.fromJson(Map<String, dynamic> json) {
+    return ProductModel(
+      id: json['id'],
+      name: json['name'],
+      available: json['available'],
+      description: json['description'],
+      price: json['price'].toDouble(),
+      quantityAvailable: json['quantityAvailable'],
+      photo: Uint8List.fromList(List<int>.from(json['photo']['data'])),
+      userId: json['userId'],
+    );
+  }
+
   /// Convierte un `ProductModel` en una entidad del dominio `Product`
   Product toDomain() {
     return Product(

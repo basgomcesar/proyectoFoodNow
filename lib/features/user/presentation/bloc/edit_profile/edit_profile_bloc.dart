@@ -15,7 +15,6 @@ class EditProfileBloc extends Bloc<EditProfileEvent, EditProfileState> {
         try{
           emit(EditProfileStateLoading());
         
-
         final failureOrUser = await editProfileUseCase(
           event.name, 
           event.email, 
