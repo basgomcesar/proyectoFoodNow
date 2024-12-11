@@ -40,7 +40,10 @@ void main() async {
         BlocProvider<UserCubit>(
           create: (_) => UserCubit(),
         ),
+<<<<<<< HEAD
+=======
 
+>>>>>>> 69a6ea7407192c01a449449ffec1ad0a57eb1214
 
       ],
       child: const MyApp(),

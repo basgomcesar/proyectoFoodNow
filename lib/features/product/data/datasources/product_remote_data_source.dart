@@ -1,4 +1,3 @@
-
 import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
@@ -18,11 +17,6 @@ abstract class ProductRemoteDataSource {
 }
 
 class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
-
-  final Dio productsSeller = Dio();
-  // Eliminar la referencia a FirebaseFirestore
-  final String apiUrl = 'http://localhost:3000'; // URL de tu API
-  final Session session = Session.instance;
 
   final ClientChannel channel;
   late final ProductServiceClient client;
@@ -48,7 +42,6 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
       rethrow;
     }
   }
-
 
   @override
   Future<bool> addProduct(ProductModel productModel) async {   
