@@ -48,7 +48,7 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
           name: response.data['nombre'],
           email: response.data['correo'],
           password: response.data['contrasenia'],
-          userType: response.data['tipo'],
+          userType: response.data['tipoUsuario'],
           photo: Uint8List.fromList(List<int>.from(response.data['foto'][
               'data'])), // Convierte la foto a Uint8List si es un arreglo de bytes
           disponibility: response.data['disponibilidad'] == 1,
@@ -58,9 +58,11 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
             userId: idUsuario.toString(), token: token, user: userAuth);
         return userAuth;
       } catch (e) {
-        throw Exception('Failed to authenticate user1');
+        print('Failed to authenticate user1');
+        throw Exception('Failed to authenticate user1');        
       }
     } else {
+      print('Failed to authenticate user2');
       throw Exception('Failed to authenticate user2');
     }
   }
