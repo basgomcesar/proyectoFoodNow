@@ -72,7 +72,7 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
 
     try {
       final response = await dioClient.post(
-        '$apiUrl/usuarios',
+        '$apiUrl/users',
         data: userModel.toFormData(),
         options: Options(
           validateStatus: (status) => status! < 500,
@@ -109,14 +109,10 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
       'foto': MultipartFile.fromBytes(photo, filename: 'photo.jpg'),
     });
 
-    String? userId = session.userId;
-    if (userId == null) {
-      throw Exception('User ID is not available');
-    }
 
     try {
       final response = await dioClient.put(
-        '$apiUrl/usuarios/$userId',
+        '$apiUrl/users',
         data: formData,
         options: Options(
           validateStatus: (status) {
@@ -156,13 +152,10 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
 
   @override
   Future<bool> deleteUser() async {
-    String? userId = session.userId;
-    if (userId == null) {
-      throw Exception('User ID is not available');
-    }
+    
     try {
       final response = await dioClient.delete(
-        '$apiUrl/usuarios',
+        '$apiUrl/users',
         options: Options(
           headers: {
             'Content-Type': 'multipart/form-data',

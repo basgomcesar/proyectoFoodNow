@@ -49,7 +49,7 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
 
     try {
       final response = await dioClient.post(
-        '$apiUrl/productos',
+        '$apiUrl/products',
         data: productModel.toFormData(),
         options: Options(
           headers: {
