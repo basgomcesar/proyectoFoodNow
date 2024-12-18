@@ -23,7 +23,7 @@ abstract class UserRemoteDataSource {
 
 class UserRemoteDataSourceImpl implements UserRemoteDataSource {
   final Dio dioClient = Dio();
-  final String apiUrl = 'http://localhost:3000'; // URL de tu API
+  final String apiUrl = 'http://192.168.100.40:3000'; // URL de tu API
   final Session session = Session.instance;
 
   UserRemoteDataSourceImpl();
@@ -49,8 +49,9 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
           email: response.data['correo'],
           password: response.data['contrasenia'],
           userType: response.data['tipoUsuario'],
-          photo: Uint8List.fromList(List<int>.from(response.data['foto'][
-              'data'])), // Convierte la foto a Uint8List si es un arreglo de bytes
+            photo: response.data['foto'] != null
+              ? Uint8List.fromList(List<int>.from(response.data['foto']['data']))
+              : Uint8List(0), // Si no hay foto, crea un Uint8List vacío
           disponibility: response.data['disponibilidad'] == 1,
           location: response.data['ubicacion'] ?? '',
         );
