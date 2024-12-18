@@ -100,17 +100,15 @@ Widget build(BuildContext context) {
     });
 
   } else if (state is DuplicateEmailFailureState) {
-    // Manejo de correo duplicado
+    Navigator.of(context, rootNavigator: true).pop();
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('El correo electrónico ya está en uso.')),
     );
   } else if (state is InvalidDataFailureState) {
-    // Manejo de datos inválidos
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Los datos ingresados no son válidos. Intenta nuevamente.')),
     );
   } else if (state is CreateProfileStateFailureState) {
-    // Manejo de errores generales
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(state.error)),
     );
