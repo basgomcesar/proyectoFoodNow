@@ -153,7 +153,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
             foregroundColor: Colors.white,
           ),
           onPressed: () {
-            _messageYouWannaBuy,
+            // Add to cart,
 
           },
           child: const Text('Pedir producto'),
@@ -162,41 +162,4 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
     );
   }
 
-
-  void _messageYouWannaBuy() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Eliminar Perfil'),
-        content: const Text(
-          '¿Estás seguro de que deseas eliminar tu perfil? Esta acción no se puede deshacer.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancelar'),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            onPressed: () async {
-              try {
-                final userRepository = serviceLocator<UserRepository>();
-                await userRepository.deleteUser();
-                Session.instance.endSession();
-                Navigator.pushNamed(context, '/login');
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Perfil eliminado exitosamente')),
-                );
-              } catch (e) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Error al eliminar el perfil: $e')),
-                );
-              }
-            },
-            child: const Text('Eliminar'),
-          ),
-        ],
-      ),
-    );
-  }
 }
