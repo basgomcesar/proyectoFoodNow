@@ -5,34 +5,33 @@ import '../../domain/entities/products_order.dart';
 class ProductsOrderModel extends ProductsOrder {
   ProductsOrderModel({
     required super.idPedido,
-    required super.estado,
-    required super.entregado,
+    required super.estadoPedido,
     required super.fechaPedido,
-    required super.idUsuario,
+    required super.idCliente,
     required super.idProducto,
+    required super.nombreCliente,
   });
 
   /// Crea una instancia de `ProductsOrderModel` desde un JSON
   factory ProductsOrderModel.fromJson(Map<String, dynamic> json) {
-  return ProductsOrderModel(
-    idPedido: json['idPedido'] as int,
-    estado: json['estado'] as String,
-    entregado: (json['entregado'] as int) == 1, // Conversión de 1/0 a bool
-    fechaPedido: DateTime.parse(json['fechaPedido'] as String),
-    idUsuario: json['idUsuario'] as int,
-    idProducto: json['idProducto'] as int,
-  );
-}
+    return ProductsOrderModel(
+      idPedido: json['idPedido'] as int,
+      estadoPedido: json['estadoPedido'] as String,
+      fechaPedido: DateTime.parse(json['fechaPedido'] as String),
+      idCliente: json['idCliente'] as int,
+      idProducto: json['idProducto'] as int,
+      nombreCliente: json['nombreCliente'] as String,
+    );
+  }
 
   /// Convierte un `ProductsOrderModel` en un mapa JSON
   Map<String, dynamic> toJson() {
     return {
       'idPedido': idPedido,
-      'estado': estado,
-      'entregado': entregado,
+      'estadoPedido': estadoPedido,
       'fechaPedido': fechaPedido.toIso8601String(),
-      'idUsuario': idUsuario,
-      'idProductos': idProducto,
+      'idCliente': idCliente,
+      'idProducto': idProducto,
     };
   }
 
@@ -40,11 +39,10 @@ class ProductsOrderModel extends ProductsOrder {
   FormData toFormData() {
     return FormData.fromMap({
       'idPedido': idPedido,
-      'estado': estado,
-      'entregado': entregado,
+      'estadoPedido': estadoPedido,
       'fechaPedido': fechaPedido.toIso8601String(),
-      'idUsuario': idUsuario,
-      'idProductos': idProducto,
+      'idCliente': idCliente,
+      'idProducto': idProducto,
     });
   }
 
@@ -52,11 +50,11 @@ class ProductsOrderModel extends ProductsOrder {
   ProductsOrder toDomain() {
     return ProductsOrder(
       idPedido: idPedido,
-      estado: estado,
-      entregado: entregado,
+      estadoPedido: estadoPedido,
       fechaPedido: fechaPedido,
-      idUsuario: idUsuario,
+      idCliente: idCliente,
       idProducto: idProducto,
+      nombreCliente: nombreCliente
     );
   }
 
@@ -64,11 +62,11 @@ class ProductsOrderModel extends ProductsOrder {
   factory ProductsOrderModel.fromEntity(ProductsOrder order) {
     return ProductsOrderModel(
       idPedido: order.idPedido,
-      estado: order.estado,
-      entregado: order.entregado,
+      estadoPedido: order.estadoPedido,
       fechaPedido: order.fechaPedido,
-      idUsuario: order.idUsuario,
+      idCliente: order.idCliente,
       idProducto: order.idProducto,
+      nombreCliente: order.nombreCliente,
     );
   }
 }

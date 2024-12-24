@@ -1,17 +1,17 @@
 class ProductsOrder {
   final int idPedido;
-  final String estado;
-  final bool entregado;
+  final String estadoPedido;
   final DateTime fechaPedido;
-  final int idUsuario;
+  final int idCliente;
   final int idProducto;
-  
+  final String nombreCliente;
+
   ProductsOrder({
     required this.idPedido,
-    required this.estado,
-    required this.entregado,
+    required this.estadoPedido,
     required this.fechaPedido,
-    required this.idUsuario,
+    required this.idCliente,
     required this.idProducto,
+    required this.nombreCliente,
   });
 }
