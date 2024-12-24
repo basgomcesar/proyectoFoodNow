@@ -105,38 +105,27 @@ class _AvailabilityContent extends State<AvailabilityContent> {
               ),
               const SizedBox(height: 20),
               Center(
-                child:ElevatedButton(
-  onPressed: () {
-    if (_formKey.currentState?.validate() == true) {
-      // Envía los datos al Bloc
-      context.read<AvailabilityBloc>().add(
-        AvailabilityButtonPressed(
-          availability: isAvailable,
-          location: _locationController.text,
-        ),
-      );
+                child: ElevatedButton(
+                  onPressed: () {
+                    if (_formKey.currentState?.validate() == true) {
+                      // Envía los datos al Bloc
+                      context.read<AvailabilityBloc>().add(
+                        AvailabilityButtonPressed(
+                          availability: isAvailable,
+                          location: _locationController.text,
+                        ),
+                      );
 
-      // Actualizar el usuario en la sesión
-      final user = Session.instance.user;
-      if (user != null) {
-        user.disponibility = isAvailable;
-        user.location = _locationController.text;
-      }
-
-      // Mostrar mensaje de éxito
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Cambios guardados con éxito'),
-        ),
-      );
-
-      // Devolver un valor para indicar que se actualizó
-      Navigator.pop(context, true);
-    }
-  },
-  child: const Text('Guardar Cambios'),
-),
-
+                      // Mostrar mensaje de éxito
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Cambios guardados con éxito'),
+                        ),
+                      );
+                    }
+                  },
+                  child: const Text('Guardar Cambios'),
+                ),
               ),
             ],
           ),

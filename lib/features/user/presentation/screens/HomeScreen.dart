@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:loging_app/core/utils/session.dart';
 import 'package:loging_app/features/user/presentation/widgets/add_product_buttom.dart';
 import 'package:loging_app/features/user/presentation/widgets/header_logo.dart';
 import 'package:loging_app/features/user/presentation/widgets/list_view.dart';
@@ -19,8 +18,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-final Session session = Session.instance;
-final userType = Session.instance.user?.userType;
+
 //@override
 //void initState() {
   /* super.initState();
@@ -49,8 +47,7 @@ final userType = Session.instance.user?.userType;
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                if (userType == 'Vendedor') 
-                  AddProductButtom(),            
+                AddProductButtom(),                
               ],
             ),
           ),

@@ -2,41 +2,15 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:loging_app/core/utils/session.dart';
 import 'package:loging_app/features/user/presentation/screens/ChangeAvailabilityScreen.dart';
-import '../../../product/presentation/screens/ProductsOfferedView.dart';
-import '../../../product/presentation/screens/ProductsChartView.dart';
 
-class DrawerListView extends StatefulWidget {
+class DrawerListView extends StatelessWidget {
   final String email;
+  final user = Session.instance.user;
+  final Uint8List? image = Session.instance.user?.photo != null
+      ? Uint8List.fromList(Session.instance.user!.photo)
+      : null;
 
-  const DrawerListView({super.key, required this.email});
-
-  @override
-  _DrawerListViewState createState() => _DrawerListViewState();
-}
-
-class _DrawerListViewState extends State<DrawerListView> {
-  late Uint8List? image;
-  late String userName;
-  late String userEmail;
-  late bool userDisponibility;
-  late String userLocation;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadUserData();
-  }
-
-  void _loadUserData() {
-    final user = Session.instance.user;
-    if (user != null) {
-      image = user.photo != null ? Uint8List.fromList(user.photo) : null;
-      userName = user.name;
-      userEmail = user.email;
-      userDisponibility = user.disponibility;
-      userLocation = user.location;
-    }
-  }
+  DrawerListView({super.key, required this.email});
 
   @override
   Widget build(BuildContext context) {
@@ -64,29 +38,29 @@ class _DrawerListViewState extends State<DrawerListView> {
                   ),
                   const SizedBox(width: 16),
                   // Leyenda "Disponible" y "Ubicación"
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          userDisponibility ? "Disponible" : "No disponible",
-                          style: const TextStyle(
-                            color: Colors.green,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
-                          ),
+                 Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [ // Añadido `const` aquí
+                      Text(
+                        user!.disponibility ? "Disponible" : "No disponible", // Personaliza el texto
+                        style: const TextStyle(
+                          color: Colors.green,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
                         ),
-                        const SizedBox(height: 8),
-                        Text(
-                          userLocation,
-                          style: const TextStyle(
-                            color: Colors.white70,
-                            fontSize: 14,
-                          ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        user!.location, // Leyenda de ubicación
+                        style: const TextStyle(
+                          color: Colors.white70,
+                          fontSize: 14,
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
+                ),
 
                   // Ícono ">"
                   IconButton(
@@ -99,26 +73,21 @@ class _DrawerListViewState extends State<DrawerListView> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const ChangeAvailability(),
-                        ),
-                      ).then((_) {
-                        // Recargar datos del usuario al regresar
-                        setState(() {
-                          _loadUserData();
-                        });
-                      });
+                            builder: (context) => ChangeAvailability()),
+                      );
                     },
                   ),
                 ],
               ),
               const SizedBox(height: 16),
+              // Información del usuario (centrada hacia la izquierda)
               Align(
                 alignment: Alignment.centerLeft,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      userName,
+                      user!.name,
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 18,
@@ -126,7 +95,7 @@ class _DrawerListViewState extends State<DrawerListView> {
                       ),
                     ),
                     Text(
-                      userEmail,
+                      user!.email,
                       style: const TextStyle(
                         color: Colors.white70,
                         fontSize: 14,
@@ -149,15 +118,9 @@ class _DrawerListViewState extends State<DrawerListView> {
         ),
         ListTile(
           leading: const Icon(Icons.gite_rounded),
-          title: const Text('Productos vendedor'),
+          title: const Text('Productos'),
           onTap: () {
-            Navigator.pop(context); // Cierra el Drawer
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const ProductsOfferedScreen(),
-              ),
-            );
+            Navigator.pop(context);
           },
         ),
         ListTile(
@@ -173,19 +136,6 @@ class _DrawerListViewState extends State<DrawerListView> {
           onTap: () {
             Navigator.pop(context);
             Navigator.pushNamed(context, '/pedidosparaentregar');
-          },
-        ),
-        ListTile(
-          leading: const Icon(Icons.hiking_rounded),
-          title: const Text('Estadísticas'),
-          onTap: () {
-            Navigator.pop(context); // Cierra el Drawer
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const ProductsChartView(),
-              ),
-            );
           },
         ),
         ListTile(

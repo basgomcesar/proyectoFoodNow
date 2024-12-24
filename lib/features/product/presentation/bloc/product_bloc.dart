@@ -3,25 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../domain/use_cases/get_products.dart';
 import '../../domain/entities/product.dart';
 
-extension ListExtensions<T> on List<T> {
-  void replaceOrRemoveWhere(
-      bool Function(T) test, bool Function(T) shouldRemove, T newValue) {
-    for (int i = 0; i < length; i++) {
-      if (test(this[i])) {
-        if (shouldRemove(this[i])) {
-          removeAt(i);
-        } else {
-          this[i] = newValue;
-        }
-        return;
-      }
-    }
-    if (!shouldRemove(newValue)) {
-      add(newValue);
-    }
-  }
-}
-
 abstract class ProductState extends Equatable {
   @override
   List<Object> get props => [];
@@ -58,11 +39,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
         result.fold(
           (failure) => emit(ProductError()),
           (product) {
-            products.replaceOrRemoveWhere(
-              (element) => element.id == product.id,
-              (element) => product.available == false,
-              product,
-            );
+            products.add(product);
             emit(ProductLoaded(List.unmodifiable(products)));
           },
         );

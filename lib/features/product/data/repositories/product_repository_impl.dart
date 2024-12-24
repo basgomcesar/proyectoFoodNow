@@ -1,11 +1,11 @@
 import 'dart:typed_data';
 
 import 'package:dartz/dartz.dart';
-import '../../domain/entities/product.dart';
+import 'package:loging_app/features/product/data/models/product_model.dart';
+import 'package:loging_app/features/product/domain/entities/product.dart';
 import '../../domain/repositories/product_repository.dart';
 import '../../../../core/error/failure.dart';
 import '../datasources/product_remote_data_source.dart';
-import '../models/product_model.dart';
 
 class ProductRepositoryImpl implements ProductRepository {
   final ProductRemoteDataSource remoteDataSource;
