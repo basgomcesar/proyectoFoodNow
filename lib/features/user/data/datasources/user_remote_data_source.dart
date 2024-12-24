@@ -23,7 +23,7 @@ abstract class UserRemoteDataSource {
 
 class UserRemoteDataSourceImpl implements UserRemoteDataSource {
   final Dio dioClient = Dio();
-  final String apiUrl = 'http://192.168.100.40:3000'; // URL de tu API
+  final String apiUrl = 'http://localhost:3000'; // URL de tu API
   final Session session = Session.instance;
 
   UserRemoteDataSourceImpl();
