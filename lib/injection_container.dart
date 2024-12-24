@@ -1,9 +1,5 @@
 import 'package:get_it/get_it.dart';
 import 'package:grpc/grpc.dart';
-import 'package:loging_app/features/order/data/datasources/order_remote_data_source.dart';
-import 'package:loging_app/features/order/data/repositories/products_order_repository_impl.dart';
-import 'package:loging_app/features/order/domain/repositories/products_order_repository.dart';
-import 'package:loging_app/features/order/domain/use_cases/get_pending_orders.dart';
 import 'package:loging_app/features/product/data/datasources/product_remote_data_source.dart';
 import 'package:loging_app/features/product/data/repositories/product_repository_impl.dart';
 import 'package:loging_app/features/product/domain/repositories/product_repository.dart';
@@ -15,8 +11,11 @@ import 'package:loging_app/features/user/domain/repositories/user_repository.dar
 import 'package:loging_app/features/user/domain/use_cases/create_profile_use_case.dart';
 import 'package:loging_app/features/user/domain/use_cases/edit_profile_use_case.dart';
 import 'package:loging_app/features/user/domain/use_cases/login_user_use_case.dart';
-import 'package:loging_app/features/user/presentation/bloc/update_avalability/update_availability_event.dart';
-
+import 'features/product/data/datasources/product_remote_data_source_rest.dart';
+import 'features/product/data/repositories/product_repository_rest_impl.dart';
+import 'features/product/domain/repositories/product_rest_repository.dart';
+import 'features/product/domain/use_cases/get_products_offered_use_case.dart';
+import 'features/product/domain/use_cases/get_products_seller_use_case.dart';
 import 'features/user/domain/use_cases/update_availability_use_case.dart';
 
 final serviceLocator = GetIt.instance;
@@ -26,63 +25,75 @@ Future<void> init() async {
 }
 
 void initInjections() {
+  // Repositorio de usuarios
   serviceLocator.registerLazySingleton<UserRepository>(
     () => UserRepositoryImpl(serviceLocator())
   );
 
-  serviceLocator.registerLazySingleton<ClientChannel>(
+  // Cliente gRPC
+  serviceLocator.registerLazySingleton<ClientChannel>( 
     () => ClientChannel(
-      'localhost',
+      '192.168.100.40',
       port: 50051,
       options: const ChannelOptions(credentials: ChannelCredentials.insecure()),
     )
   );
 
+  // DataSource para productos (gRPC)
   serviceLocator.registerLazySingleton<ProductRemoteDataSource>(
     () => ProductRemoteDataSourceImpl(serviceLocator<ClientChannel>())
   );
 
+  // DataSource para usuarios
   serviceLocator.registerLazySingleton<UserRemoteDataSource>(
     () => UserRemoteDataSourceImpl()
   );
 
-  serviceLocator.registerLazySingleton<OrderRemoteDataSource>(
-    () => OrderRemoteDataSourceImpl()
-  );
-
+  // Casos de uso para usuarios
   serviceLocator.registerLazySingleton<LoginUserUseCase>(
     () => LoginUserUseCase(repository: serviceLocator())
   );
-
   serviceLocator.registerLazySingleton<CreateProfileUseCase>(
     () => CreateProfileUseCase(repository: serviceLocator())
   );
-
   serviceLocator.registerLazySingleton<EditProfileUseCase>(
     () => EditProfileUseCase(repository: serviceLocator())
   );
-
-  serviceLocator.registerLazySingleton<ProductRepository>(
-    () => ProductRepositoryImpl(serviceLocator<ProductRemoteDataSource>())
-  );
-
-  serviceLocator.registerLazySingleton<GetProducts>(
-    () => GetProducts(repository: serviceLocator<ProductRepository>())
-  );
-
   serviceLocator.registerLazySingleton<UpdateAvailabilityUseCase>(
     () => UpdateAvailabilityUseCase(repository: serviceLocator())
   );
 
+  // Repositorio de productos (gRPC)
+  serviceLocator.registerLazySingleton<ProductRepository>(
+    () => ProductRepositoryImpl(serviceLocator<ProductRemoteDataSource>())
+  );
+
+  // Caso de uso para obtener productos (gRPC)
+  serviceLocator.registerLazySingleton<GetProducts>(
+    () => GetProducts(repository: serviceLocator<ProductRepository>())
+  );
+
+  // DataSource para productos (REST)
+  serviceLocator.registerLazySingleton<ProductRemoteDataSourceRest>(
+    () => ProductRemoteDataSourceRestImpl()
+  );
+
+  // Repositorio de productos (REST)
+  serviceLocator.registerLazySingleton<ProductRestRepository>(
+    () => ProductRestRepositoryRestImpl(serviceLocator<ProductRemoteDataSourceRest>())
+  );
+
+  // Casos de uso para obtener productos ofrecidos (REST)
+  serviceLocator.registerLazySingleton<GetProductsOfferedUseCase>(
+    () => GetProductsOfferedUseCase(repositoryProduct: serviceLocator<ProductRestRepository>())
+  );
+
+  // Casos de uso para obtener productos del vendedor (REST)
+  serviceLocator.registerLazySingleton<GetProductsSellerUseCase>(
+    () => GetProductsSellerUseCase(repositoryProduct: serviceLocator<ProductRestRepository>())
+  );
+
   serviceLocator.registerLazySingleton<AddProductUseCase>(
     () => AddProductUseCase(repository: serviceLocator())
-  );
-
-  serviceLocator.registerLazySingleton<ProductsOrderRepository>(
-    () => ProductsOrderRepositoryImpl(serviceLocator())
-  );
-
-  serviceLocator.registerLazySingleton<GetPendingOrders>(
-    () => GetPendingOrders(serviceLocator<ProductsOrderRepository>()),
   );
 }

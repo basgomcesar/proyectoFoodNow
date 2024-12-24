@@ -108,7 +108,6 @@ Future<Either<Failure, bool>> createUser(User user) async {
     throw UnimplementedError();
   }
 
-  
   @override
   Future<Either<Failure, User>> updateAvailability(bool availability, String location) async {
     try {
@@ -122,9 +121,4 @@ Future<Either<Failure, bool>> createUser(User user) async {
           return Left(ServerFailure('Update user failed'));
     }
   }
-  
-  
-  
-
-  
 }
