@@ -86,7 +86,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
               minValue: 1,
               maxValue: product.quantityAvailable,
               axis: Axis.horizontal,
-                itemWidth: MediaQuery.of(context).size.width / 3, 
+              itemWidth: MediaQuery.of(context).size.width / 3,
               onChanged: (value) {
                 setState(() {
                   currentValue = value;
@@ -105,7 +105,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                   onPressed: () {
                     setState(() {
                       final newValue = currentValue - 1;
-                      currentValue = newValue.clamp(1, product.quantityAvailable);
+                      currentValue =
+                          newValue.clamp(1, product.quantityAvailable);
                     });
                   },
                 ),
@@ -115,14 +116,14 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                   onPressed: () {
                     setState(() {
                       final newValue = currentValue + 1;
-                      currentValue = newValue.clamp(1, product.quantityAvailable);
+                      currentValue =
+                          newValue.clamp(1, product.quantityAvailable);
                     });
                   },
                 ),
               ],
             ),
             ButtonsOptions()
-
           ],
         ),
       ),
@@ -137,7 +138,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.white,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(30),
               side: const BorderSide(color: Color.fromARGB(255, 255, 0, 0)),
             ),
           ),
@@ -147,12 +148,55 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
           child: const Text('Cancelar'),
         ),
         ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.red,
+            foregroundColor: Colors.white,
+          ),
           onPressed: () {
-            // Buy now
+            _messageYouWannaBuy,
+
           },
           child: const Text('Pedir producto'),
         ),
       ],
+    );
+  }
+
+
+  void _messageYouWannaBuy() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Eliminar Perfil'),
+        content: const Text(
+          '¿Estás seguro de que deseas eliminar tu perfil? Esta acción no se puede deshacer.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancelar'),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            onPressed: () async {
+              try {
+                final userRepository = serviceLocator<UserRepository>();
+                await userRepository.deleteUser();
+                Session.instance.endSession();
+                Navigator.pushNamed(context, '/login');
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Perfil eliminado exitosamente')),
+                );
+              } catch (e) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Error al eliminar el perfil: $e')),
+                );
+              }
+            },
+            child: const Text('Eliminar'),
+          ),
+        ],
+      ),
     );
   }
 }
