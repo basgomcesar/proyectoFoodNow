@@ -21,14 +21,13 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
   final ClientChannel channel;
   late final ProductServiceClient client;
   final Dio dioClient = Dio();
-  final String apiUrl = 'http://localhost:3000'; // URL de tu API
+  final String apiUrl = 'http://192.168.100.40:3000'; // URL de tu API
   final Session session = Session.instance;
 
   ProductRemoteDataSourceImpl(this.channel) {
     client = ProductServiceClient(channel);
   }
   
-
   @override
   Stream<ProductModel> getProducts() async* {
     try {
@@ -50,7 +49,7 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
 
     try {
       final response = await dioClient.post(
-        '$apiUrl/productos',
+        '$apiUrl/products',
         data: productModel.toFormData(),
         options: Options(
           headers: {

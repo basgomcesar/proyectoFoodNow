@@ -23,7 +23,7 @@ abstract class UserRemoteDataSource {
 
 class UserRemoteDataSourceImpl implements UserRemoteDataSource {
   final Dio dioClient = Dio();
-  final String apiUrl = 'http://localhost:3000'; // URL de tu API
+  final String apiUrl = 'http://192.168.100.40:3000'; // URL de tu API
   final Session session = Session.instance;
 
   UserRemoteDataSourceImpl();
@@ -48,9 +48,10 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
           name: response.data['nombre'],
           email: response.data['correo'],
           password: response.data['contrasenia'],
-          userType: response.data['tipo'],
-          photo: Uint8List.fromList(List<int>.from(response.data['foto'][
-              'data'])), // Convierte la foto a Uint8List si es un arreglo de bytes
+          userType: response.data['tipoUsuario'],
+            photo: response.data['foto'] != null
+              ? Uint8List.fromList(List<int>.from(response.data['foto']['data']))
+              : Uint8List(0), // Si no hay foto, crea un Uint8List vacío
           disponibility: response.data['disponibilidad'] == 1,
           location: response.data['ubicacion'] ?? '',
         );
@@ -58,9 +59,11 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
             userId: idUsuario.toString(), token: token, user: userAuth);
         return userAuth;
       } catch (e) {
-        throw Exception('Failed to authenticate user1');
+        print('Failed to authenticate user1');
+        throw Exception('Failed to authenticate user1');        
       }
     } else {
+      print('Failed to authenticate user2');
       throw Exception('Failed to authenticate user2');
     }
   }
@@ -70,7 +73,7 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
 
     try {
       final response = await dioClient.post(
-        '$apiUrl/usuarios',
+        '$apiUrl/users',
         data: userModel.toFormData(),
         options: Options(
           validateStatus: (status) => status! < 500,
@@ -107,14 +110,10 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
       'foto': MultipartFile.fromBytes(photo, filename: 'photo.jpg'),
     });
 
-    String? userId = session.userId;
-    if (userId == null) {
-      throw Exception('User ID is not available');
-    }
 
     try {
       final response = await dioClient.put(
-        '$apiUrl/usuarios/$userId',
+        '$apiUrl/users',
         data: formData,
         options: Options(
           validateStatus: (status) {
@@ -154,13 +153,10 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
 
   @override
   Future<bool> deleteUser() async {
-    String? userId = session.userId;
-    if (userId == null) {
-      throw Exception('User ID is not available');
-    }
+    
     try {
       final response = await dioClient.delete(
-        '$apiUrl/usuarios',
+        '$apiUrl/users',
         options: Options(
           headers: {
             'Content-Type': 'multipart/form-data',
