@@ -4,10 +4,10 @@ import '../../domain/repositories/products_order_repository.dart';
 import '/core/error/failure.dart';
 import '../datasources/order_remote_data_source.dart';
 
-class ProductsOrderRepositoryImpl implements ProductsOrderRepository {
+class OrderRepositoryImpl implements OrderRepository {
   final OrderRemoteDataSource remoteDataSource;
 
-  ProductsOrderRepositoryImpl(this.remoteDataSource);
+  OrderRepositoryImpl(this.remoteDataSource);
 
   @override
   Future<Either<Failure, List<ProductsOrder>>> getPendingOrders() async {

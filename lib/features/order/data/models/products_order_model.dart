@@ -14,15 +14,18 @@ class ProductsOrderModel extends ProductsOrder {
 
   /// Crea una instancia de `ProductsOrderModel` desde un JSON
   factory ProductsOrderModel.fromJson(Map<String, dynamic> json) {
-    return ProductsOrderModel(
-      idPedido: json['idPedido'] as int,
-      estadoPedido: json['estadoPedido'] as String,
-      fechaPedido: DateTime.parse(json['fechaPedido'] as String),
-      idCliente: json['idCliente'] as int,
-      idProducto: json['idProducto'] as int,
-      nombreCliente: json['nombreCliente'] as String,
-    );
-  }
+  return ProductsOrderModel(
+    idPedido: json['idPedido'] as int? ?? 0, // Manejo de null con valor por defecto
+    estadoPedido: json['estadoPedido'] as String? ?? 'Desconocido', // Manejo de null
+    fechaPedido: json['fechaPedido'] != null
+        ? DateTime.parse(json['fechaPedido'] as String)
+        : DateTime.now(), // Manejo de null
+    idCliente: json['idCliente'] as int? ?? 0, // Si no existe, asigna 0
+    idProducto: json['idProducto'] as int? ?? 0, // Si no existe, asigna 0
+    nombreCliente: json['nombreCliente'] as String? ?? 'Sin nombre', // Manejo de null
+  );
+}
+
 
   /// Convierte un `ProductsOrderModel` en un mapa JSON
   Map<String, dynamic> toJson() {

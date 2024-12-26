@@ -54,6 +54,6 @@ class InvalidPriceFailure extends Failure {
   InvalidPriceFailure(super.message);
 }
 
-
-
-
+class NotFoundFailure extends Failure {
+  NotFoundFailure(super.message);
+}

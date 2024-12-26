@@ -172,7 +172,7 @@ class _DrawerListViewState extends State<DrawerListView> {
           title: const Text('Pedidos a entregar'),
           onTap: () {
             Navigator.pop(context);
-            Navigator.pushNamed(context, '/pedidosparaentregar');
+            Navigator.pushNamed(context, '/pendingOrders');
           },
         ),
         ListTile(

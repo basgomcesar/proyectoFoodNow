@@ -43,10 +43,25 @@ class ProductRepositoryImpl implements ProductRepository {
         return Left(UnknownFailure(e.message));
 
       } catch (e, stackTrace) {
-        
+        print(stackTrace);
         return Left(UnknownFailure('Ocurrió un error inesperado.'));
       }
     }
+    
+      @override
+    Future<Either<Failure, Product>> getOrderProduct(int idPedido) async {
+      try {
+        final product = await remoteDataSource.getOrderProduct(idPedido);
+        return Right(product);
+      } on NotFoundFailure catch (e) {
+        return Left(NotFoundFailure(e.message));
+      } on ServerFailure catch (e) {
+        return Left(ServerFailure(e.message));
+      } catch (e) {
+        return Left(UnknownFailure('Ocurrió un error inesperado al obtener el producto del pedido.'));
+      }
+    }
+
 
   }
 

@@ -4,7 +4,7 @@ import 'package:loging_app/features/order/domain/entities/products_order.dart';
 import 'package:loging_app/features/order/domain/repositories/products_order_repository.dart';
 
 class GetPendingOrders {
-  final ProductsOrderRepository orderRepository;
+  final OrderRepository orderRepository;
   const GetPendingOrders(this.orderRepository);
 
   Future<Either<Failure, List<ProductsOrder>>> call() {

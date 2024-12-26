@@ -7,6 +7,7 @@ import '../entities/product.dart';
 
 abstract class ProductRepository {
   Stream<Either<Failure, Product>> getProducts();
-  Future<Either<Failure, bool>> addProduct(Product product);  
+  Future<Either<Failure, bool>> addProduct(Product product);
+  Future<Either<Failure, Product>> getOrderProduct(int idPedido);
 
 }

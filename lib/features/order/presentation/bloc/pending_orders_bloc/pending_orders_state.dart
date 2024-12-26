@@ -13,7 +13,6 @@ final class PendingOrdersSuccess extends PendingOrdersState {
   PendingOrdersSuccess(this.orders);
 }
 
-
 final class PendingOrdersFailure extends PendingOrdersState {
   final String message;
   const PendingOrdersFailure(this.message);

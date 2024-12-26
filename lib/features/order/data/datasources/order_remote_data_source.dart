@@ -54,7 +54,6 @@ class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
           throw ServerFailure('Respuesta del servidor no contiene la clave "pedidos".');
         }
       } else {
-        // Si el código de estado no es 200, manejar el error
         throw ServerFailure(
           'Error al obtener pedidos pendientes. Código: ${response.statusCode}',
         );

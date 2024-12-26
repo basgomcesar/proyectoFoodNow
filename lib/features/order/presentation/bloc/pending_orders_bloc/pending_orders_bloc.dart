@@ -1,8 +1,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:loging_app/features/order/domain/entities/products_order.dart';
 import 'package:loging_app/features/order/domain/use_cases/get_pending_orders.dart';
-import '../../domain/entities/products_order.dart';
 
 part 'pending_orders_event.dart';
 part 'pending_orders_state.dart';

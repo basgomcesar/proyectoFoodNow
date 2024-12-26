@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:loging_app/core/utils/routes.dart';
+import 'package:loging_app/features/order/presentation/bloc/order_details_bloc/order_details_bloc.dart';
 import 'package:loging_app/features/product/presentation/bloc/product_bloc.dart';
-import 'package:loging_app/features/product/presentation/bloc/add_product/add_product_bloc.dart';
 import 'package:loging_app/features/user/presentation/bloc/create_profile/create_profile_bloc.dart';
 import 'package:loging_app/injection_container.dart' as di;
 import 'package:loging_app/features/user/presentation/bloc/edit_profile/edit_profile_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
+import 'features/order/presentation/bloc/pending_orders_bloc/pending_orders_bloc.dart';
 import 'features/product/presentation/bloc/product_offered_bloc/product_offered_bloc.dart';
 import 'features/product/presentation/bloc/product_seller_bloc/products_seller_bloc.dart';
 import 'features/user/presentation/bloc/login_user/login_user_bloc.dart';
@@ -40,12 +40,18 @@ void main() async {
         BlocProvider<UserCubit>(
           create: (_) => UserCubit(),
         ),
-
+        BlocProvider<PendingOrdersBloc>(
+          create: (_) => PendingOrdersBloc(getPendingOrders: di.serviceLocator()),
+        ),
+        BlocProvider<OrderDetailsBloc>(
+          create: (_) => OrderDetailsBloc(getOrderProduct: di.serviceLocator())
+        ),
       ],
       child: const MyApp(),
     ),
   );
 }
+
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});

@@ -21,11 +21,7 @@ class UserRepositoryImpl implements UserRepository {
   @override
   Future<Either<Failure, User>> authenticateUser(String email, String password) async {
     try {
-      print('UserRepositoryImpl: authenticateUser');
-      print('email: $email');
-      print('password: $password');
       final User user = await userRemoteDataSource.authenticateUser(email, password);// Aquí se hace la petición al servidor
-      print('UserRepositoryImpl: authenticateUser: user: $user');
       return Right(user);
     } catch (e) {
       return Left(ServerFailure('Authentication failed'));

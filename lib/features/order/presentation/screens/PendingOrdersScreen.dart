@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:loging_app/features/order/presentation/bloc/pending_orders_bloc.dart';
+import 'package:loging_app/features/order/presentation/bloc/order_details_bloc/order_details_bloc.dart';
+import 'package:loging_app/features/order/presentation/bloc/pending_orders_bloc/pending_orders_bloc.dart';
 import 'package:loging_app/features/order/presentation/screens/OrderDetailsScreen.dart';
+import 'package:loging_app/features/product/domain/use_cases/get_order_product.dart';
 import 'package:loging_app/features/user/presentation/widgets/header_logo.dart';
 import 'package:loging_app/features/order/presentation/widgets/pending_order_item.dart';
 
-class Pedidosaentregarscreen extends StatelessWidget {
-  const Pedidosaentregarscreen({super.key});
+class PendingOrdersScreen extends StatelessWidget {
+  const PendingOrdersScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +33,7 @@ class Pedidosaentregarscreen extends StatelessWidget {
                     if (state is PendingOrdersInitial) {
                       return const Center(child: CircularProgressIndicator());
                     } else if (state is PendingOrdersFailure) {
-                      return Center(child: Text('Error: ${state.message}'));
+                      return Center(child: Text(state.message));
                     } else if (state is PendingOrdersSuccess) {
                       final pedidos = state.orders; // Aquí obtienes la lista
                       return ListView.builder(
@@ -39,13 +41,18 @@ class Pedidosaentregarscreen extends StatelessWidget {
                         itemBuilder: (context, index) {
                           final pedido = pedidos[index];
                           return PendingOrderItem(
-                            pedido: pedido.fechaPedido.toString(),
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => DetallesPedidoScreen(
+                          pedido: pedido.nombreCliente,
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => BlocProvider(
+                                  create: (context) => OrderDetailsBloc(
+                                    getOrderProduct: context.read<GetOrderProduct>(),
+                                  ),
+                                  child: OrderDetailsScreen(
                                     pedido: pedido,
+                                    )
                                   ),
                                 ),
                               );
