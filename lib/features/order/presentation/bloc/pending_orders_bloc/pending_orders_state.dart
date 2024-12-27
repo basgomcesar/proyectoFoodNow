@@ -9,7 +9,7 @@ final class PendingOrdersInitial extends PendingOrdersState {}
 final class PendingOrdersLoading extends PendingOrdersState {}
 
 final class PendingOrdersSuccess extends PendingOrdersState {
-  final List<ProductsOrder> orders;
+  final List<ProductOrder> orders;
   PendingOrdersSuccess(this.orders);
 }
 

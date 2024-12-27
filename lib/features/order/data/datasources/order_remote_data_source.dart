@@ -6,8 +6,7 @@ import 'package:loging_app/features/order/domain/entities/products_order.dart';
 import 'package:loging_app/features/order/data/models/products_order_model.dart';
 
 abstract interface class OrderRemoteDataSource {
-  /// Recupera una lista de pedidos pendientes desde el servidor
-  Future<List<ProductsOrder>> getPendingOrders();
+  Future<List<ProductOrder>> getPendingOrders();
 }
 
 class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
@@ -16,18 +15,16 @@ class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
   final Session session = Session.instance;
 
   @override
-  Future<List<ProductsOrder>> getPendingOrders() async {
+  Future<List<ProductOrder>> getPendingOrders() async {
     try {
-      print('Fetching pending orders from the server...');
       final response = await dioClient.get(
-        '$apiUrl/pedidos/activos/usuario', // Endpoint para pedidos pendientes
+        '$apiUrl/pedidos/activos/usuario',
         options: Options(
           headers: {
             'x-token': session.token, // Token de sesión
           },
         ),
       );
-      print('Response data: ${response.data}'); // Verificar el contenido de la respuesta
 
       if (response.statusCode == 200) {
         if (response.data == null) {

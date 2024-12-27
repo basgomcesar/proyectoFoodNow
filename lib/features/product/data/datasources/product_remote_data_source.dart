@@ -46,7 +46,6 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
 
   @override
   Future<bool> addProduct(ProductModel productModel) async {   
-    print(productModel.toFormData());
 
     try {
       final response = await dioClient.post(
@@ -78,63 +77,66 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
           );
       }
     } catch (e) {
-      print('Error: $e');
       rethrow;
     }
   }
   
     @override
-  Future<Product> getOrderProduct(int idPedido) async {
-    try {
-      print('Fetching product for order ID: $idPedido...');
-      
-      final response = await dioClient.get(
-        '$apiUrl/orderproducts/$idPedido', // Endpoint para obtener producto de un pedido
-        options: Options(
-          headers: {
-            'x-token': session.token, // Token de sesión
-          },
-        ),
-      );
-
-      print('Response data: ${response.data}'); // Log para verificar el contenido de la respuesta
-
-      if (response.statusCode == 200) {
-        if (response.data == null) {
-          throw ServerFailure('La respuesta del servidor es nula.');
-        }
-
-        final Map<String, dynamic> responseData = response.data as Map<String, dynamic>;
-
-        if (responseData.containsKey('productos')) {
-          final productos = responseData['productos'];
-
-          // Comprobamos que 'productos' contiene un producto válido
-          if (productos != null && productos is List && productos.isNotEmpty) {
-            // Asumimos que un pedido tiene un único producto
-            final productJson = productos.first;
-            return ProductModel.fromJson(productJson).toDomain();
-          } else {
-            // Si 'productos' está vacío o no es válido, manejar el error
-            throw ServerFailure('No se encontró un producto válido para el pedido.');
-          }
-        } else {
-          throw ServerFailure('Respuesta del servidor no contiene la clave "productos".');
-        }
-      } else if (response.statusCode == 404) {
-        throw NotFoundFailure('No se encontró un producto para el pedido con ID: $idPedido.');
-      } else {
-        throw ServerFailure(
-          'Error al obtener el producto del pedido. Código: ${response.statusCode}',
+    Future<Product> getOrderProduct(int idPedido) async {
+      try {
+        
+        final response = await dioClient.get(
+          '$apiUrl/products/orderproducts/$idPedido', // Endpoint para obtener producto de un pedido
+          options: Options(
+            headers: {
+              'x-token': session.token, // Token de sesión
+            },
+          ),
         );
+
+        if (response.statusCode == 200) {
+          if (response.data == null) {
+            throw ServerFailure('La respuesta del servidor es nula.');
+          }
+
+          final Map<String, dynamic> responseData = response.data as Map<String, dynamic>;
+
+          // Comprobamos que la clave 'productos' existe y no es nula
+          if (responseData.containsKey('productos') && responseData['productos'] != null) {
+            final productos = responseData['productos'];
+
+            // Comprobamos que 'productos' contiene un producto válido
+            if (productos is List && productos.isNotEmpty) {
+              // Asumimos que un pedido tiene un único producto
+              final productJson = productos.first;
+
+              // Asegurarse de que 'foto' sea manejado si es null
+              if (productJson['foto'] == null) {
+                productJson['foto'] = ''; // O asignar algún valor predeterminado si es necesario
+              }
+
+              // Crear el modelo de producto y devolverlo
+              return ProductModel.fromJsonEsp(productJson).toDomain();
+            } else {
+              throw ServerFailure('No se encontró un producto válido para el pedido.');
+            }
+          } else {
+            throw ServerFailure('Respuesta del servidor no contiene la clave "productos" o es nula.');
+          }
+        } else if (response.statusCode == 404) {
+          throw NotFoundFailure('No se encontró un producto para el pedido con ID: $idPedido.');
+        } else {
+          throw ServerFailure(
+            'Error al obtener el producto del pedido. Código: ${response.statusCode}',
+          );
+        }
+      } on DioException catch (dioError) {
+        print('Error al conectar con el servidor: ${dioError.message}');
+        throw ServerFailure('Error al conectar con el servidor.');
+      } catch (error) {
+        print('Error inesperado: $error');
+        throw ServerFailure('Error inesperado al obtener el producto del pedido.');
       }
-    } on DioException catch (dioError) {
-      print('Error al conectar con el servidor: ${dioError.message}');
-      throw ServerFailure('Error al conectar con el servidor.');
-    } catch (error) {
-      print('Error inesperado: $error');
-      throw ServerFailure('Error inesperado al obtener el producto del pedido.');
     }
-  }
 
 }

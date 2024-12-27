@@ -10,7 +10,7 @@ class OrderRepositoryImpl implements OrderRepository {
   OrderRepositoryImpl(this.remoteDataSource);
 
   @override
-  Future<Either<Failure, List<ProductsOrder>>> getPendingOrders() async {
+  Future<Either<Failure, List<ProductOrder>>> getPendingOrders() async {
     try {
       final orders = await remoteDataSource.getPendingOrders();
       if (orders.isNotEmpty) {

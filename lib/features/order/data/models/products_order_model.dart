@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 
 import '../../domain/entities/products_order.dart';
 
-class ProductsOrderModel extends ProductsOrder {
+class ProductsOrderModel extends ProductOrder {
   ProductsOrderModel({
     required super.idPedido,
     required super.estadoPedido,
@@ -50,8 +50,8 @@ class ProductsOrderModel extends ProductsOrder {
   }
 
   /// Convierte un `ProductsOrderModel` en una entidad del dominio `ProductsOrder`
-  ProductsOrder toDomain() {
-    return ProductsOrder(
+  ProductOrder toDomain() {
+    return ProductOrder(
       idPedido: idPedido,
       estadoPedido: estadoPedido,
       fechaPedido: fechaPedido,
@@ -62,7 +62,7 @@ class ProductsOrderModel extends ProductsOrder {
   }
 
   /// Crea una instancia de `ProductsOrderModel` desde una entidad del dominio `ProductsOrder`
-  factory ProductsOrderModel.fromEntity(ProductsOrder order) {
+  factory ProductsOrderModel.fromEntity(ProductOrder order) {
     return ProductsOrderModel(
       idPedido: order.idPedido,
       estadoPedido: order.estadoPedido,

@@ -1,4 +1,4 @@
-class ProductsOrder {
+class ProductOrder {
   final int idPedido;
   final String estadoPedido;
   final DateTime fechaPedido;
@@ -6,7 +6,7 @@ class ProductsOrder {
   final int idProducto;
   final String nombreCliente;
 
-  ProductsOrder({
+  ProductOrder({
     required this.idPedido,
     required this.estadoPedido,
     required this.fechaPedido,

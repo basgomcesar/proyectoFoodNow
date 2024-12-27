@@ -2,44 +2,47 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loging_app/features/order/domain/entities/products_order.dart';
 import 'package:loging_app/features/order/presentation/bloc/order_details_bloc/order_details_bloc.dart';
-import 'package:loging_app/features/product/domain/entities/product.dart';
-import 'package:loging_app/features/order/presentation/bloc/order_details_bloc/order_details_bloc.dart';
+import 'package:loging_app/features/product/domain/use_cases/get_order_product.dart';
 import 'package:loging_app/features/user/presentation/widgets/header_logo.dart';
+import 'package:loging_app/injection_container.dart';
 
-class OrderDetailsScreen extends StatefulWidget {
-  final ProductsOrder pedido;
+class OrderDetailsScreen extends StatelessWidget {
+  final ProductOrder pedido;
 
   const OrderDetailsScreen({
     super.key,
-    required this.pedido, // Recibe el pedido seleccionado.
+    required this.pedido,
   });
 
   @override
-  State<OrderDetailsScreen> createState() => _OrderDetailsScreenState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (_) => OrderDetailsBloc(
+        getOrderProduct: serviceLocator<GetOrderProduct>(),
+      )..add(GetOrderDetails(pedido.idPedido)),
+      child: OrderDetailsContent(pedido: pedido),
+    );
+  }
 }
 
-class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
-  @override
-  void initState() {
-    super.initState();
-    // Disparamos el evento para obtener los detalles del pedido cuando la pantalla se cargue.
-    context.read<OrderDetailsBloc>().add(GetOrderDetails(widget.pedido.idPedido));
-  }
+class OrderDetailsContent extends StatelessWidget {
+  final ProductOrder pedido;
+
+  const OrderDetailsContent({
+    super.key,
+    required this.pedido,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Detalles del Pedido'),
-      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Encabezado
             LogoHeader(
-              titulo: 'Detalles de Pedido',
+              titulo: 'Pedidos a Entregar',
               onNavigateBack: () => Navigator.pop(context),
             ),
             const SizedBox(height: 16),
@@ -50,19 +53,15 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
             ),
             const SizedBox(height: 8),
             Text(
-              'ID Pedido: ${widget.pedido.idPedido}',
+              'Estado: ${pedido.estadoPedido}',
               style: const TextStyle(fontSize: 16),
             ),
             Text(
-              'Estado: ${widget.pedido.estadoPedido}',
+              'Fecha: ${pedido.fechaPedido.toLocal().toString()}',
               style: const TextStyle(fontSize: 16),
             ),
             Text(
-              'Fecha: ${widget.pedido.fechaPedido.toLocal().toString()}',
-              style: const TextStyle(fontSize: 16),
-            ),
-            Text(
-              'Cliente: ${widget.pedido.nombreCliente}',
+              'Cliente: ${pedido.nombreCliente}',
               style: const TextStyle(fontSize: 16),
             ),
             const SizedBox(height: 20),

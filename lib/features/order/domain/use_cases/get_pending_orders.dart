@@ -7,7 +7,7 @@ class GetPendingOrders {
   final OrderRepository orderRepository;
   const GetPendingOrders(this.orderRepository);
 
-  Future<Either<Failure, List<ProductsOrder>>> call() {
+  Future<Either<Failure, List<ProductOrder>>> call() {
     return orderRepository.getPendingOrders();
   }
 }
