@@ -3,6 +3,7 @@ import 'package:grpc/grpc.dart';
 import 'package:loging_app/features/order/data/datasources/order_remote_data_source.dart';
 import 'package:loging_app/features/order/data/repositories/products_order_repository_impl.dart';
 import 'package:loging_app/features/order/domain/repositories/products_order_repository.dart';
+import 'package:loging_app/features/order/domain/use_cases/get_customer_orders.dart';
 import 'package:loging_app/features/order/domain/use_cases/get_pending_orders.dart';
 import 'package:loging_app/features/product/data/datasources/product_remote_data_source.dart';
 import 'package:loging_app/features/product/data/repositories/product_repository_impl.dart';
@@ -116,5 +117,9 @@ void initInjections() {
 
   serviceLocator.registerLazySingleton<GetPendingOrders>(
     () => GetPendingOrders(serviceLocator<OrderRepository>()),
+  );
+
+  serviceLocator.registerLazySingleton<GetCustomerOrders>(
+    () => GetCustomerOrders(serviceLocator<OrderRepository>()),
   );
 }

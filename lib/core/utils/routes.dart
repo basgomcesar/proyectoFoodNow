@@ -1,5 +1,6 @@
 // core/utils/routes.dart
 import 'package:flutter/material.dart';
+import 'package:loging_app/features/order/presentation/screens/CustomerOrdersScreen.dart';
 import 'package:loging_app/features/user/presentation/screens/HomeScreen.dart';
 import 'package:loging_app/features/user/presentation/screens/LoginScreen.dart';
 import 'package:loging_app/features/user/presentation/screens/CreateProfileScreen.dart';
@@ -13,6 +14,7 @@ class AppRoutes {
   static const String home = '/home';
   static const String editProfile = '/editProfile';
   static const String pendingOrders = '/pendingOrders';
+  static const String customerOrders = '/customerOrders';
   static const String orderDetails = '/orderDetails';
   static const String addProduct = '/addProduct';
 
@@ -23,7 +25,8 @@ class AppRoutes {
       home: (context) => const HomeScreen(email: '',),
       pendingOrders: (context) => const PendingOrdersScreen(),
       editProfile: (context) => const EditProfileScreen(),
-      addProduct: (context) => const AddProductScreen(),  
+      addProduct: (context) => const AddProductScreen(),
+      customerOrders: (context) => const CustomerOrdersScreen(),
     };
   }
 }

@@ -20,6 +20,7 @@ class _DrawerListViewState extends State<DrawerListView> {
   late String userEmail;
   late bool userDisponibility;
   late String userLocation;
+  late String userType;
 
   @override
   void initState() {
@@ -35,7 +36,9 @@ class _DrawerListViewState extends State<DrawerListView> {
       userEmail = user.email;
       userDisponibility = user.disponibility;
       userLocation = user.location;
+      userType = user.userType;
     }
+    print("tipo de usuario: " + userType);
   }
 
   @override
@@ -169,10 +172,11 @@ class _DrawerListViewState extends State<DrawerListView> {
         ),
         ListTile(
           leading: const Icon(Icons.hiking_rounded),
-          title: const Text('Pedidos a entregar'),
+          title: Text(userType == 'Cliente' ? 'Mis pedidos' : 'Pedidos a entregar'),
           onTap: () {
             Navigator.pop(context);
-            Navigator.pushNamed(context, '/pendingOrders');
+            Navigator.pushNamed( context,
+            userType == 'Cliente' ? '/customerOrders' : '/pendingOrders');
           },
         ),
         ListTile(

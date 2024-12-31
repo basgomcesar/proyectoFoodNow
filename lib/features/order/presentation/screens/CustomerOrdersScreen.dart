@@ -1,30 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:loging_app/features/order/domain/use_cases/get_pending_orders.dart';
+import 'package:loging_app/features/order/domain/use_cases/get_customer_orders.dart';
+import 'package:loging_app/features/order/presentation/bloc/customer_orders_bloc/customer_orders_bloc.dart';
 import 'package:loging_app/features/order/presentation/bloc/order_details_bloc/order_details_bloc.dart';
-import 'package:loging_app/features/order/presentation/bloc/pending_orders_bloc/pending_orders_bloc.dart';
 import 'package:loging_app/features/order/presentation/screens/OrderDetailsScreen.dart';
 import 'package:loging_app/features/product/domain/use_cases/get_order_product.dart';
 import 'package:loging_app/features/user/presentation/widgets/header_logo.dart';
 import 'package:loging_app/features/order/presentation/widgets/pending_order_item.dart';
 import 'package:loging_app/injection_container.dart';
 
-class PendingOrdersScreen extends StatelessWidget {
-  const PendingOrdersScreen({super.key});
+class CustomerOrdersScreen extends StatelessWidget {
+  const CustomerOrdersScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => PendingOrdersBloc(
-        getPendingOrders: serviceLocator<GetPendingOrders>(),
-      )..add(OrderGetPendingOrders()), // Añade esta línea para disparar el evento
-      child: const PendingOrdersContent(),
+      create: (_) => CustomerOrdersBloc(
+        getCustomerOrders: serviceLocator<GetCustomerOrders>(),
+      )..add(CustomerGetCustomerOrders()), // Añade esta línea para disparar el evento
+      child: const CustomerOrdersContent(),
     );
   }
 }
 
-class PendingOrdersContent extends StatelessWidget {
-  const PendingOrdersContent({super.key});
+class CustomerOrdersContent extends StatelessWidget {
+  const CustomerOrdersContent({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -35,24 +35,24 @@ class PendingOrdersContent extends StatelessWidget {
           children: [
             // Encabezado
             LogoHeader(
-              titulo: 'Pedidos a Entregar',
+              titulo: 'Pedidos activos',
               onNavigateBack: () => Navigator.pop(context),
             ),
             const SizedBox(height: 16),
             // Lista de pedidos con BlocBuilder
             Expanded(
-              child: BlocBuilder<PendingOrdersBloc, PendingOrdersState>(
+              child: BlocBuilder<CustomerOrdersBloc, CustomerOrdersState>(
                 builder: (context, state) {
-                  if (state is PendingOrdersFailure) {
+                  if (state is CustomerOrdersFailure) {
                     return Center(child: Text(state.message));
-                  } else if (state is PendingOrdersSuccess) {
-                    final pedidos = state.orders;
+                  } else if (state is CustomerOrdersSuccess) {
+                    final pedidos = state.orders; // Aquí obtienes la lista
                     return ListView.builder(
                       itemCount: pedidos.length,
                       itemBuilder: (context, index) {
                         final pedido = pedidos[index];
                         return PendingOrderItem(
-                          pedido: 'Cliente: ${pedido.nombreCliente}',
+                          pedido: 'Vendedor: ${pedido.nombreVendedor}',
                           onTap: () {
                             Navigator.push(
                               context,

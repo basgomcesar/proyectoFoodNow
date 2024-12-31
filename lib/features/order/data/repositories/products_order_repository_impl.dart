@@ -30,4 +30,26 @@ class OrderRepositoryImpl implements OrderRepository {
       return Left(UnknownFailure('Ocurrió un error inesperado.'));
     }
   }
+
+  @override
+  Future<Either<Failure, List<ProductOrder>>> getCustomerOrders() async {
+    try {
+      final orders = await remoteDataSource.getCustomerOrders();
+      if (orders.isNotEmpty) {
+        return Right(orders);
+      } else {
+        return Left(UnknownFailure('No tienes pedidos activos.'));
+      }
+    } on ServerFailure catch (e) {
+      print('Error en el repositorio: ${e.message}');
+      return Left(ServerFailure(e.message));
+    } on UnknownFailure catch (e) {
+      print('Error desconocido en el repositorio: ${e.message}');
+      return Left(UnknownFailure(e.message));
+    } catch (e, stackTrace) {
+      print('Error inesperado en getPendingOrders: $e');
+      print('StackTrace: $stackTrace');
+      return Left(UnknownFailure('Ocurrió un error inesperado.'));
+    }
+  }
 }

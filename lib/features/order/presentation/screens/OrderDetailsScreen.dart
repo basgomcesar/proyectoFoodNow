@@ -39,10 +39,11 @@ class OrderDetailsContent extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Encabezado
             LogoHeader(
-              titulo: 'Pedidos a Entregar',
+              titulo: 'Detalles del pedido',
               onNavigateBack: () => Navigator.pop(context),
             ),
             const SizedBox(height: 16),
@@ -52,20 +53,22 @@ class OrderDetailsContent extends StatelessWidget {
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
-            Text(
-              'Estado: ${pedido.estadoPedido}',
-              style: const TextStyle(fontSize: 16),
+            buildInfoRow('Estado:', pedido.estadoPedido),
+            buildInfoRow(
+              'Fecha:',
+              pedido.fechaPedido.toLocal().toString(),
             ),
-            Text(
-              'Fecha: ${pedido.fechaPedido.toLocal().toString()}',
-              style: const TextStyle(fontSize: 16),
-            ),
-            Text(
-              'Cliente: ${pedido.nombreCliente}',
-              style: const TextStyle(fontSize: 16),
+            buildInfoRow(
+              pedido.nombreCliente == "Sin nombre" ? 'Vendedor:' : 'Cliente:',
+              pedido.nombreCliente == "Sin nombre" ? pedido.nombreVendedor : pedido.nombreCliente,
             ),
             const SizedBox(height: 20),
             // Mostrar detalles del producto
+            const Text(
+              "Detalles del producto:",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
             BlocBuilder<OrderDetailsBloc, OrderDetailsBlocState>(
               builder: (context, state) {
                 if (state is OrderDetailsLoading) {
@@ -76,19 +79,12 @@ class OrderDetailsContent extends StatelessWidget {
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        'Producto: ${product.name}', // Suponiendo que 'name' es el nombre del producto
-                        style: const TextStyle(fontSize: 16),
+                      buildInfoRow('Producto:', product.name),
+                      buildInfoRow(
+                        'Precio:',
+                        '\$${product.price.toStringAsFixed(2)}',
                       ),
-                      Text(
-                        'Precio: \$${product.price.toStringAsFixed(2)}', // Suponiendo que 'price' es el precio del producto
-                        style: const TextStyle(fontSize: 16),
-                      ),
-                      Text(
-                        'Descripción: ${product.description}', // Suponiendo que 'description' es la descripción del producto
-                        style: const TextStyle(fontSize: 16),
-                      ),
-                      // Puedes agregar más campos si es necesario
+                      buildInfoRow('Descripción:', product.description ?? 'Sin descripción'),
                     ],
                   );
                 } else if (state is OrderDetailsFailure) {
@@ -99,9 +95,48 @@ class OrderDetailsContent extends StatelessWidget {
                     ),
                   );
                 } else {
-                  return const SizedBox(); // En caso de que el estado sea el inicial o no esperado
+                  return const SizedBox();
                 }
               },
+            ),
+            const Spacer(),
+            
+            if (pedido.nombreCliente == "Sin nombre")
+              ElevatedButton(
+                onPressed: () {
+                  // Lógica para cancelar el pedido
+                  print('Pedido cancelado'); // Placeholder
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red,
+                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+                ),
+                child: const Text(
+                  'Cancelar pedido',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+                ),
+              ),
+            const SizedBox(height: 16), // Espaciado final
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget buildInfoRow(String title, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      child: RichText(
+        text: TextSpan(
+          style: const TextStyle(fontSize: 16, color: Colors.black),
+          children: [
+            TextSpan(
+              text: title,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+            TextSpan(
+              text: ' $value',
+              style: const TextStyle(fontWeight: FontWeight.normal),
             ),
           ],
         ),

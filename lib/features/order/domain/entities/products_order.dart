@@ -5,6 +5,7 @@ class ProductOrder {
   final int idCliente;
   final int idProducto;
   final String nombreCliente;
+  final String nombreVendedor;
 
   ProductOrder({
     required this.idPedido,
@@ -13,5 +14,6 @@ class ProductOrder {
     required this.idCliente,
     required this.idProducto,
     required this.nombreCliente,
+    required this.nombreVendedor,
   });
 }
