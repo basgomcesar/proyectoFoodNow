@@ -8,9 +8,9 @@ part 'pending_orders_event.dart';
 part 'pending_orders_state.dart';
 
 class PendingOrdersBloc extends Bloc<PendingOrdersEvent, PendingOrdersState> {
-  final GetPendingOrders _getPendingOrders;
+  final GetPendingOrdersUseCase _getPendingOrders;
   PendingOrdersBloc({
-    required GetPendingOrders getPendingOrders,}) 
+    required GetPendingOrdersUseCase getPendingOrders,}) 
     : _getPendingOrders = getPendingOrders, 
     super(PendingOrdersInitial()) {
     on<OrderGetPendingOrders>((event, emit) async {

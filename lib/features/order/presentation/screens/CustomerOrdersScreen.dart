@@ -16,7 +16,7 @@ class CustomerOrdersScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) => CustomerOrdersBloc(
-        getCustomerOrders: serviceLocator<GetCustomerOrders>(),
+        getCustomerOrders: serviceLocator<GetCustomerOrdersUseCase>(),
       )..add(CustomerGetCustomerOrders()), // Añade esta línea para disparar el evento
       child: const CustomerOrdersContent(),
     );

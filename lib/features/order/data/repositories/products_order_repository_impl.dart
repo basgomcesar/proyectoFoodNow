@@ -19,14 +19,10 @@ class OrderRepositoryImpl implements OrderRepository {
         return Left(UnknownFailure('No hay órdenes pendientes.'));
       }
     } on ServerFailure catch (e) {
-      print('Error en el repositorio: ${e.message}');
       return Left(ServerFailure(e.message));
     } on UnknownFailure catch (e) {
-      print('Error desconocido en el repositorio: ${e.message}');
       return Left(UnknownFailure(e.message));
-    } catch (e, stackTrace) {
-      print('Error inesperado en getPendingOrders: $e');
-      print('StackTrace: $stackTrace');
+    } catch (e) {
       return Left(UnknownFailure('Ocurrió un error inesperado.'));
     }
   }
@@ -41,15 +37,35 @@ class OrderRepositoryImpl implements OrderRepository {
         return Left(UnknownFailure('No tienes pedidos activos.'));
       }
     } on ServerFailure catch (e) {
-      print('Error en el repositorio: ${e.message}');
       return Left(ServerFailure(e.message));
     } on UnknownFailure catch (e) {
-      print('Error desconocido en el repositorio: ${e.message}');
       return Left(UnknownFailure(e.message));
-    } catch (e, stackTrace) {
-      print('Error inesperado en getPendingOrders: $e');
-      print('StackTrace: $stackTrace');
+    } catch (e) {
       return Left(UnknownFailure('Ocurrió un error inesperado.'));
     }
   }
+
+  @override
+    Future<Either<Failure, bool>> cancelOrder(int idOrder) async {
+      try {
+        final canceledOrder = await remoteDataSource.cancelOrder(idOrder);
+        return Right(canceledOrder);
+
+      } on DuplicateProductFailure catch (e) {
+        return Left(DuplicateProductFailure(e.message));
+
+      }on InvalidDataFailure catch (e) {
+      return Left(InvalidDataFailure(e.message));
+
+      } on InvalidPriceFailure catch (e) {
+        return Left(InvalidPriceFailure(e.message));
+
+      } on UnknownFailure catch (e) {
+        return Left(UnknownFailure(e.message));
+
+      } catch (e) {
+        return Left(UnknownFailure('Ocurrió un error inesperado.'));
+      }
+    }
+    
 }

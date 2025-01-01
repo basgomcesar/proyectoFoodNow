@@ -16,7 +16,7 @@ class PendingOrdersScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) => PendingOrdersBloc(
-        getPendingOrders: serviceLocator<GetPendingOrders>(),
+        getPendingOrders: serviceLocator<GetPendingOrdersUseCase>(),
       )..add(OrderGetPendingOrders()), // Añade esta línea para disparar el evento
       child: const PendingOrdersContent(),
     );

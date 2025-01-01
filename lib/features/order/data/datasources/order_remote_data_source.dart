@@ -8,6 +8,7 @@ import 'package:loging_app/features/order/data/models/products_order_model.dart'
 abstract interface class OrderRemoteDataSource {
   Future<List<ProductOrder>> getPendingOrders();
   Future<List<ProductOrder>> getCustomerOrders();
+  Future<bool> cancelOrder(int idOrder);
 }
 
 class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
@@ -60,7 +61,6 @@ class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
       print('Error al conectar con el servidor: ${dioError.message}');
       throw ServerFailure('Error al conectar con el servidor.');
     } catch (error) {
-      print('Error inesperado: $error');
       throw ServerFailure('Error inesperado al obtener pedidos pendientes.');
     }
   }
@@ -110,8 +110,35 @@ class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
       print('Error al conectar con el servidor: ${dioError.message}');
       throw ServerFailure('Error al conectar con el servidor.');
     } catch (error) {
-      print('Error inesperado: $error');
       throw ServerFailure('Error inesperado al obtener pedidos pendientes.');
+    }
+  }
+
+  @override
+  Future<bool> cancelOrder(int idOrder) async {
+    try {
+      final response = await dioClient.put(
+        '$apiUrl/orders/cancelorder/$idOrder',
+        options: Options(
+          headers: {
+            'x-token': session.token, // Token de sesión
+          },
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        return true;
+      } else if (response.statusCode == 404) {
+        throw ServerFailure('No se encontró el pedido o no pertenece al usuario autenticado.');
+      } else if (response.statusCode == 400) {
+        throw ServerFailure('No se pudo cancelar el pedido.');
+      } else {
+        throw ServerFailure('Error desconocido al cancelar el pedido.');
+      }
+    } on DioException catch (dioError) {
+      throw ServerFailure('Error al conectar con el servidor. ${dioError.message}');
+    } catch (error) {
+      throw ServerFailure('Error inesperado al cancelar el pedido.');
     }
   }
 }

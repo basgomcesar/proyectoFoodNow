@@ -5,4 +5,5 @@ import '/core/error/failure.dart';
 abstract class OrderRepository {
   Future<Either<Failure, List<ProductOrder>>> getPendingOrders();
   Future<Either<Failure, List<ProductOrder>>> getCustomerOrders();
+  Future<Either<Failure, bool>> cancelOrder(int idOrder);
 }

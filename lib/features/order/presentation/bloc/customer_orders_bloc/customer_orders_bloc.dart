@@ -7,9 +7,9 @@ part 'customer_orders_event.dart';
 part 'customer_orders_state.dart';
 
 class CustomerOrdersBloc extends Bloc<CustomerOrdersEvent, CustomerOrdersState> {
-  final GetCustomerOrders _getCustomerOrders;
+  final GetCustomerOrdersUseCase _getCustomerOrders;
   CustomerOrdersBloc({
-    required GetCustomerOrders getCustomerOrders,}) 
+    required GetCustomerOrdersUseCase getCustomerOrders,}) 
     : _getCustomerOrders = getCustomerOrders, 
     super(CustomerOrdersInitial()) {
     on<CustomerGetCustomerOrders>((event, emit) async {

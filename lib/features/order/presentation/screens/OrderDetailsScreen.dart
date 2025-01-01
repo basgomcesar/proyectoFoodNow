@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loging_app/features/order/domain/entities/products_order.dart';
+import 'package:loging_app/features/order/domain/use_cases/cancel_order.dart';
 import 'package:loging_app/features/order/presentation/bloc/order_details_bloc/order_details_bloc.dart';
 import 'package:loging_app/features/product/domain/use_cases/get_order_product.dart';
 import 'package:loging_app/features/user/presentation/widgets/header_logo.dart';
@@ -25,13 +26,68 @@ class OrderDetailsScreen extends StatelessWidget {
   }
 }
 
-class OrderDetailsContent extends StatelessWidget {
+class OrderDetailsContent extends StatefulWidget {
   final ProductOrder pedido;
 
   const OrderDetailsContent({
     super.key,
     required this.pedido,
   });
+
+  @override
+  State<OrderDetailsContent> createState() => _OrderDetailsContentState();
+}
+
+class _OrderDetailsContentState extends State<OrderDetailsContent> {
+  late String estadoPedido;
+  bool botonHabilitado = true;
+
+  @override
+  void initState() {
+    super.initState();
+    estadoPedido = widget.pedido.estadoPedido; // Estado inicial del pedido
+  }
+
+  Future<bool> showConfirmationDialog(BuildContext context, String title, String content) async {
+    return await showDialog<bool>(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: Text(title),
+              content: Text(content),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(false),
+                  child: const Text('No'),
+                ),
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(true),
+                  child: const Text('Sí'),
+                ),
+              ],
+            );
+          },
+        ) ??
+        false;
+  }
+
+  Future<void> showMessageDialog(BuildContext context, String title, String content) async {
+    return showDialog<void>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(content),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,17 +109,19 @@ class OrderDetailsContent extends StatelessWidget {
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
-            buildInfoRow('Estado:', pedido.estadoPedido),
+            buildInfoRow('Estado:', estadoPedido),
             buildInfoRow(
               'Fecha:',
-              pedido.fechaPedido.toLocal().toString(),
+              widget.pedido.fechaPedido.toLocal().toString(),
             ),
             buildInfoRow(
-              pedido.nombreCliente == "Sin nombre" ? 'Vendedor:' : 'Cliente:',
-              pedido.nombreCliente == "Sin nombre" ? pedido.nombreVendedor : pedido.nombreCliente,
+              widget.pedido.nombreCliente == "Sin nombre" ? 'Vendedor:' : 'Cliente:',
+              widget.pedido.nombreCliente == "Sin nombre"
+                  ? widget.pedido.nombreVendedor
+                  : widget.pedido.nombreCliente,
             ),
             const SizedBox(height: 20),
-            // Mostrar detalles del producto
+            // Detalles del producto
             const Text(
               "Detalles del producto:",
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -75,7 +133,6 @@ class OrderDetailsContent extends StatelessWidget {
                   return const Center(child: CircularProgressIndicator());
                 } else if (state is OrderDetailsSuccess) {
                   final product = state.product;
-
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -100,15 +157,57 @@ class OrderDetailsContent extends StatelessWidget {
               },
             ),
             const Spacer(),
-            
-            if (pedido.nombreCliente == "Sin nombre")
+
+            // Botón para cancelar el pedido
+            if (widget.pedido.nombreCliente == "Sin nombre")
               ElevatedButton(
-                onPressed: () {
-                  // Lógica para cancelar el pedido
-                  print('Pedido cancelado'); // Placeholder
-                },
+                onPressed: botonHabilitado
+                    ? () async {
+                        final confirm = await showConfirmationDialog(
+                          context,
+                          'Confirmación',
+                          '¿Realmente deseas cancelar el pedido?',
+                        );
+
+                        if (!confirm) return;
+
+                        final cancelOrderUseCase = serviceLocator<CancelOrderUseCase>();
+
+                        try {
+                          final result = await cancelOrderUseCase.call(widget.pedido.idPedido);
+
+                          await result.fold(
+                            (failure) async {
+                              await showMessageDialog(
+                                context,
+                                'Error',
+                                'Error al cancelar el pedido: ${failure.message}',
+                              );
+                            },
+                            (success) async {
+                              await showMessageDialog(
+                                context,
+                                'Éxito',
+                                'Pedido cancelado con éxito',
+                              );
+
+                              setState(() {
+                                estadoPedido = 'Cancelado'; // Actualizar estado
+                                botonHabilitado = false; // Deshabilitar botón
+                              });
+                            },
+                          );
+                        } catch (e) {
+                          await showMessageDialog(
+                            context,
+                            'Error inesperado',
+                            'Ocurrió un error inesperado: $e',
+                          );
+                        }
+                      }
+                    : null,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red,
+                  backgroundColor: botonHabilitado ? Colors.red : Colors.grey,
                   padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
                 ),
                 child: const Text(
@@ -116,7 +215,7 @@ class OrderDetailsContent extends StatelessWidget {
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
                 ),
               ),
-            const SizedBox(height: 16), // Espaciado final
+            const SizedBox(height: 16),
           ],
         ),
       ),
