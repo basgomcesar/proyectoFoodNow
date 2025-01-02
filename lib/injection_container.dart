@@ -33,7 +33,7 @@ void initInjections() {
   // Cliente gRPC
   serviceLocator.registerLazySingleton<ClientChannel>( 
     () => ClientChannel(
-      '192.168.100.40',
+      'localhost',
       port: 50051,
       options: const ChannelOptions(credentials: ChannelCredentials.insecure()),
     )
