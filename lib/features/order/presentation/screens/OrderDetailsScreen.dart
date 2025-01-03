@@ -190,11 +190,11 @@ class _OrderDetailsContentState extends State<OrderDetailsContent> {
                                 'Éxito',
                                 'Pedido cancelado con éxito',
                               );
-
-                              setState(() {
+                              Navigator.pushNamed(context, '/home');
+                              /*setState(() {
                                 estadoPedido = 'Cancelado'; // Actualizar estado
                                 botonHabilitado = false; // Deshabilitar botón
-                              });
+                              });*/
                             },
                           );
                         } catch (e) {

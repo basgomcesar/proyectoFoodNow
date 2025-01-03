@@ -10,19 +10,19 @@ class ProductRepositoryImpl implements ProductRepository {
 
   ProductRepositoryImpl(this.remoteDataSource);
 
-  @override
-  Stream<Either<Failure, Product>> getProducts() async* {
-    try {
-      await for (final product in remoteDataSource.getProducts()) {
-        print("product in the repo $product");
-        yield Right(product.toDomain());
+    @override
+    Stream<Either<Failure, Product>> getProducts() async* {
+      try {
+        await for (final product in remoteDataSource.getProducts()) {
+          print("product in the repo $product");
+          yield Right(product.toDomain());
+        }
+      } catch (e) {
+        yield Left(ServerFailure('An error occurred while fetching products'));
       }
-    } catch (e) {
-      yield Left(ServerFailure('An error occurred while fetching products'));
     }
-  }
 
-   @override
+    @override
     Future<Either<Failure, bool>> addProduct(Product product) async {
       try {
         final addedProduct = await remoteDataSource.addProduct(ProductModel.fromEntity(product));
@@ -46,7 +46,7 @@ class ProductRepositoryImpl implements ProductRepository {
       }
     }
     
-      @override
+    @override
     Future<Either<Failure, Product>> getOrderProduct(int idPedido) async {
       try {
         final product = await remoteDataSource.getOrderProduct(idPedido);
@@ -58,6 +58,34 @@ class ProductRepositoryImpl implements ProductRepository {
       } catch (e) {
         return Left(UnknownFailure('Ocurrió un error inesperado al obtener el producto del pedido.'));
       }
+    }
+    
+    @override
+    Future<Either<Failure, bool>>  deleteProduct(int idProduct) async{
+      try {
+        final product = await remoteDataSource.deleteProduct(idProduct);
+        return Right(product);
+      } on NotFoundFailure catch (e) {
+        return Left(NotFoundFailure(e.message));
+      } on ServerFailure catch (e) {
+        return Left(ServerFailure(e.message));
+      } catch (e) {
+        return Left(UnknownFailure('Ocurrió un error inesperado al obtener el producto del pedido.'));
+      }
+    }
+    
+      @override
+      Future<Either<Failure, bool>>  updateProduct(ProductModel updatedProduct) async{
+      try {
+          final product = await remoteDataSource.updateProduct(updatedProduct);
+          return Right(product);
+        } on NotFoundFailure catch (e) {
+          return Left(NotFoundFailure(e.message));
+        } on ServerFailure catch (e) {
+          return Left(ServerFailure(e.message));
+        } catch (e) {
+          return Left(UnknownFailure('Ocurrió un error inesperado al obtener el producto del pedido.'));
+        }
     }
 
 
