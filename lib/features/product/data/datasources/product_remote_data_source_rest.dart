@@ -14,10 +14,10 @@ abstract class ProductRemoteDataSourceRest {
 class ProductRemoteDataSourceRestImpl implements ProductRemoteDataSourceRest {
   final Dio client = Dio(BaseOptions(
   validateStatus: (status) {
-    return status! < 500; // No lanzar excepciones para respuestas con status < 500
+    return status! < 500; 
   },
 ));
-  final String apiUrl = 'http://localhost:3000'; // URL de tu API
+  final String apiUrl = 'http://localhost:3000'; 
   final Session session = Session.instance;
 
   ProductRemoteDataSourceRestImpl();
@@ -40,12 +40,12 @@ class ProductRemoteDataSourceRestImpl implements ProductRemoteDataSourceRest {
 
       final List<ProductGraph> products = productList.map((product) {
         return ProductGraph(
-          name: product['producto'], // name
-          sales: product['cantidad_vendida'],  // sales
+          name: product['producto'],
+          sales: product['cantidad_vendida'],
         );
       }).toList();
 
-      return Right(products); // Retorna la lista en caso de éxito
+      return Right(products); 
     } else {
       return Left(ServerFailure('Failed to fetch products: ${response.statusCode}'));
     }
@@ -55,16 +55,16 @@ class ProductRemoteDataSourceRestImpl implements ProductRemoteDataSourceRest {
   }
 }
 
-  @override
+  
+@override
 Future<Either<Failure, List<Product>>> getProductsSeller(String sellerId) async {
-  final int idSeller = 1;
   try {
     final response = await client.get(
-      '$apiUrl/products/offered/$idSeller',  // Usamos sellerId en la URL
+      '$apiUrl/products/offered/$sellerId',
       options: Options(
         headers: {
           'Content-Type': 'application/json',
-          'x-token': session.token,  // Usamos el token de sesión para la autenticación
+          'x-token': session.token, 
         },
       ),
     );
@@ -74,26 +74,26 @@ Future<Either<Failure, List<Product>>> getProductsSeller(String sellerId) async 
 
       final List<Product> products = productList.map((product) {
         return Product(
-          id: product['producto'],  // id del producto
-          name: product['producto'],  // nombre del producto
-          available: product['disponible'] == 1,  // disponibilidad
-          description: product['descripcion'],  // descripción del producto
-          price: double.parse(product['precio']),  // precio
-          quantityAvailable: product['cantidadDisponible'],  // cantidad disponible
-          photo: product['foto'] != null ? Uint8List.fromList([]) : Uint8List(0),  // foto (si es null, asignamos un array vacío)
-          userId: null,  // Puedes asignar null o cualquier valor que no necesite pasar el userId
+          id: product['idProducto'] ?? '', 
+          name: product['producto'] ?? '', 
+          category: product['categoria'], 
+          available: product['cantidadDisponible'] > 0, 
+          description: product['descripcion'] ?? '', 
+          price: double.tryParse(product['precio'].toString()) ?? 0.0, 
+          quantityAvailable: product['cantidadDisponible'] ?? 0,
+          photo: Uint8List(0), 
+          userId: sellerId, 
         );
       }).toList();
 
-      return Right(products);  // Retorna la lista de productos
+      return Right(products); 
     } else {
-      return Left(ServerFailure('Failed to fetch seller products: ${response.statusCode}'));
+      return Left(ServerFailure(
+          'Failed to fetch seller products: ${response.statusCode} - ${response.statusMessage}'));
     }
   } catch (e) {
     print('Error in getProductsSeller: $e');
     return Left(ServerFailure('Failed to fetch seller products: $e'));
   }
 }
-
-
 }
