@@ -21,10 +21,10 @@ abstract class UserRemoteDataSource {
 
 class UserRemoteDataSourceImpl implements UserRemoteDataSource {
   final Dio dioClient = Dio();
-  final String apiUrl = 'http://localhost:3000'; // URL de tu API
+  final String apiUrl ; // URL de tu API
   final Session session = Session.instance;
 
-  UserRemoteDataSourceImpl();
+  UserRemoteDataSourceImpl({required this.apiUrl});
 
     @override
   Future<UserModel> authenticateUser(String correo, String password) async {    

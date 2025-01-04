@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:dartz/dartz.dart';
+import 'package:loging_app/features/product/domain/entities/product_order.dart';
 import '../../domain/entities/product.dart';
 import '../../domain/repositories/product_repository.dart';
 import '../../../../core/error/failure.dart';
@@ -24,29 +25,36 @@ class ProductRepositoryImpl implements ProductRepository {
     }
   }
 
-   @override
-    Future<Either<Failure, bool>> addProduct(Product product) async {
-      try {
-        final addedProduct = await remoteDataSource.addProduct(ProductModel.fromEntity(product));
-        return Right(addedProduct);
-
-      } on DuplicateProductFailure catch (e) {
-        return Left(DuplicateProductFailure(e.message));
-
-      }on InvalidDataFailure catch (e) {
+  @override
+  Future<Either<Failure, bool>> addProduct(Product product) async {
+    try {
+      final addedProduct =
+          await remoteDataSource.addProduct(ProductModel.fromEntity(product));
+      return Right(addedProduct);
+    } on DuplicateProductFailure catch (e) {
+      return Left(DuplicateProductFailure(e.message));
+    } on InvalidDataFailure catch (e) {
       return Left(InvalidDataFailure(e.message));
-
-      } on InvalidPriceFailure catch (e) {
-        return Left(InvalidPriceFailure(e.message));
-
-      } on UnknownFailure catch (e) {
-        return Left(UnknownFailure(e.message));
-
-      } catch (e, stackTrace) {
-        
-        return Left(UnknownFailure('Ocurrió un error inesperado.'));
-      }
+    } on InvalidPriceFailure catch (e) {
+      return Left(InvalidPriceFailure(e.message));
+    } on UnknownFailure catch (e) {
+      return Left(UnknownFailure(e.message));
+    } catch (e, stackTrace) {
+      return Left(UnknownFailure('Ocurrió un error inesperado.'));
     }
-
   }
 
+  @override
+  Future<Either<Failure, ProductOrder>> placeOrder(
+      Product product, int quantity) async {
+    try {
+      final result = await remoteDataSource.placeOrder(ProductModel.fromEntity(product), quantity);
+      return Right(result as ProductOrder);
+    } on OrderFailure catch (e) {
+      return Left(OrderFailure(e.message));
+    } catch (e, stackTrace) {
+      print("Unexpected error in placeOrder: $e\n$stackTrace");
+      return Left(UnknownFailure('An unexpected error occurred.'));
+    }
+  }
+}
