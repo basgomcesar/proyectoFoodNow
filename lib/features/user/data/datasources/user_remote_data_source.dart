@@ -36,37 +36,55 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
  
   @override
   Future<UserModel> authenticateUser(String correo, String password) async {    
-    final Response response = await client.post(
-      '$apiUrl/auth/login',
-      data: {
-        'correo': correo,
-        'contrasenia': password,
-      },
-      options: Options(headers: {'Content-Type': 'application/json'}),
-    );
-   
- 
-    if (response.statusCode == 200) {
-      try {
-        final idUsuario = response.data['idUsuario'];
-        final token = response.headers['x-token']?.first ?? '';
-        UserModel userAuth = UserModel(
-          name: response.data['nombre'],
-          email: response.data['correo'],
-          password: response.data['contrasenia'],
-          userType: response.data['tipo'],
-          photo: Uint8List.fromList(List<int>.from(response.data['foto']['data'])), // Convierte la foto a Uint8List si es un arreglo de bytes
-          disponibility: response.data['disponibilidad'] == 1, 
-          location: response.data['ubicacion'],
-        );
-        session.startSession(userId: idUsuario.toString(), token: token, user: userAuth);
-        return userAuth;
-      } catch (e) {
-        throw Exception('Failed to authenticate user');
-      }
-    } else {
-      throw Exception('Failed to authenticate user');
+  final Response response = await client.post(
+    '$apiUrl/auth/login',
+    data: {
+      'correo': correo,
+      'contrasenia': password,
+    },
+    options: Options(headers: {'Content-Type': 'application/json'}),
+  );
+
+  if (response.statusCode == 200) {
+    try {
+      // Obtener datos asegurando que no sean null y asignando valores predeterminados
+      final idUsuario = response.data['idUsuario'];
+      final token = response.headers['x-token']?.first ?? '';
+
+      String name = response.data['nombre'] ?? 'Desconocido';
+      String email = response.data['correo'] ?? 'Correo no disponible';
+      String password = response.data['contrasenia'] ?? 'Sin contraseña';
+      Uint8List photo = response.data['foto'] != null
+          ? Uint8List.fromList(List<int>.from(response.data['foto']['data']))
+          : Uint8List(0); // Foto vacía si no está presente
+      String userType = response.data['tipoUsuario'] ?? 'Tipo no especificado';
+      bool disponibility = response.data['disponibilidad'] == 1;
+      String location = response.data['ubicacion'] ?? 'Ubicación no disponible';
+
+      // Construcción del modelo UserModel
+      UserModel userAuth = UserModel(
+        name: name,
+        email: email,
+        password: password,
+        photo: photo,
+        userType: userType,
+        disponibility: disponibility,
+        location: location,
+      );
+
+      // Iniciar sesión
+      session.startSession(userId: idUsuario.toString(), token: token, user: userAuth);
+
+      return userAuth;
+    } catch (e) {
+      print('Error al procesar los datos del usuario: $e');
+      throw Exception('Error al procesar los datos del usuario. Verifica la estructura de la respuesta del servidor.');
     }
+  } else {
+    print('Error de autenticación: Código de estado ${response.statusCode}, respuesta: ${response.data}');
+    throw Exception('Error de autenticación. Código de estado ${response.statusCode}.');
+  }
+
   }
  
 @override

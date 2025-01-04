@@ -20,7 +20,6 @@ class DrawerListView extends StatelessWidget {
     return ListView(
       padding: EdgeInsets.zero,
       children: [
-        // Cabecera personalizada del Drawer
         Container(
           decoration: const BoxDecoration(
             color: Color.fromRGBO(220, 107, 39, 1),
@@ -32,7 +31,6 @@ class DrawerListView extends StatelessWidget {
               Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  // Imagen del perfil
                   CircleAvatar(
                     radius: 40,
                     backgroundImage: image != null
@@ -40,13 +38,12 @@ class DrawerListView extends StatelessWidget {
                         : const AssetImage('assets/images/default_avatar.png'),
                   ),
                   const SizedBox(width: 16),
-                  // Leyenda "Disponible" y "Ubicación"
                  Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [ // Añadido `const` aquí
+                    children: [ 
                       Text(
-                        user!.disponibility ? "Disponible" : "No disponible", // Personaliza el texto
+                        user!.disponibility ? "Disponible" : "No disponible", 
                         style: const TextStyle(
                           color: Colors.green,
                           fontWeight: FontWeight.bold,
@@ -55,7 +52,7 @@ class DrawerListView extends StatelessWidget {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        user!.location, // Leyenda de ubicación
+                        user!.location,
                         style: const TextStyle(
                           color: Colors.white70,
                           fontSize: 14,
@@ -64,8 +61,6 @@ class DrawerListView extends StatelessWidget {
                     ],
                   ),
                 ),
-
-                  // Ícono ">"
                   IconButton(
                     icon: const Icon(
                       Icons.arrow_forward,
@@ -83,7 +78,6 @@ class DrawerListView extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 16),
-              // Información del usuario (centrada hacia la izquierda)
               Align(
                 alignment: Alignment.centerLeft,
                 child: Column(
@@ -110,7 +104,6 @@ class DrawerListView extends StatelessWidget {
             ],
           ),
         ),
-        // Opciones del Drawer
         ListTile(
           leading: const Icon(Icons.person),
           title: const Text('Editar perfil'),
@@ -123,11 +116,11 @@ class DrawerListView extends StatelessWidget {
           leading: const Icon(Icons.gite_rounded),
           title: const Text('Productos'),
           onTap: () {
-            Navigator.pop(context); // Cierra el Drawer
+            Navigator.pop(context); 
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => const ProductOfferedScreen(),
+                builder: (context) => const ProductsOfferedScreen(),
               ),
             );
           },
@@ -154,7 +147,7 @@ class DrawerListView extends StatelessWidget {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => ProductsChartView(), // Aquí se pasa el ID del vendedor
+        builder: (context) => ProductsChartView(), 
       ),
     );
   },
