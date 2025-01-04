@@ -12,8 +12,10 @@ import 'package:loging_app/features/user/domain/repositories/user_repository.dar
 import 'package:loging_app/features/user/domain/use_cases/create_profile_use_case.dart';
 import 'package:loging_app/features/user/domain/use_cases/edit_profile_use_case.dart';
 import 'package:loging_app/features/user/domain/use_cases/login_user_use_case.dart';
+
 import 'features/product/data/datasources/product_remote_data_source_rest.dart';
 import 'features/product/data/repositories/product_repository_rest_impl.dart';
+import 'features/product/domain/repositories/product_offered_repository.dart';
 import 'features/product/domain/repositories/product_rest_repository.dart';
 import 'features/product/domain/use_cases/get_products_offered_use_case.dart';
 import 'features/product/domain/use_cases/get_products_seller_use_case.dart';
@@ -88,6 +90,7 @@ void initInjections() {
 
   // Caso de uso para agregar productos
   serviceLocator.registerLazySingleton<AddProductUseCase>(
+
       () => AddProductUseCase(repository: serviceLocator()));
 
   // Registrar el caso de uso PlaceOrderUseCase

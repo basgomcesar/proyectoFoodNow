@@ -32,9 +32,6 @@ void main() async {
         BlocProvider<ProductBloc>(
           create: (_) => ProductBloc(getProducts: di.serviceLocator()),
         ),
-        BlocProvider<ProductOfferedBloc>(
-          create: (_) => ProductOfferedBloc(getProductsOfferedUseCase: di.serviceLocator()),
-        ),
         BlocProvider<ProductsSellerBloc>(
           create: (_) => ProductsSellerBloc(getProductsSellerUseCase: di.serviceLocator()),
         ),

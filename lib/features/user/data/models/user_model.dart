@@ -9,7 +9,7 @@ class UserModel extends User {
     required super.password,
     required super.photo,
     required super.userType,
-    required super.disponibility,
+    required super.disponibility, 
     required super.location,
   });
 
