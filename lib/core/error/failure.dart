@@ -54,6 +54,11 @@ class InvalidPriceFailure extends Failure {
   InvalidPriceFailure(super.message);
 }
 
+class OrderFailure extends Failure {
+  OrderFailure(super.message);
+}
 
-
+class NetworkFailure extends Failure {
+  NetworkFailure(super.message);
+}
 
