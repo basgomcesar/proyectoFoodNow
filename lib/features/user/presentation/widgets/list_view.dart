@@ -2,6 +2,9 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:loging_app/core/utils/session.dart';
 import 'package:loging_app/features/user/presentation/screens/ChangeAvailabilityScreen.dart';
+import '../../../product/presentation/screens/ProductsOfferedView.dart';
+import '../../../product/presentation/screens/ProductsChartView.dart';
+
 
 class DrawerListView extends StatelessWidget {
   final String email;
@@ -120,7 +123,13 @@ class DrawerListView extends StatelessWidget {
           leading: const Icon(Icons.gite_rounded),
           title: const Text('Productos'),
           onTap: () {
-            Navigator.pop(context);
+            Navigator.pop(context); // Cierra el Drawer
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const ProductOfferedScreen(),
+              ),
+            );
           },
         ),
         ListTile(
@@ -137,6 +146,21 @@ class DrawerListView extends StatelessWidget {
             Navigator.pop(context);
           },
         ),
+        ListTile(
+  leading: const Icon(Icons.hiking_rounded),
+  title: const Text('Estadísticas'),
+  onTap: () {
+    Navigator.pop(context); // Cierra el Drawer
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ProductsChartView(), // Aquí se pasa el ID del vendedor
+      ),
+    );
+  },
+),
+
+
         ListTile(
           leading: const Icon(Icons.info),
           title: const Text('Acerca de'),

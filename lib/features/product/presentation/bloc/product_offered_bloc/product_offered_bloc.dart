@@ -1,55 +1,37 @@
-import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:loging_app/features/product/domain/use_cases/get_products_offered_use_case.dart';
-import '../../../domain/use_cases/get_products.dart';
-import '../../../domain/entities/product.dart';
+import '../../../domain/use_cases/get_products_offered_use_case.dart';
+import 'product_offered_event.dart';
+import 'product_offered_state.dart';
 
-abstract class ProductOfferedState extends Equatable {
-  @override
-  List<Object> get props => [];
-}
+class ProductOfferedBloc extends Bloc<ProductOfferedEvent, ProductOfferedState> {
+  final GetProductsOfferedUseCase getProductsOfferedUseCase;
 
-class ProductInitial extends ProductOfferedState {}
+  ProductOfferedBloc({required this.getProductsOfferedUseCase}) : super(ProductOfferedInitial()) {
+    on<FetchProductsOffered>((event, emit) async {
+      print('Despachando FetchProductsOffered...');
+      emit(ProductOfferedLoading());
 
-class ProductLoading extends ProductOfferedState {}
+      try {
+        // Ejecutar el use case
+        final result = await getProductsOfferedUseCase(event.userId, event.anio, event.mes);
 
-class ProductLoaded extends ProductOfferedState {
-  final List<Product> products;
-  ProductLoaded(this.products);
-
-  @override
-  List<Object> get props => [products];
-}
-
-class ProductError extends ProductOfferedState {
-  final String message;
-  ProductError(this.message);
-
-  @override
-  List<Object> get props => [message];
-}
-
-abstract class ProductEvent extends Equatable {
-  @override
-  List<Object> get props => [];
-}
-
-class FetchProducts extends ProductEvent {}
-
-class ProductBloc extends Bloc<ProductEvent, ProductOfferedState> {
-  final GetProductsOfferedUseCase getProducts;
-
-  ProductBloc({required this.getProducts}) : super(ProductInitial()) {
-    on<FetchProducts>((event, emit) async {
-      emit(ProductLoading());
-
-      // Asumiendo que el 'userId' está disponible en algún lugar, aquí lo pasamos
-      final result = await getProducts.call('userId'); // Pasa el userId aquí correctamente
-
-      result.fold(
-        (failure) => emit(ProductError(failure.message)), // Manejamos el error con el mensaje
-        (products) => emit(ProductLoaded(products)), // Emitimos la lista de productos correctamente
-      );
+        // Verificar el resultado (Either<Failure, List<ProductGraph>>)
+        result.fold(
+          (failure) {
+            // Si es un error (Left), emitir el estado de error
+            print('Error fetching products: $failure');
+            emit(ProductOfferedError('Error fetching products: $failure'));
+          },
+          (products) {
+            // Si es exitoso (Right), emitir los productos
+            emit(ProductOfferedLoaded(products));
+          },
+        );
+      } catch (e) {
+        // En caso de error inesperado
+        print('Unexpected error: $e');
+        emit(ProductOfferedError('Unexpected error: $e'));
+      }
     });
   }
 }

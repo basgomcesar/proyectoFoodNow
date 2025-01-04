@@ -8,6 +8,7 @@ class ProductOfferedScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print('-------- PRODUCTOS OBTENIDOS ------------');
     context.read<ProductBloc>().add(FetchProducts());
     return Scaffold(
       body: BlocBuilder<ProductBloc, ProductState>(
