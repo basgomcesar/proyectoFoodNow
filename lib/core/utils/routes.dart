@@ -12,6 +12,7 @@ class AppRoutes {
   static const String home = '/home';
   static const String editProfile = '/editProfile';
   static const String addProduct = '/addProduct';
+  static const String placeOrder = '/placeOrder';
 
   static Map<String, WidgetBuilder> getRoutes() {
     return {
@@ -19,7 +20,8 @@ class AppRoutes {
       createProfile: (context) => const CreateProfileScreen(),
       home: (context) => const HomeScreen(email: '',),
       editProfile: (context) => const EditProfileScreen(),
-      addProduct: (context) => const AddProductScreen(),  
+      addProduct: (context) => const AddProductScreen(), 
+      placeOrder: (context) => const AddProductScreen(), 
     };
   }
 }

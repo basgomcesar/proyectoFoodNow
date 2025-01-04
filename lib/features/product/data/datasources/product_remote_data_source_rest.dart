@@ -17,10 +17,14 @@ class ProductRemoteDataSourceRestImpl implements ProductRemoteDataSourceRest {
     return status! < 500; 
   },
 ));
+<<<<<<< HEAD
   final String apiUrl = 'http://localhost:3000'; 
+=======
+  final String apiUrl ; // URL de tu API
+>>>>>>> 4dadef35ff2dbe055194684ed926c088a9d7bad3
   final Session session = Session.instance;
 
-  ProductRemoteDataSourceRestImpl();
+  ProductRemoteDataSourceRestImpl({required this.apiUrl});
 
   @override
   Future<Either<Failure, List<ProductGraph>>> getProductsOffered(String userId, String anio, String mes) async {
