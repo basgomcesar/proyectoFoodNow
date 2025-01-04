@@ -32,6 +32,9 @@ class UnknownFailure extends Failure {
 class ConnectionFailure extends Failure {
   ConnectionFailure(super.message);
 }
+class UnauthorizedFailure extends Failure {
+  UnauthorizedFailure(super.message);
+}
 
 //UpdateUserFailure
 class NoDataFailure extends Failure {

@@ -7,10 +7,12 @@ import 'package:image_picker/image_picker.dart';
 
 import 'package:loging_app/core/utils/session.dart';
 import 'package:loging_app/features/user/domain/repositories/user_repository.dart';
+import 'package:loging_app/features/user/domain/use_cases/delete_profile_use_case.dart';
 import 'package:loging_app/features/user/domain/use_cases/edit_profile_use_case.dart';
 import 'package:loging_app/features/user/presentation/bloc/Edit_profile/edit_profile_bloc.dart';
 import 'package:loging_app/features/user/presentation/bloc/Edit_profile/edit_profile_event.dart';
 import 'package:loging_app/features/user/presentation/bloc/Edit_profile/edit_profile_state.dart';
+import 'package:loging_app/features/user/presentation/bloc/delete_profile/delete_profile_bloc.dart';
 import 'package:loging_app/features/user/presentation/widgets/custom_text_field.dart';
 import 'package:loging_app/features/user/presentation/widgets/header_logo.dart';
 import 'package:loging_app/features/user/presentation/widgets/image_display.dart';
@@ -26,7 +28,13 @@ class EditProfileScreen extends StatelessWidget {
       create: (_) => EditProfileBloc(
         editProfileUseCase: serviceLocator<EditProfileUseCase>(),
       ),
+      child: BlocProvider(
+        create: (_) => DeleteProfileBloc(
+          deleteProfileUseCase: serviceLocator<DeleteProfileUseCase>(),
+        ),
+      
       child: const EditProfileContent(),
+      ),
     );
   }
 }

@@ -38,7 +38,6 @@ class AddProductScreen extends StatelessWidget  {
   }
 
   class _AddProductContentState extends State<AddProductContent> {
-  // Inicialización de las variables
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _priceController = TextEditingController();
