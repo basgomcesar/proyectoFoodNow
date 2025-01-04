@@ -1,44 +1,53 @@
 import 'package:dartz/dartz.dart';
 import 'package:loging_app/core/error/failure.dart';
+import 'package:loging_app/features/product/domain/entities/product.dart';
 import 'package:loging_app/features/product/domain/entities/product_graph.dart';
-import 'package:loging_app/features/product/domain/repositories/product_offered_repository.dart';
+import 'package:loging_app/features/product/domain/repositories/product_rest_repository.dart';
 
 import '../datasources/product_remote_data_source_rest.dart';
 
-class ProductOfferedRepositoryRestImpl implements ProductOfferedRepository {
+class ProductRestRepositoryRestImpl implements ProductRestRepository {
   final ProductRemoteDataSourceRest userRemoteDataSourceRest;
 
-  ProductOfferedRepositoryRestImpl(this.userRemoteDataSourceRest);
+  ProductRestRepositoryRestImpl(this.userRemoteDataSourceRest);
 
   @override
   Future<Either<Failure, List<ProductGraph>>> getProductsOffered(String userId, String anio, String mes) async {
     try {
-      // Parámetros fijos para pruebas
-      final fixedUserId = '1';
-      final fixedAnio = '2024';
-      final fixedMes = '12';
-
-      print('UserRepositoryImpl: getProductsOffered');
-      print('Año: $fixedAnio');
-      print('Mes: $fixedMes');
-
-      print('Fetching products for UserId: $fixedUserId, Año: $fixedAnio, Mes: $fixedMes');
-
-      final result = await userRemoteDataSourceRest.getProductsOffered(fixedUserId, fixedAnio, fixedMes);
+      final result = await userRemoteDataSourceRest.getProductsOffered(userId, anio, mes);
 
       return result.fold(
         (failure) {
-          print('Error fetching products: ${failure.toString()}');
-          return Left(failure); // Retorna el error
+          return Left(failure); 
         },
         (products) {
-          print('Fetched products: ${products.length} products retrieved');
-          return Right(products); // Retorna los productos en caso de éxito
+          return Right(products); 
         },
       );
     } catch (e) {
-      print('Exception in getProductsOffered: $e');
       return Left(ServerFailure('Error while fetching products: $e'));
     }
   }
+
+  @override
+Future<Either<Failure, List<Product>>> getProductsSeller(String sellerId) async {
+  try {
+    if (sellerId.isEmpty) {
+      return Left(ServerFailure('Seller ID cannot be empty.'));
+    }
+
+    final result = await userRemoteDataSourceRest.getProductsSeller(sellerId);
+
+    return result.fold(
+      (failure) {
+        return Left(failure); 
+      },
+      (products) {
+        return Right(products); 
+      },
+    );
+  } catch (e) {
+    return Left(ServerFailure('Error while fetching seller products: $e'));
+  }
+}
 }

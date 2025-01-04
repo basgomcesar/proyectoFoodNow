@@ -1,11 +1,10 @@
-import 'dart:convert'; 
-import 'dart:typed_data'; 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loging_app/core/utils/session.dart';
 import '../bloc/product_seller_bloc/products_seller_bloc.dart';
 import '../bloc/product_seller_bloc/products_seller_event.dart';
 import '../bloc/product_seller_bloc/products_seller_state.dart';
+import 'AddProductScreen.dart';
 
 class ProductsOfferedScreen extends StatefulWidget {
   const ProductsOfferedScreen({Key? key}) : super(key: key);
@@ -26,10 +25,6 @@ class _ProductsOfferedScreenState extends State<ProductsOfferedScreen> {
         );
       }
     });
-  }
-
-  Uint8List _base64ToBytes(String base64String) {
-    return base64Decode(base64String);
   }
 
   void _showErrorDialog(String message) {
@@ -75,9 +70,6 @@ class _ProductsOfferedScreenState extends State<ProductsOfferedScreen> {
               itemCount: products.length,
               itemBuilder: (context, index) {
                 final product = products[index];
-
-                final photoBytes = product.photo;
-
                 return Card(
                   margin: const EdgeInsets.symmetric(vertical: 8.0),
                   shape: RoundedRectangleBorder(
@@ -86,36 +78,23 @@ class _ProductsOfferedScreenState extends State<ProductsOfferedScreen> {
                   elevation: 4.0,
                   child: ListTile(
                     contentPadding: const EdgeInsets.all(16.0),
-                    leading: (product.photo.isNotEmpty)
-                        ? ClipRRect(
-                            borderRadius: BorderRadius.circular(8.0),
-                            child: Image.memory(
-                              product.photo, 
-                              width: 50,
-                              height: 50,
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) {
-                                return const Icon(
-                                  Icons.image_not_supported,
-                                  size: 50,
-                                );
-                              },
-                            ),
-                          )
-                        : ClipRRect(
-                            borderRadius: BorderRadius.circular(8.0),
-                            child: Image.asset(
-                              'assets/dish.png',
-                              width: 50,
-                              height: 50,
-                              fit: BoxFit.cover,
-                            ),
-                          ),
+                    leading: ClipRRect(
+                      borderRadius: BorderRadius.circular(8.0),
+                      child: Image.asset(
+                        'assets/dish.png',  
+                        width: 50,
+                        height: 50,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
                     title: Text(
                       product.name,
                       style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
-                    subtitle: Text('Disponible: ${product.quantityAvailable} unidades'),
+                    subtitle: Text(
+                      'Categoría: ${product.category}\nDisponible: ${product.quantityAvailable} unidades',
+                      style: const TextStyle(fontSize: 12),
+                    ),
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -123,15 +102,18 @@ class _ProductsOfferedScreenState extends State<ProductsOfferedScreen> {
                           icon: const Icon(Icons.delete),
                           onPressed: () {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('Eliminar ${product.name}')),
+                              SnackBar(content: Text('Eliminar ${product.name}')) ,
                             );
                           },
                         ),
                         IconButton(
                           icon: const Icon(Icons.edit),
                           onPressed: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('Modificar ${product.name}')),
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => AddProductScreen(),
+                              ),
                             );
                           },
                         ),

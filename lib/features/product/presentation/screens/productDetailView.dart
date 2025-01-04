@@ -86,7 +86,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
               minValue: 1,
               maxValue: product.quantityAvailable,
               axis: Axis.horizontal,
-                itemWidth: MediaQuery.of(context).size.width / 3, 
+              itemWidth: MediaQuery.of(context).size.width / 3,
               onChanged: (value) {
                 setState(() {
                   currentValue = value;
@@ -105,7 +105,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                   onPressed: () {
                     setState(() {
                       final newValue = currentValue - 1;
-                      currentValue = newValue.clamp(1, product.quantityAvailable);
+                      currentValue =
+                          newValue.clamp(1, product.quantityAvailable);
                     });
                   },
                 ),
@@ -115,14 +116,14 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                   onPressed: () {
                     setState(() {
                       final newValue = currentValue + 1;
-                      currentValue = newValue.clamp(1, product.quantityAvailable);
+                      currentValue =
+                          newValue.clamp(1, product.quantityAvailable);
                     });
                   },
                 ),
               ],
             ),
             ButtonsOptions()
-
           ],
         ),
       ),
@@ -137,7 +138,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.white,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(30),
               side: const BorderSide(color: Color.fromARGB(255, 255, 0, 0)),
             ),
           ),
@@ -147,12 +148,18 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
           child: const Text('Cancelar'),
         ),
         ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.red,
+            foregroundColor: Colors.white,
+          ),
           onPressed: () {
-            // Buy now
+            // Add to cart,
+
           },
           child: const Text('Pedir producto'),
         ),
       ],
     );
   }
+
 }

@@ -17,8 +17,8 @@ import 'dart:typed_data';
 
 import 'package:loging_app/injection_container.dart'; // Para trabajar con Uint8List
 
-class CreateProfile extends StatelessWidget  {
-  const CreateProfile({super.key});
+class CreateProfileScreen extends StatelessWidget  {
+  const CreateProfileScreen({super.key});
 
  
 //escucha pantalla
@@ -83,17 +83,49 @@ Widget build(BuildContext context) {
   // BlocListener escucha el estado del BLoC y muestra un mensaje de error o éxito 
   return BlocListener<CreateProfileBloc, CreateProfileState>(
     listener: (context, state) {
-      if (state is CreateProfileStateSucess) {
-        //Muestra mensaje de éxito   
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Perfil creado correctamente')),
-        );     
-      } else if (state is CreateProfileStateFailure) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(state.error)),
-        );
-      }
-    },
+  if (state is CreateProfileStateSucess) {
+
+    Navigator.of(context, rootNavigator: true).pop();
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Perfil creado correctamente')),
+    );
+
+    // Limpia los campos después de enviar
+    _nameController.clear();
+    _emailController.clear();
+    _passwordController.clear();
+    setState(() {
+      _selectedUserType = null;
+      _profileImageBytes = null;
+    });
+
+  } else if (state is DuplicateEmailFailureState) {
+    Navigator.of(context, rootNavigator: true).pop();
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('El correo electrónico ya está en uso.')),
+    );
+  } else if (state is InvalidDataFailureState) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Los datos ingresados no son válidos. Intenta nuevamente.')),
+    );
+  } else if (state is CreateProfileStateFailureState) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(state.error)),
+    );
+  }else if (state is CreateProfileStateLoading) {
+      // Mostrar diálogo de carga
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        },
+      );
+    }
+}
+,
     child: Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -212,22 +244,18 @@ Widget build(BuildContext context) {
             email: _emailController.text,
             password: _passwordController.text,
             userType: _selectedUserType!,
-            profileImage: _profileImageBytes!,  // Aquí enviamos la imagen en base64       
+            photo: _profileImageBytes!,  // Aquí enviamos la imagen en base64       
              disponibility: _isAvailable,     
+             location: '',  
           ),          
-        );
-
-        // Limpia los campos después de enviar
-        _nameController.clear();
-        _emailController.clear();
-        _passwordController.clear();
-        setState(() {
-          _selectedUserType = null;
-          _profileImageBytes = null;
-        });
+        );        
       }
     },
     child: const Text('Crear Perfil'),
+    style: ElevatedButton.styleFrom(
+      backgroundColor: Color(0xFFDC6B27),  // Color de fondo del botón
+      foregroundColor: Colors.white,
+    ),
   );
 }
 

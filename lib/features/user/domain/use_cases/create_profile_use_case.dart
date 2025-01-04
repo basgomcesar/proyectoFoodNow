@@ -11,8 +11,8 @@ class CreateProfileUseCase {
 
   CreateProfileUseCase({required this.repository});
 
-  Future<Either<Failure, User>> call(String name, String email, String password, String userType, Uint8List profileImage, bool disponibility) async {      
-    return await repository.createUser(name, email, password, userType, profileImage, disponibility);      
+  Future<Either<Failure, bool>> call(User user) async {      
+    return await repository.createUser(user);      
   }  
   
 }

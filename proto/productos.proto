@@ -20,5 +20,5 @@ message ProductUpdateResponse {
   bool available = 6;                   
   bytes photo = 7;                      
   string user_id = 8;                   
-  string status = 9;                    
+  string status = 9;     
 }
