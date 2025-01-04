@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
@@ -53,7 +52,7 @@ class _EditProfileContentState extends State<EditProfileContent> {
   Uint8List? _profileImageBytes;
 
   final _formKey = GlobalKey<FormState>();
-  
+
   @override
   void initState() {
     super.initState();
@@ -92,25 +91,25 @@ class _EditProfileContentState extends State<EditProfileContent> {
   }
 
   void _updateProfile() {
-  if (_profileImageBytes == null) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Por favor, selecciona una imagen de perfil')),
-    );
-    return;
-  }
+    if (_profileImageBytes == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text('Por favor, selecciona una imagen de perfil')),
+      );
+      return;
+    }
 
-  if (_formKey.currentState?.validate() == true) {
-    context.read<EditProfileBloc>().add(
-      EditProfileButtonPressed(
-        name: _nameController.text,
-        email: _emailController.text,
-        password: _passwordController.text,
-        profileImage: _profileImageBytes!,
-      ),
-    );
+    if (_formKey.currentState?.validate() == true) {
+      context.read<EditProfileBloc>().add(
+            EditProfileButtonPressed(
+              name: _nameController.text,
+              email: _emailController.text,
+              password: _passwordController.text,
+              profileImage: _profileImageBytes!,
+            ),
+          );
+    }
   }
-}
-
 
   void _deleteProfile() {
     showDialog(
@@ -134,7 +133,8 @@ class _EditProfileContentState extends State<EditProfileContent> {
                 Session.instance.endSession();
                 Navigator.pushNamed(context, '/login');
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Perfil eliminado exitosamente')),
+                  const SnackBar(
+                      content: Text('Perfil eliminado exitosamente')),
                 );
               } catch (e) {
                 ScaffoldMessenger.of(context).showSnackBar(
@@ -159,10 +159,9 @@ class _EditProfileContentState extends State<EditProfileContent> {
           );
           // Cierra la sesión y navega al login después de un retraso
           Future.delayed(const Duration(seconds: 1), () {
-                Session.instance.endSession();
-                Navigator.pushReplacementNamed(context, '/login');
-              });
-
+            Session.instance.endSession();
+            Navigator.pushReplacementNamed(context, '/login');
+          });
         } else if (state is EditProfileStateFailure) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(state.error)),
@@ -190,8 +189,9 @@ class _EditProfileContentState extends State<EditProfileContent> {
                   CustomTextField(
                     controller: _nameController,
                     labelText: 'Nombre',
-                    validator: (value) =>
-                        value == null || value.isEmpty ? 'Por favor, ingresa tu nombre' : null,
+                    validator: (value) => value == null || value.isEmpty
+                        ? 'Por favor, ingresa tu nombre'
+                        : null,
                   ),
                   const SizedBox(height: 16),
                   CustomTextField(

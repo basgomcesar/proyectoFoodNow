@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:loging_app/core/utils/routes.dart';
+import 'package:loging_app/features/product/presentation/bloc/placer_order/place_order_bloc.dart';
 import 'package:loging_app/features/product/presentation/bloc/product_bloc.dart';
 import 'package:loging_app/features/product/presentation/bloc/add_product/add_product_bloc.dart';
 import 'package:loging_app/features/user/presentation/bloc/create_profile/create_profile_bloc.dart';
@@ -31,14 +32,14 @@ void main() async {
         BlocProvider<ProductBloc>(
           create: (_) => ProductBloc(getProducts: di.serviceLocator()),
         ),
-        BlocProvider<ProductOfferedBloc>(
-          create: (_) => ProductOfferedBloc(getProductsOfferedUseCase: di.serviceLocator()),
-        ),
         BlocProvider<ProductsSellerBloc>(
           create: (_) => ProductsSellerBloc(getProductsSellerUseCase: di.serviceLocator()),
         ),
         BlocProvider<UserCubit>(
           create: (_) => UserCubit(),
+        ),
+         BlocProvider<PlaceOrderBloc>(
+          create: (_) => PlaceOrderBloc(di.serviceLocator()), 
         ),
 
       ],
