@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loging_app/features/order/domain/entities/products_order.dart';
 import 'package:loging_app/features/order/domain/use_cases/cancel_order.dart';
+import 'package:loging_app/features/order/domain/use_cases/confirm_order.dart';
 import 'package:loging_app/features/order/presentation/bloc/order_details_bloc/order_details_bloc.dart';
 import 'package:loging_app/features/product/domain/use_cases/get_order_product.dart';
 import 'package:loging_app/features/user/presentation/widgets/header_logo.dart';
@@ -229,10 +230,10 @@ class _OrderDetailsContentState extends State<OrderDetailsContent> {
 
                         if (!confirm) return;
 
-                        final cancelOrderUseCase = serviceLocator<CancelOrderUseCase>();
+                        final confirmOrderUseCase = serviceLocator<ConfirmOrderUseCase>();
 
                         try {
-                          final result = await cancelOrderUseCase.call(widget.pedido.idPedido);
+                          final result = await confirmOrderUseCase.call(widget.pedido.idPedido);
 
                           await result.fold(
                             (failure) async {

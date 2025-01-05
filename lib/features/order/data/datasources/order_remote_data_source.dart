@@ -9,6 +9,8 @@ abstract interface class OrderRemoteDataSource {
   Future<List<ProductOrder>> getPendingOrders();
   Future<List<ProductOrder>> getCustomerOrders();
   Future<bool> cancelOrder(int idOrder);
+
+  confirmOrder(int idOrder) {}
 }
 
 class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
@@ -139,6 +141,35 @@ class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
       throw ServerFailure('Error al conectar con el servidor. ${dioError.message}');
     } catch (error) {
       throw ServerFailure('Error inesperado al cancelar el pedido.');
+    }
+  }
+  
+  @override
+  Future<bool> confirmOrder(int idOrder) async {
+       try {
+        print("EN confirmar orde>>>>>>>>>>");  
+      final response = await dioClient.put(
+        '$apiUrl/orders/confirmOrder/$idOrder',
+        options: Options(
+          headers: {
+            'x-token': session.token, // Token de sesión
+          },
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        return true;
+      } else if (response.statusCode == 404) {
+        throw ServerFailure('No se encontró el pedido o no pertenece al usuario autenticado.');
+      } else if (response.statusCode == 400) {
+        throw ServerFailure('No se pudo confirmar el pedido.');
+      } else {
+        throw ServerFailure('Error desconocido al confirmar el pedido.');
+      }
+    } on DioException catch (dioError) {
+      throw ServerFailure('Error al conectar con el servidor. ${dioError.message}');
+    } catch (error) {
+      throw ServerFailure('Error inesperado al confirmar el pedido.');
     }
   }
 }
