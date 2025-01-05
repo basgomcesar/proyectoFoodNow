@@ -103,12 +103,10 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
 
         final Map<String, dynamic> responseData =
             response.data as Map<String, dynamic>;
-
         // Comprobamos que la clave 'productos' existe y no es nula
         if (responseData.containsKey('productos') &&
             responseData['productos'] != null) {
           final productos = responseData['productos'];
-
           // Comprobamos que 'productos' contiene un producto válido
           if (productos is List && productos.isNotEmpty) {
             // Asumimos que un pedido tiene un único producto
@@ -119,7 +117,6 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
               productJson['foto'] =
                   ''; // O asignar algún valor predeterminado si es necesario
             }
-
             // Crear el modelo de producto y devolverlo
             return ProductModel.fromJsonEsp(productJson).toDomain();
           } else {

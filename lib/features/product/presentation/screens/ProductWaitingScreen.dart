@@ -48,6 +48,7 @@ class _ProductWaitingScreenContent extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Detalles de la orden'),
         centerTitle: true,
+        automaticallyImplyLeading: false,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -122,6 +123,20 @@ class _ProductWaitingScreenContent extends StatelessWidget {
               child: Text(
                 productOrder.sellerLocation, // Usando información del `ProductOrder`.
                 style: const TextStyle(fontSize: 16),
+              ),
+            ),
+            const SizedBox(height: 40),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/home');
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.orange, // Color del botón
+                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+              ),
+              child: const Text(
+                'OK',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
             ),
           ],

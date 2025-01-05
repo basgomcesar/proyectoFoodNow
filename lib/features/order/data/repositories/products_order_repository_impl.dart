@@ -46,26 +46,38 @@ class OrderRepositoryImpl implements OrderRepository {
   }
 
   @override
-    Future<Either<Failure, bool>> cancelOrder(int idOrder) async {
-      try {
-        final canceledOrder = await remoteDataSource.cancelOrder(idOrder);
-        return Right(canceledOrder);
-
-      } on DuplicateProductFailure catch (e) {
-        return Left(DuplicateProductFailure(e.message));
-
-      }on InvalidDataFailure catch (e) {
+  Future<Either<Failure, bool>> cancelOrder(int idOrder) async {
+    try {
+      final canceledOrder = await remoteDataSource.cancelOrder(idOrder);
+      return Right(canceledOrder);
+    } on DuplicateProductFailure catch (e) {
+      return Left(DuplicateProductFailure(e.message));
+    } on InvalidDataFailure catch (e) {
       return Left(InvalidDataFailure(e.message));
-
-      } on InvalidPriceFailure catch (e) {
-        return Left(InvalidPriceFailure(e.message));
-
-      } on UnknownFailure catch (e) {
-        return Left(UnknownFailure(e.message));
-
-      } catch (e) {
-        return Left(UnknownFailure('Ocurrió un error inesperado.'));
-      }
+    } on InvalidPriceFailure catch (e) {
+      return Left(InvalidPriceFailure(e.message));
+    } on UnknownFailure catch (e) {
+      return Left(UnknownFailure(e.message));
+    } catch (e) {
+      return Left(UnknownFailure('Ocurrió un error inesperado.'));
     }
-    
+  }
+
+  @override
+  Future<Either<Failure, bool>> confirmOrder(int idOrder) async {
+    try {
+      final confirmedOrder = await remoteDataSource.confirmOrder(idOrder);
+      return Right(confirmedOrder);
+    } on DuplicateProductFailure catch (e) {
+      return Left(DuplicateProductFailure(e.message));
+    } on InvalidDataFailure catch (e) {
+      return Left(InvalidDataFailure(e.message));
+    } on InvalidPriceFailure catch (e) {
+      return Left(InvalidPriceFailure(e.message));
+    } on UnknownFailure catch (e) {
+      return Left(UnknownFailure(e.message));
+    } catch (e) {
+      return Left(UnknownFailure('Ocurrió un error inesperado.'));
+    }
+  }
 }
