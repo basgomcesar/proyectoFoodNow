@@ -137,6 +137,7 @@ class _OrderDetailsContentState extends State<OrderDetailsContent> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       buildInfoRow('Producto:', product.name),
+                      buildInfoRow('Cantidad:', widget.pedido.cantidad.toString()),
                       buildInfoRow(
                         'Precio:',
                         '\$${product.price.toStringAsFixed(2)}',
