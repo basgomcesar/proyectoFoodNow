@@ -49,7 +49,7 @@ class ProductRepositoryImpl implements ProductRepository {
       Product product, int quantity) async {
     try {
       final result = await remoteDataSource.placeOrder(ProductModel.fromEntity(product), quantity);
-      return Right(result as ProductOrder);
+      return Right(result.toEntity());
     } on OrderFailure catch (e) {
       return Left(OrderFailure(e.message));
     } catch (e, stackTrace) {

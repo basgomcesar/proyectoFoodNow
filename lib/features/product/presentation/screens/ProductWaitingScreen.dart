@@ -1,24 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:loging_app/features/product/domain/entities/product.dart';
 import 'package:loging_app/features/product/domain/entities/product_order.dart';
 import 'package:loging_app/features/product/presentation/bloc/placer_order/place_order_bloc.dart';
 import 'package:loging_app/features/product/presentation/bloc/placer_order/place_order_state.dart';
 
-class ProductWaitingscreen extends StatelessWidget {
-  
+class ProductWaitingScreen extends StatelessWidget {
+  final ProductOrder productOrder;
 
-  const ProductWaitingscreen(ProductOrder productOrder, {super.key});
+  const ProductWaitingScreen({required this.productOrder, Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    //aqui se muestra el estado de la orden en espera
     return BlocBuilder<PlaceOrderBloc, PlaceOrderState>(
       builder: (context, state) {
         if (state is PlaceOrderInitial) {
-          return const Center(
-            //child: CircularProgressIndicator(),
-            child: _ProductWaitingScreenContent(),
+          return Center(
+            child: _ProductWaitingScreenContent(productOrder: productOrder),
           );
         } else if (state is PlaceOrderError) {
           return Center(
@@ -38,26 +35,26 @@ class ProductWaitingscreen extends StatelessWidget {
       },
     );
   }
-
-
 }
 
 class _ProductWaitingScreenContent extends StatelessWidget {
-  const _ProductWaitingScreenContent({Key? key}) : super(key: key);
+  final ProductOrder productOrder;
+
+  const _ProductWaitingScreenContent({required this.productOrder, Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Detalles del producto'),
+        title: const Text('Detalles de la orden'),
         centerTitle: true,
       ),
-      body: const Padding(
-        padding: EdgeInsets.all(16.0),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Row(
+            const Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Icon(
@@ -79,8 +76,8 @@ class _ProductWaitingScreenContent extends StatelessWidget {
                 ),
               ],
             ),
-            SizedBox(height: 40),
-            Row(
+            const SizedBox(height: 40),
+            const Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Icon(
@@ -95,16 +92,16 @@ class _ProductWaitingScreenContent extends StatelessWidget {
                 ),
               ],
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Padding(
-              padding: EdgeInsets.only(left: 40),
+              padding: const EdgeInsets.only(left: 40),
               child: Text(
-                'Nombre vendedor',
-                style: TextStyle(fontSize: 16),
+                productOrder.sellerName, // Usando información del `ProductOrder`.
+                style: const TextStyle(fontSize: 16),
               ),
             ),
-            SizedBox(height: 24),
-            Row(
+            const SizedBox(height: 24),
+            const Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Icon(
@@ -119,12 +116,12 @@ class _ProductWaitingScreenContent extends StatelessWidget {
                 ),
               ],
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Padding(
-              padding: EdgeInsets.only(left: 40),
+              padding: const EdgeInsets.only(left: 40),
               child: Text(
-                'Ubicación del vendedor',
-                style: TextStyle(fontSize: 16),
+                productOrder.sellerLocation, // Usando información del `ProductOrder`.
+                style: const TextStyle(fontSize: 16),
               ),
             ),
           ],

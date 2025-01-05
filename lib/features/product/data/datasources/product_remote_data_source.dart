@@ -91,8 +91,8 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
       final response = await dioClient.post(
         '$apiUrl/orders',
         data: {
-          'product_id': product.id,
-          'quantity': quantity,
+          'idProducto': product.id,
+          'cantidad': quantity,
         },
         options: Options(
           headers: {
@@ -104,7 +104,8 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
 
       switch (response.statusCode) {
         case 201:
-          return ProductOrderModel.fromJson(response.data); // Orden creada exitosamente
+          print(response.data);
+          return ProductOrderModel.fromJson(response.data['order']); // Orden creada exitosamente
         case 400:
           throw InvalidDataFailure('Datos inválidos enviados al servidor.');
         case 404:
