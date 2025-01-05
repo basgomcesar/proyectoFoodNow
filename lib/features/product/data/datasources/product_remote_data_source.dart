@@ -103,7 +103,8 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
 
         final Map<String, dynamic> responseData =
             response.data as Map<String, dynamic>;
-
+        print(responseData);
+        print("Print despues de la respuesta");
         // Comprobamos que la clave 'productos' existe y no es nula
         if (responseData.containsKey('productos') &&
             responseData['productos'] != null) {
