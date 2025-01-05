@@ -11,6 +11,7 @@ class ProductsOrderModel extends ProductOrder {
     required super.idProducto,
     required super.nombreCliente,
     required super.nombreVendedor,
+    required super.cantidad,
   });
 
   /// Crea una instancia de `ProductsOrderModel` desde un JSON
@@ -22,6 +23,7 @@ class ProductsOrderModel extends ProductOrder {
         ? DateTime.parse(json['fechaPedido'] as String)
         : DateTime.now(), // Manejo de null
     idCliente: json['idCliente'] as int? ?? 0,
+    cantidad: json['cantidad'] as int? ?? 0,
     idProducto: json['idProducto'] as int? ?? 0,
     nombreCliente: json['nombreCliente'] as String? ?? 'Sin nombre',
     nombreVendedor: json['nombreVendedor'] as String? ?? 'Sin nombre',
@@ -61,6 +63,7 @@ class ProductsOrderModel extends ProductOrder {
       idProducto: idProducto,
       nombreCliente: nombreCliente,
       nombreVendedor: nombreVendedor,
+      cantidad: cantidad,
     );
   }
 
@@ -74,6 +77,7 @@ class ProductsOrderModel extends ProductOrder {
       idProducto: order.idProducto,
       nombreCliente: order.nombreCliente,
       nombreVendedor: order.nombreVendedor,
+      cantidad: order.cantidad,
     );
   }
 }
