@@ -51,7 +51,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreenContent> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => ProductWaitingscreen(state.order),
+              builder: (context) => ProductWaitingScreen(productOrder: state.order),
             ),
           );
         } else if (state is PlaceOrderDelivered) {

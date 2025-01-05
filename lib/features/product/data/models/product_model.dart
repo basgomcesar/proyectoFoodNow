@@ -76,8 +76,6 @@ class ProductModel extends Product {
     });
   }
 
-
-
   /// Convierte un `ProductModel` en una entidad del dominio `Product`
   Product toDomain() {
     return Product(
@@ -106,6 +104,27 @@ class ProductModel extends Product {
       category: product.category,
     );
   }
+
+  factory ProductModel.fromJsonEsp(Map<String, dynamic> json) {
+    return ProductModel(
+      id: (json['idProducto'] as int?)?.toString() ?? '',  // 'idProducto' es int en la API, lo convertimos a String
+      name: json['nombre'] as String? ?? 'Sin nombre',  // 'nombre' en la API -> 'name' en el modelo
+      category: json['categoria'] as String? ?? 'Sin categoría',  // 'categoria' en la API -> 'category' en el modelo
+      description: json['descripcion'] as String? ?? 'Sin descripción',  // 'descripcion' en la API -> 'description' en el modelo
+      price: double.tryParse(json['precio'].toString()) ?? 0.0,  // Convertir 'precio' de String a double
+      quantityAvailable: json['cantidadDisponible'] as int? ?? 0,  // 'cantidadDisponible' en la API -> 'quantityAvailable' en el modelo
+      available: (json['disponible'] as int?) == 1,  // 'disponible' en la API es int (1 o 0) -> bool
+      // Manejar foto como un String (por ejemplo, URL) o como una lista de enteros (por ejemplo, base64)
+      photo: json['foto'] is String
+          ? Uint8List(0) // Si 'foto' es un String, asigna un valor predeterminado vacío
+          : (json['foto'] as List<dynamic>?)?.cast<int>().isNotEmpty ?? false
+              ? Uint8List.fromList((json['foto'] as List<dynamic>).cast<int>())
+              : Uint8List(0),  // Si 'foto' es una lista de enteros, conviértelo a Uint8List
+      userId: (json['idUsuario'] as int?)?.toString() ?? '',  // 'idUsuario' es int en la API, lo convertimos a String
+    );
+  }
+
+
 
 
 }

@@ -17,7 +17,7 @@ class ProductRemoteDataSourceRestImpl implements ProductRemoteDataSourceRest {
     return status! < 500; 
   },
 ));
-  final String apiUrl = 'http://localhost:3000'; 
+  final String apiUrl; 
   final Session session = Session.instance;
 
   ProductRemoteDataSourceRestImpl({required this.apiUrl});
