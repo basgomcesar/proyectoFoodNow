@@ -43,10 +43,10 @@ class _DrawerListViewState extends State<DrawerListView> {
 
   @override
   Widget build(BuildContext context) {
+    final user = Session.instance.user; // Garantizar que user esté cargado
     return ListView(
       padding: EdgeInsets.zero,
       children: [
-        // Cabecera personalizada del Drawer
         Container(
           decoration: const BoxDecoration(
             color: Color.fromRGBO(220, 107, 39, 1),
@@ -58,7 +58,6 @@ class _DrawerListViewState extends State<DrawerListView> {
               Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  // Imagen del perfil
                   CircleAvatar(
                     radius: 40,
                     backgroundImage: image != null
@@ -66,13 +65,14 @@ class _DrawerListViewState extends State<DrawerListView> {
                         : const AssetImage('assets/images/default_avatar.png'),
                   ),
                   const SizedBox(width: 16),
-                  // Leyenda "Disponible" y "Ubicación"
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          userDisponibility ? "Disponible" : "No disponible",
+                          user != null && user.disponibility
+                              ? "Disponible"
+                              : "No disponible",
                           style: const TextStyle(
                             color: Colors.green,
                             fontWeight: FontWeight.bold,
@@ -81,7 +81,7 @@ class _DrawerListViewState extends State<DrawerListView> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          userLocation,
+                          user?.location ?? 'Ubicación no disponible',
                           style: const TextStyle(
                             color: Colors.white70,
                             fontSize: 14,
@@ -90,8 +90,6 @@ class _DrawerListViewState extends State<DrawerListView> {
                       ],
                     ),
                   ),
-
-                  // Ícono ">"
                   IconButton(
                     icon: const Icon(
                       Icons.arrow_forward,
@@ -105,7 +103,6 @@ class _DrawerListViewState extends State<DrawerListView> {
                           builder: (context) => const ChangeAvailability(),
                         ),
                       ).then((_) {
-                        // Recargar datos del usuario al regresar
                         setState(() {
                           _loadUserData();
                         });
@@ -141,7 +138,6 @@ class _DrawerListViewState extends State<DrawerListView> {
             ],
           ),
         ),
-        // Opciones del Drawer
         ListTile(
           leading: const Icon(Icons.person),
           title: const Text('Editar perfil'),
@@ -154,7 +150,7 @@ class _DrawerListViewState extends State<DrawerListView> {
           leading: const Icon(Icons.gite_rounded),
           title: const Text('Productos vendedor'),
           onTap: () {
-            Navigator.pop(context); // Cierra el Drawer
+            Navigator.pop(context);
             Navigator.push(
               context,
               MaterialPageRoute(
@@ -183,7 +179,7 @@ class _DrawerListViewState extends State<DrawerListView> {
           leading: const Icon(Icons.hiking_rounded),
           title: const Text('Estadísticas'),
           onTap: () {
-            Navigator.pop(context); // Cierra el Drawer
+            Navigator.pop(context); 
             Navigator.push(
               context,
               MaterialPageRoute(
@@ -201,39 +197,37 @@ class _DrawerListViewState extends State<DrawerListView> {
         ),
         const Divider(),
         ListTile(
-        leading: const Icon(Icons.logout),
-        title: const Text('Cerrar Sesión'),
-        onTap: () {
-          // Mostrar un diálogo de confirmación antes de cerrar sesión
-          showDialog(
-            context: context,
-            builder: (context) => AlertDialog(
-              title: const Text('Cerrar Sesión'),
-              content: const Text('¿Estás seguro de que deseas cerrar sesión?'),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.pop(context); // Cerrar el diálogo sin hacer nada
-                  },
-                  child: const Text('Cancelar'),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(context); 
-                    Session.instance.endSession();
-                    Navigator.pushReplacementNamed(context, '/login');
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Sesión cerrada correctamente')),
-                    );
-                  },
-                  child: const Text('Cerrar Sesión'),
-                ),
-              ],
-            ),
-          );
-        },
-      ),
-
+          leading: const Icon(Icons.logout),
+          title: const Text('Cerrar Sesión'),
+          onTap: () {
+            showDialog(
+              context: context,
+              builder: (context) => AlertDialog(
+                title: const Text('Cerrar Sesión'),
+                content: const Text('¿Estás seguro de que deseas cerrar sesión?'),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pop(context); 
+                    },
+                    child: const Text('Cancelar'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      Session.instance.endSession();
+                      Navigator.pushReplacementNamed(context, '/login');
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Sesión cerrada correctamente')),
+                      );
+                    },
+                    child: const Text('Cerrar Sesión'),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
       ],
     );
   }

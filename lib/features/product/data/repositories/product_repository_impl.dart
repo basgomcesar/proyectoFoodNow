@@ -1,4 +1,5 @@
 import 'package:dartz/dartz.dart';
+import 'package:loging_app/features/product/domain/entities/product_order.dart';
 import '../../domain/entities/product.dart';
 import '../../domain/repositories/product_repository.dart';
 import '../../../../core/error/failure.dart';
@@ -21,6 +22,7 @@ class ProductRepositoryImpl implements ProductRepository {
         yield Left(ServerFailure('An error occurred while fetching products'));
       }
     }
+
 
     @override
     Future<Either<Failure, bool>> addProduct(Product product) async {
@@ -89,5 +91,18 @@ class ProductRepositoryImpl implements ProductRepository {
     }
 
 
-  }
 
+  @override
+  Future<Either<Failure, ProductOrder>> placeOrder(
+      Product product, int quantity) async {
+    try {
+      final result = await remoteDataSource.placeOrder(ProductModel.fromEntity(product), quantity);
+      return Right(result.toEntity());
+    } on OrderFailure catch (e) {
+      return Left(OrderFailure(e.message));
+    } catch (e, stackTrace) {
+      print("Unexpected error in placeOrder: $e\n$stackTrace");
+      return Left(UnknownFailure('An unexpected error occurred.'));
+    }
+  }
+  }

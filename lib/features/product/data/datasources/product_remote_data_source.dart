@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:loging_app/core/error/failure.dart';
 import 'package:loging_app/core/utils/session.dart';
+import 'package:loging_app/features/product/data/models/product_order_model.dart';
 import 'package:loging_app/features/product/domain/entities/product.dart';
 
 import '../models/product_model.dart';
@@ -15,16 +16,18 @@ abstract class ProductRemoteDataSource {
   Future<Product> getOrderProduct(int idOrder);
   Future<bool> updateProduct(ProductModel updatedProduct);
   Future<bool> deleteProduct(int idProduct);
+  Future<ProductOrderModel> placeOrder(ProductModel productModel, int quantity);
+  
 }
 
 class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
   final ClientChannel channel;
   late final ProductServiceClient client;
   final Dio dioClient = Dio();
-  final String apiUrl = 'http://localhost:3000'; // URL de tu API
+  final String apiUrl ; // URL de tu API
   final Session session = Session.instance;
 
-  ProductRemoteDataSourceImpl(this.channel) {
+  ProductRemoteDataSourceImpl(this.channel,{required this.apiUrl}) {
     client = ProductServiceClient(channel);
   }
 
@@ -80,7 +83,7 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
       rethrow;
     }
   }
-
+  
   @override
   Future<Product> getOrderProduct(int idPedido) async {
     try {
@@ -211,5 +214,42 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
     } catch (error) {
       throw ServerFailure('Error inesperado al actualizar el producto. $error');
     }
+  }@override
+  Future<ProductOrderModel> placeOrder(Product product, int quantity) async {
+    try {
+      final response = await dioClient.post(
+        '$apiUrl/orders',
+        data: {
+          'idProducto': product.id,
+          'cantidad': quantity,
+        },
+        options: Options(
+          headers: {
+            'x-token': session.token,
+          },
+          validateStatus: (status) => status! < 500,
+        ),
+      );
+
+      switch (response.statusCode) {
+        case 201:
+          print(response.data);
+          return ProductOrderModel.fromJson(response.data['order']); // Orden creada exitosamente
+        case 400:
+          throw InvalidDataFailure('Datos inválidos enviados al servidor.');
+        case 404:
+          throw OrderFailure('Producto no encontrado.');
+        case 500:
+          throw ServerFailure('Error en el servidor. Inténtalo más tarde.');
+        default:
+          throw UnknownFailure(
+            'Error desconocido: ${response.statusCode}',
+          );
+      }
+    } catch (e) {
+      print('Error en placeOrder: $e');
+      rethrow;
+    }
   }
+
 }

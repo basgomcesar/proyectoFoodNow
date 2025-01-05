@@ -17,6 +17,7 @@ class AppRoutes {
   static const String customerOrders = '/customerOrders';
   static const String orderDetails = '/orderDetails';
   static const String addProduct = '/addProduct';
+  static const String placeOrder = '/placeOrder';
 
   static Map<String, WidgetBuilder> getRoutes() {
     return {
@@ -27,6 +28,8 @@ class AppRoutes {
       editProfile: (context) => const EditProfileScreen(),
       addProduct: (context) => const AddProductScreen(),
       customerOrders: (context) => const CustomerOrdersScreen(),
+      addProduct: (context) => const AddProductScreen(), 
+      placeOrder: (context) => const AddProductScreen(), 
     };
   }
 }

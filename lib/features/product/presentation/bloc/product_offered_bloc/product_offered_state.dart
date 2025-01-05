@@ -26,4 +26,5 @@ class ProductOfferedError extends ProductOfferedState {
 
   @override
   List<Object> get props => [message];
+
 }

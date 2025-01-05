@@ -57,3 +57,11 @@ class InvalidPriceFailure extends Failure {
 class NotFoundFailure extends Failure {
   NotFoundFailure(super.message);
 }
+class OrderFailure extends Failure {
+  OrderFailure(super.message);
+}
+
+class NetworkFailure extends Failure {
+  NetworkFailure(super.message);
+}
+
