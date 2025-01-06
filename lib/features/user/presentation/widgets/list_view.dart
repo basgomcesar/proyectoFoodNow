@@ -20,6 +20,7 @@ class _DrawerListViewState extends State<DrawerListView> {
   late String userEmail;
   late bool userDisponibility;
   late String userLocation;
+  late String userType;
 
   @override
   void initState() {
@@ -35,7 +36,9 @@ class _DrawerListViewState extends State<DrawerListView> {
       userEmail = user.email;
       userDisponibility = user.disponibility;
       userLocation = user.location;
+      userType = user.userType;
     }
+    print("tipo de usuario: " + userType);
   }
 
   @override
@@ -157,37 +160,26 @@ class _DrawerListViewState extends State<DrawerListView> {
           },
         ),
         ListTile(
-          leading: const Icon(Icons.directions_run),
-          title: const Text('Pedidos a recoger'),
-          onTap: () {
-            Navigator.pop(context);
-          },
-        ),
-        ListTile(
           leading: const Icon(Icons.hiking_rounded),
-          title: const Text('Pedidos a entregar'),
+          title: Text(
+              userType == 'Cliente' ? 'Mis pedidos' : 'Pedidos a entregar'),
           onTap: () {
             Navigator.pop(context);
+            Navigator.pushNamed(context,
+                userType == 'Cliente' ? '/customerOrders' : '/pendingOrders');
           },
         ),
         ListTile(
           leading: const Icon(Icons.hiking_rounded),
           title: const Text('Estadísticas'),
           onTap: () {
-            Navigator.pop(context); 
+            Navigator.pop(context);
             Navigator.push(
               context,
               MaterialPageRoute(
                 builder: (context) => const ProductsChartView(),
               ),
             );
-          },
-        ),
-        ListTile(
-          leading: const Icon(Icons.info),
-          title: const Text('Acerca de'),
-          onTap: () {
-            Navigator.pop(context);
           },
         ),
         const Divider(),
@@ -199,11 +191,12 @@ class _DrawerListViewState extends State<DrawerListView> {
               context: context,
               builder: (context) => AlertDialog(
                 title: const Text('Cerrar Sesión'),
-                content: const Text('¿Estás seguro de que deseas cerrar sesión?'),
+                content:
+                    const Text('¿Estás seguro de que deseas cerrar sesión?'),
                 actions: [
                   TextButton(
                     onPressed: () {
-                      Navigator.pop(context); 
+                      Navigator.pop(context);
                     },
                     child: const Text('Cancelar'),
                   ),
@@ -213,7 +206,8 @@ class _DrawerListViewState extends State<DrawerListView> {
                       Session.instance.endSession();
                       Navigator.pushReplacementNamed(context, '/login');
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Sesión cerrada correctamente')),
+                        const SnackBar(
+                            content: Text('Sesión cerrada correctamente')),
                       );
                     },
                     child: const Text('Cerrar Sesión'),

@@ -1,10 +1,20 @@
 import 'package:get_it/get_it.dart';
 import 'package:grpc/grpc.dart';
+import 'package:loging_app/features/order/data/datasources/order_remote_data_source.dart';
+import 'package:loging_app/features/order/data/repositories/products_order_repository_impl.dart';
+import 'package:loging_app/features/order/domain/repositories/products_order_repository.dart';
+import 'package:loging_app/features/order/domain/use_cases/cancel_order.dart';
+import 'package:loging_app/features/order/domain/use_cases/confirm_order.dart';
+import 'package:loging_app/features/order/domain/use_cases/get_customer_orders.dart';
+import 'package:loging_app/features/order/domain/use_cases/get_pending_orders.dart';
 import 'package:loging_app/features/product/data/datasources/product_remote_data_source.dart';
 import 'package:loging_app/features/product/data/repositories/product_repository_impl.dart';
 import 'package:loging_app/features/product/domain/repositories/product_repository.dart';
 import 'package:loging_app/features/product/domain/use_cases/add_product_use_case.dart';
+import 'package:loging_app/features/product/domain/use_cases/delete_product_use_case.dart';
+import 'package:loging_app/features/product/domain/use_cases/get_order_product.dart';
 import 'package:loging_app/features/product/domain/use_cases/get_products.dart';
+import 'package:loging_app/features/product/domain/use_cases/update_product_use_case.dart';
 import 'package:loging_app/features/product/domain/use_cases/place_order_use_case.dart';
 import 'package:loging_app/features/user/data/datasources/user_remote_data_source.dart';
 import 'package:loging_app/features/user/data/repositories/user_repository_impl.dart';
@@ -96,4 +106,42 @@ void initInjections() {
   // Registrar el caso de uso PlaceOrderUseCase
   serviceLocator.registerLazySingleton<PlaceOrderUseCase>(
       () => PlaceOrderUseCase(repository: serviceLocator<ProductRepository>()));
+
+  serviceLocator.registerLazySingleton<GetOrderProduct>(
+    () => GetOrderProduct(repository : serviceLocator())
+  );
+  
+  serviceLocator.registerLazySingleton<OrderRemoteDataSource>(
+    () => OrderRemoteDataSourceImpl()
+  );
+
+  serviceLocator.registerLazySingleton<OrderRepository>(
+    () => OrderRepositoryImpl(serviceLocator())
+  );
+
+  serviceLocator.registerLazySingleton<GetPendingOrdersUseCase>(
+    () => GetPendingOrdersUseCase(serviceLocator<OrderRepository>()),
+  );
+
+  serviceLocator.registerLazySingleton<GetCustomerOrdersUseCase>(
+    () => GetCustomerOrdersUseCase(serviceLocator<OrderRepository>()),
+  );
+
+  serviceLocator.registerLazySingleton<CancelOrderUseCase>(
+  () => CancelOrderUseCase(repository: serviceLocator()),
+  );
+
+    serviceLocator.registerLazySingleton<ConfirmOrderUseCase>(
+  () => ConfirmOrderUseCase(repository: serviceLocator()),
+  );
+
+  serviceLocator.registerLazySingleton<UpdateProductUseCase>(
+    () => UpdateProductUseCase(repository: serviceLocator()),
+  );
+
+  serviceLocator.registerLazySingleton<DeleteProductUseCase>(
+    () => DeleteProductUseCase(repository: serviceLocator()),
+  );
+
+
 }
