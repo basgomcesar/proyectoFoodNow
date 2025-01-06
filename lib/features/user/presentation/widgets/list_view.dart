@@ -43,6 +43,8 @@ class _DrawerListViewState extends State<DrawerListView> {
 
   @override
   Widget build(BuildContext context) {
+    final userTypeProduct = Session.instance.user?.userType;
+
     final user = Session.instance.user; // Garantizar que user esté cargado
     return ListView(
       padding: EdgeInsets.zero,
@@ -146,19 +148,21 @@ class _DrawerListViewState extends State<DrawerListView> {
             Navigator.pushNamed(context, '/editProfile');
           },
         ),
-        ListTile(
-          leading: const Icon(Icons.gite_rounded),
-          title: const Text('Productos vendedor'),
-          onTap: () {
-            Navigator.pop(context);
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const ProductsOfferedScreen(),
-              ),
-            );
-          },
-        ),
+        if (userType == 'Vendedor')
+          ListTile(
+            leading: const Icon(Icons.gite_rounded),
+            title: const Text('Productos vendedor'),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const ProductsOfferedScreen(),
+                ),
+              );
+            },
+          ),
+
         ListTile(
           leading: const Icon(Icons.hiking_rounded),
           title: Text(
@@ -169,7 +173,10 @@ class _DrawerListViewState extends State<DrawerListView> {
                 userType == 'Cliente' ? '/customerOrders' : '/pendingOrders');
           },
         ),
-        ListTile(
+
+        
+        if (userType == 'Vendedor')
+          ListTile(
           leading: const Icon(Icons.hiking_rounded),
           title: const Text('Estadísticas'),
           onTap: () {
@@ -182,6 +189,8 @@ class _DrawerListViewState extends State<DrawerListView> {
             );
           },
         ),
+
+        
         const Divider(),
         ListTile(
           leading: const Icon(Icons.logout),
