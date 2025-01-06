@@ -21,7 +21,7 @@ abstract class UserRemoteDataSource {
 
 class UserRemoteDataSourceImpl implements UserRemoteDataSource {
   final Dio dioClient = Dio();
-  final String apiUrl ; // URL de tu API
+  final String apiUrl;
   final Session session = Session.instance;
 
   UserRemoteDataSourceImpl({required this.apiUrl});
