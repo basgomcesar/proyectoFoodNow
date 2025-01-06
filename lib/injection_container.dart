@@ -28,6 +28,7 @@ import 'features/product/data/repositories/product_repository_rest_impl.dart';
 import 'features/product/domain/repositories/product_rest_repository.dart';
 import 'features/product/domain/use_cases/get_products_offered_use_case.dart';
 import 'features/product/domain/use_cases/get_products_seller_use_case.dart';
+import 'features/product/presentation/bloc/product_offered_bloc/product_offered_bloc.dart';
 import 'features/user/domain/use_cases/update_availability_use_case.dart';
 
 final serviceLocator = GetIt.instance;
@@ -71,6 +72,10 @@ void initInjections() {
 
   serviceLocator.registerLazySingleton<ProductRemoteDataSourceRest>(() =>
         ProductRemoteDataSourceRestImpl(apiUrl: apiUrl));
+
+serviceLocator.registerLazySingleton<ProductOfferedBloc>(() =>
+    ProductOfferedBloc(getProductsOfferedUseCase: serviceLocator<GetProductsOfferedUseCase>()));
+
 
   // Repositorio de productos (REST)
   serviceLocator.registerLazySingleton<ProductRestRepository>(() =>
