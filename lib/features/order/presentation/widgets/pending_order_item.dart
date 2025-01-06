@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class PendingOrderItem extends StatelessWidget {
   final String pedido;
-  final VoidCallback onTap; // Función para manejar el clic.
+  final VoidCallback onTap;
 
   const PendingOrderItem({
     super.key,
@@ -17,7 +17,7 @@ class PendingOrderItem extends StatelessWidget {
       child: ListTile(
         title: Text(pedido),
         trailing: const Icon(Icons.arrow_forward),
-        onTap: onTap, // Llama a la función cuando se toca el pedido.
+        onTap: onTap,
       ),
     );
   }
