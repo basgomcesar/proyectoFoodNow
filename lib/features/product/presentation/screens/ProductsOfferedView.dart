@@ -17,14 +17,13 @@ class _ProductsOfferedScreenState extends State<ProductsOfferedScreen> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final session = Session.instance;
-      if (session.userId != null) {
-        BlocProvider.of<ProductsSellerBloc>(context).add(
-          FetchProductsSeller(session.userId!),
-        );
-      }
-    });
+    final session = Session.instance;
+    if (session.userId != null) {
+      // Realiza la llamada a la API directamente en initState
+      BlocProvider.of<ProductsSellerBloc>(context).add(
+        FetchProductsSeller(session.userId!),
+      );
+    }
   }
 
   void _showErrorDialog(String message) {
@@ -81,7 +80,7 @@ class _ProductsOfferedScreenState extends State<ProductsOfferedScreen> {
                     leading: ClipRRect(
                       borderRadius: BorderRadius.circular(8.0),
                       child: Image.asset(
-                        'assets/dish.png',  
+                        'assets/dish.png',  // Aquí puedes cambiar por la foto si la tienes
                         width: 50,
                         height: 50,
                         fit: BoxFit.cover,
@@ -92,7 +91,7 @@ class _ProductsOfferedScreenState extends State<ProductsOfferedScreen> {
                       style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
                     subtitle: Text(
-                      'Categoría: ${product.category}\nDisponible: ${product.quantityAvailable} unidades',
+                      'Categoría: ${product.category ?? 'N/A'}\nDisponible: ${product.quantityAvailable} unidades\nPrecio: \$${product.price.toStringAsFixed(2)}',
                       style: const TextStyle(fontSize: 12),
                     ),
                     trailing: Row(
@@ -102,7 +101,7 @@ class _ProductsOfferedScreenState extends State<ProductsOfferedScreen> {
                           icon: const Icon(Icons.delete),
                           onPressed: () {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('Eliminar ${product.name}')) ,
+                              SnackBar(content: Text('Eliminar ${product.name}')),
                             );
                           },
                         ),

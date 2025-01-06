@@ -25,7 +25,6 @@ import 'package:loging_app/features/user/domain/use_cases/login_user_use_case.da
 
 import 'features/product/data/datasources/product_remote_data_source_rest.dart';
 import 'features/product/data/repositories/product_repository_rest_impl.dart';
-import 'features/product/domain/repositories/product_offered_repository.dart';
 import 'features/product/domain/repositories/product_rest_repository.dart';
 import 'features/product/domain/use_cases/get_products_offered_use_case.dart';
 import 'features/product/domain/use_cases/get_products_seller_use_case.dart';
@@ -40,108 +39,81 @@ Future<void> init() async {
 
 void initInjections() {
   // Repositorio de usuarios
-  serviceLocator.registerLazySingleton<UserRepository>(
-      () => UserRepositoryImpl(serviceLocator()));
+  serviceLocator.registerLazySingleton<UserRepository>(() => UserRepositoryImpl(serviceLocator()));
 
   // Cliente gRPC
   serviceLocator.registerLazySingleton<ClientChannel>(() => ClientChannel(
-        'localhost',
-        port: 50051,
-        options:
-            const ChannelOptions(credentials: ChannelCredentials.insecure()),
-      ));
+    'localhost',
+    port: 50051,
+    options: const ChannelOptions(credentials: ChannelCredentials.insecure()),
+  ));
 
   // DataSource para productos (gRPC)
   serviceLocator.registerLazySingleton<ProductRemoteDataSource>(() =>
-      ProductRemoteDataSourceImpl(serviceLocator<ClientChannel>(),
-          apiUrl: apiUrl));
+      ProductRemoteDataSourceImpl(serviceLocator<ClientChannel>(), apiUrl: apiUrl));
 
   // DataSource para usuarios
-  serviceLocator.registerLazySingleton<UserRemoteDataSource>(
-      () => UserRemoteDataSourceImpl(apiUrl : apiUrl));
+  serviceLocator.registerLazySingleton<UserRemoteDataSource>(() => UserRemoteDataSourceImpl(apiUrl: apiUrl));
 
   // Casos de uso para usuarios
-  serviceLocator.registerLazySingleton<LoginUserUseCase>(
-      () => LoginUserUseCase(repository: serviceLocator()));
-  serviceLocator.registerLazySingleton<CreateProfileUseCase>(
-      () => CreateProfileUseCase(repository: serviceLocator()));
-  serviceLocator.registerLazySingleton<EditProfileUseCase>(
-      () => EditProfileUseCase(repository: serviceLocator()));
-  serviceLocator.registerLazySingleton<UpdateAvailabilityUseCase>(
-      () => UpdateAvailabilityUseCase(repository: serviceLocator()));
+  serviceLocator.registerLazySingleton<LoginUserUseCase>(() => LoginUserUseCase(repository: serviceLocator()));
+  serviceLocator.registerLazySingleton<CreateProfileUseCase>(() => CreateProfileUseCase(repository: serviceLocator()));
+  serviceLocator.registerLazySingleton<EditProfileUseCase>(() => EditProfileUseCase(repository: serviceLocator()));
+  serviceLocator.registerLazySingleton<UpdateAvailabilityUseCase>(() => UpdateAvailabilityUseCase(repository: serviceLocator()));
 
   // Repositorio de productos (gRPC)
-  serviceLocator.registerLazySingleton<ProductRepository>(
-      () => ProductRepositoryImpl(serviceLocator<ProductRemoteDataSource>()));
+  serviceLocator.registerLazySingleton<ProductRepository>(() =>
+      ProductRepositoryImpl(serviceLocator<ProductRemoteDataSource>()));
 
   // Caso de uso para obtener productos (gRPC)
-  serviceLocator.registerLazySingleton<GetProducts>(
-      () => GetProducts(repository: serviceLocator<ProductRepository>()));
+  serviceLocator.registerLazySingleton<GetProducts>(() =>
+      GetProducts(repository: serviceLocator<ProductRepository>()));
 
-  // DataSource para productos (REST)
-  /*serviceLocator.registerLazySingleton<ProductRemoteDataSourceRest>(
-      () => ProductRemoteDataSourceRestImpl(apiUrl: apiUrl)
-  );*/
+  serviceLocator.registerLazySingleton<ProductRemoteDataSourceRest>(() =>
+        ProductRemoteDataSourceRestImpl(apiUrl: apiUrl));
 
   // Repositorio de productos (REST)
   serviceLocator.registerLazySingleton<ProductRestRepository>(() =>
-      ProductRestRepositoryRestImpl(
-          serviceLocator<ProductRemoteDataSourceRest>()));
+      ProductRestRepositoryRestImpl(serviceLocator<ProductRemoteDataSourceRest>()));
 
   // Casos de uso para obtener productos ofrecidos (REST)
   serviceLocator.registerLazySingleton<GetProductsOfferedUseCase>(() =>
-      GetProductsOfferedUseCase(
-          repositoryProduct: serviceLocator<ProductRestRepository>()));
+      GetProductsOfferedUseCase(repositoryProduct: serviceLocator<ProductRestRepository>()));
 
   // Casos de uso para obtener productos del vendedor (REST)
   serviceLocator.registerLazySingleton<GetProductsSellerUseCase>(() =>
-      GetProductsSellerUseCase(
-          repositoryProduct: serviceLocator<ProductRestRepository>()));
+      GetProductsSellerUseCase(repositoryProduct: serviceLocator<ProductRestRepository>()));
 
   // Caso de uso para agregar productos
-  serviceLocator.registerLazySingleton<AddProductUseCase>(
-
-      () => AddProductUseCase(repository: serviceLocator()));
+  serviceLocator.registerLazySingleton<AddProductUseCase>(() =>
+      AddProductUseCase(repository: serviceLocator()));
 
   // Registrar el caso de uso PlaceOrderUseCase
-  serviceLocator.registerLazySingleton<PlaceOrderUseCase>(
-      () => PlaceOrderUseCase(repository: serviceLocator<ProductRepository>()));
+  serviceLocator.registerLazySingleton<PlaceOrderUseCase>(() =>
+      PlaceOrderUseCase(repository: serviceLocator<ProductRepository>()));
 
-  serviceLocator.registerLazySingleton<GetOrderProduct>(
-    () => GetOrderProduct(repository : serviceLocator())
-  );
-  
-  serviceLocator.registerLazySingleton<OrderRemoteDataSource>(
-    () => OrderRemoteDataSourceImpl()
-  );
+  serviceLocator.registerLazySingleton<GetOrderProduct>(() =>
+      GetOrderProduct(repository: serviceLocator()));
 
-  serviceLocator.registerLazySingleton<OrderRepository>(
-    () => OrderRepositoryImpl(serviceLocator())
-  );
+  serviceLocator.registerLazySingleton<OrderRemoteDataSource>(() => OrderRemoteDataSourceImpl());
 
-  serviceLocator.registerLazySingleton<GetPendingOrdersUseCase>(
-    () => GetPendingOrdersUseCase(serviceLocator<OrderRepository>()),
-  );
+  serviceLocator.registerLazySingleton<OrderRepository>(() => OrderRepositoryImpl(serviceLocator()));
 
-  serviceLocator.registerLazySingleton<GetCustomerOrdersUseCase>(
-    () => GetCustomerOrdersUseCase(serviceLocator<OrderRepository>()),
-  );
+  serviceLocator.registerLazySingleton<GetPendingOrdersUseCase>(() =>
+      GetPendingOrdersUseCase(serviceLocator<OrderRepository>()));
 
-  serviceLocator.registerLazySingleton<CancelOrderUseCase>(
-  () => CancelOrderUseCase(repository: serviceLocator()),
-  );
+  serviceLocator.registerLazySingleton<GetCustomerOrdersUseCase>(() =>
+      GetCustomerOrdersUseCase(serviceLocator<OrderRepository>()));
 
-    serviceLocator.registerLazySingleton<ConfirmOrderUseCase>(
-  () => ConfirmOrderUseCase(repository: serviceLocator()),
-  );
+  serviceLocator.registerLazySingleton<CancelOrderUseCase>(() =>
+      CancelOrderUseCase(repository: serviceLocator()));
 
-  serviceLocator.registerLazySingleton<UpdateProductUseCase>(
-    () => UpdateProductUseCase(repository: serviceLocator()),
-  );
+  serviceLocator.registerLazySingleton<ConfirmOrderUseCase>(() =>
+      ConfirmOrderUseCase(repository: serviceLocator()));
 
-  serviceLocator.registerLazySingleton<DeleteProductUseCase>(
-    () => DeleteProductUseCase(repository: serviceLocator()),
-  );
+  serviceLocator.registerLazySingleton<UpdateProductUseCase>(() =>
+      UpdateProductUseCase(repository: serviceLocator()));
 
-
+  serviceLocator.registerLazySingleton<DeleteProductUseCase>(() =>
+      DeleteProductUseCase(repository: serviceLocator()));
 }
