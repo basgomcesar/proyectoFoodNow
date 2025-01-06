@@ -17,7 +17,7 @@ class CustomerOrdersScreen extends StatelessWidget {
     return BlocProvider(
       create: (_) => CustomerOrdersBloc(
         getCustomerOrders: serviceLocator<GetCustomerOrdersUseCase>(),
-      )..add(CustomerGetCustomerOrders()), // Añade esta línea para disparar el evento
+      )..add(CustomerGetCustomerOrders()),
       child: const CustomerOrdersContent(),
     );
   }
@@ -46,7 +46,7 @@ class CustomerOrdersContent extends StatelessWidget {
                   if (state is CustomerOrdersFailure) {
                     return Center(child: Text(state.message));
                   } else if (state is CustomerOrdersSuccess) {
-                    final pedidos = state.orders; // Aquí obtienes la lista
+                    final pedidos = state.orders;
                     return ListView.builder(
                       itemCount: pedidos.length,
                       itemBuilder: (context, index) {

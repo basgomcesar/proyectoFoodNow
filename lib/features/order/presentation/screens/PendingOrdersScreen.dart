@@ -17,7 +17,7 @@ class PendingOrdersScreen extends StatelessWidget {
     return BlocProvider(
       create: (_) => PendingOrdersBloc(
         getPendingOrders: serviceLocator<GetPendingOrdersUseCase>(),
-      )..add(OrderGetPendingOrders()), // Añade esta línea para disparar el evento
+      )..add(OrderGetPendingOrders()),
       child: const PendingOrdersContent(),
     );
   }

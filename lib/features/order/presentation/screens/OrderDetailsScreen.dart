@@ -46,7 +46,7 @@ class _OrderDetailsContentState extends State<OrderDetailsContent> {
   @override
   void initState() {
     super.initState();
-    estadoPedido = widget.pedido.estadoPedido; // Estado inicial del pedido
+    estadoPedido = widget.pedido.estadoPedido;
   }
 
   Future<bool> showConfirmationDialog(BuildContext context, String title, String content) async {
@@ -169,7 +169,7 @@ class _OrderDetailsContentState extends State<OrderDetailsContent> {
                                 Icons.image_not_supported,
                                 size: 150,
                                 color: Colors.grey,
-                              ), // Icono predeterminado si no hay imagen
+                              ),
                       ),
                     ],
                   );
@@ -221,10 +221,6 @@ class _OrderDetailsContentState extends State<OrderDetailsContent> {
                                 'Pedido cancelado con éxito',
                               );
                               Navigator.pushNamed(context, '/home');
-                              /*setState(() {
-                                estadoPedido = 'Cancelado'; // Actualizar estado
-                                botonHabilitado = false; // Deshabilitar botón
-                              });*/
                             },
                           );
                         } catch (e) {
@@ -278,10 +274,6 @@ class _OrderDetailsContentState extends State<OrderDetailsContent> {
                                 'Pedido entregado con éxito',
                               );
                               Navigator.pushNamed(context, '/home');
-                              /*setState(() {
-                                estadoPedido = 'Entregado'; // Actualizar estado
-                                botonHabilitado = false; // Deshabilitar botón
-                              });*/
                             },
                           );
                         } catch (e) {

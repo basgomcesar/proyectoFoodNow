@@ -15,7 +15,7 @@ abstract interface class OrderRemoteDataSource {
 
 class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
   final Dio dioClient = Dio();
-  final String apiUrl = 'http://localhost:3000'; // URL de tu API
+  final String apiUrl = 'http://localhost:3000';
   final Session session = Session.instance;
 
   @override
@@ -25,7 +25,7 @@ class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
         '$apiUrl/orders/pending/seller',
         options: Options(
           headers: {
-            'x-token': session.token, // Token de sesión
+            'x-token': session.token,
           },
         ),
       );
@@ -35,20 +35,17 @@ class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
           throw ServerFailure('La respuesta del servidor es nula.');
         }
 
-        // Asegurarnos de que la respuesta contiene la clave 'pedidos' y que no es null
         final Map<String, dynamic> responseData = response.data as Map<String, dynamic>;
 
         if (responseData.containsKey('pedidos')) {
           final pedidos = responseData['pedidos'];
 
-          // Comprobamos que 'pedidos' sea una lista
           if (pedidos != null && pedidos is List) {
             
             return pedidos
                 .map((orderJson) => ProductsOrderModel.fromJson(orderJson).toDomain())
                 .toList();
           } else {
-            // Si 'pedidos' no es una lista, manejar el error
             throw ServerFailure('Formato de respuesta inesperado: "pedidos" no es una lista.');
           }
         } else {
@@ -60,8 +57,7 @@ class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
         );
       }
     } on DioException catch (dioError) {
-      print('Error al conectar con el servidor: ${dioError.message}');
-      throw ServerFailure('Error al conectar con el servidor.');
+      throw ServerFailure('Error al conectar con el servidor. ${dioError.message}');
     } catch (error) {
       throw ServerFailure('Error inesperado al obtener pedidos pendientes.');
     }
@@ -74,7 +70,7 @@ class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
         '$apiUrl/orders/pending/customer',
         options: Options(
           headers: {
-            'x-token': session.token, // Token de sesión
+            'x-token': session.token,
           },
         ),
       );
@@ -84,20 +80,17 @@ class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
           throw ServerFailure('La respuesta del servidor es nula.');
         }
 
-        // Asegurarnos de que la respuesta contiene la clave 'pedidos' y que no es null
         final Map<String, dynamic> responseData = response.data as Map<String, dynamic>;
 
         if (responseData.containsKey('pedidos')) {
           final pedidos = responseData['pedidos'];
 
-          // Comprobamos que 'pedidos' sea una lista
           if (pedidos != null && pedidos is List) {
             
             return pedidos
                 .map((orderJson) => ProductsOrderModel.fromJson(orderJson).toDomain())
                 .toList();
           } else {
-            // Si 'pedidos' no es una lista, manejar el error
             throw ServerFailure('Formato de respuesta inesperado: "pedidos" no es una lista.');
           }
         } else {
@@ -109,8 +102,7 @@ class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
         );
       }
     } on DioException catch (dioError) {
-      print('Error al conectar con el servidor: ${dioError.message}');
-      throw ServerFailure('Error al conectar con el servidor.');
+      throw ServerFailure('Error al conectar con el servidor. ${dioError.message}');
     } catch (error) {
       throw ServerFailure('Error inesperado al obtener pedidos pendientes.');
     }
@@ -123,7 +115,7 @@ class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
         '$apiUrl/orders/cancelorder/$idOrder',
         options: Options(
           headers: {
-            'x-token': session.token, // Token de sesión
+            'x-token': session.token,
           },
         ),
       );
