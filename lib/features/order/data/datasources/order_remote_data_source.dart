@@ -15,9 +15,10 @@ abstract interface class OrderRemoteDataSource {
 
 class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
   final Dio dioClient = Dio();
-  final String apiUrl = 'http://localhost:3000';
+  final String apiUrl;
   final Session session = Session.instance;
 
+  OrderRemoteDataSourceImpl({required this.apiUrl});
   @override
   Future<List<ProductOrder>> getPendingOrders() async {
     try {
@@ -139,7 +140,6 @@ class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
   @override
   Future<bool> confirmOrder(int idOrder) async {
        try {
-        print("EN confirmar orde>>>>>>>>>>");  
       final response = await dioClient.put(
         '$apiUrl/orders/confirmOrder/$idOrder',
         options: Options(
