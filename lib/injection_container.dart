@@ -100,7 +100,7 @@ serviceLocator.registerLazySingleton<ProductOfferedBloc>(() =>
   serviceLocator.registerLazySingleton<GetOrderProduct>(() =>
       GetOrderProduct(repository: serviceLocator()));
 
-  serviceLocator.registerLazySingleton<OrderRemoteDataSource>(() => OrderRemoteDataSourceImpl());
+  serviceLocator.registerLazySingleton<OrderRemoteDataSource>(() => OrderRemoteDataSourceImpl(apiUrl: apiUrl));
 
   serviceLocator.registerLazySingleton<OrderRepository>(() => OrderRepositoryImpl(serviceLocator()));
 
