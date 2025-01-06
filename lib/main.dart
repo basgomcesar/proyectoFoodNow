@@ -19,37 +19,41 @@ void main() async {
   await di.init();
   runApp(
     MultiBlocProvider(
-      providers: [
-        BlocProvider<CreateProfileBloc>(
-          create: (_) => CreateProfileBloc(createProfileUseCase: di.serviceLocator()),
-        ),
-        BlocProvider<LoginBloc>(
-          create: (_) => LoginBloc(loginUserUseCase: di.serviceLocator()),
-        ),
-        BlocProvider<EditProfileBloc>(
-          create: (_) => EditProfileBloc(editProfileUseCase: di.serviceLocator()),
-        ),
-        BlocProvider<ProductBloc>(
-          create: (_) => ProductBloc(getProducts: di.serviceLocator()),
-        ),
-        BlocProvider<ProductsSellerBloc>(
-          create: (_) => ProductsSellerBloc(getProductsSellerUseCase: di.serviceLocator()),
-        ),
-        BlocProvider<UserCubit>(
-          create: (_) => UserCubit(),
-        ),
-        BlocProvider<PendingOrdersBloc>(
-          create: (_) => PendingOrdersBloc(getPendingOrders: di.serviceLocator()),
-        ),
-        BlocProvider<OrderDetailsBloc>(
-          create: (_) => OrderDetailsBloc(getOrderProduct: di.serviceLocator())
-        ),         BlocProvider<PlaceOrderBloc>(
-          create: (_) => PlaceOrderBloc(di.serviceLocator()), 
-        ),
-
-      ],
-      child: const MyApp(),
+  providers: [
+    BlocProvider<CreateProfileBloc>(
+      create: (_) => CreateProfileBloc(createProfileUseCase: di.serviceLocator()),
     ),
+    BlocProvider<LoginBloc>(
+      create: (_) => LoginBloc(loginUserUseCase: di.serviceLocator()),
+    ),
+    BlocProvider<EditProfileBloc>(
+      create: (_) => EditProfileBloc(editProfileUseCase: di.serviceLocator()),
+    ),
+    BlocProvider<ProductBloc>(
+      create: (_) => ProductBloc(getProducts: di.serviceLocator()),
+    ),
+    BlocProvider<ProductsSellerBloc>(
+      create: (_) => ProductsSellerBloc(getProductsSellerUseCase: di.serviceLocator()),
+    ),
+    BlocProvider<UserCubit>(
+      create: (_) => UserCubit(),
+    ),
+    BlocProvider<PendingOrdersBloc>(
+      create: (_) => PendingOrdersBloc(getPendingOrders: di.serviceLocator()),
+    ),
+    BlocProvider<OrderDetailsBloc>(
+      create: (_) => OrderDetailsBloc(getOrderProduct: di.serviceLocator()),
+    ),
+    BlocProvider<PlaceOrderBloc>(
+      create: (_) => PlaceOrderBloc(di.serviceLocator()),
+    ),
+    BlocProvider<ProductOfferedBloc>(
+  create: (_) => ProductOfferedBloc(getProductsOfferedUseCase: di.serviceLocator()),
+),
+  ],
+  child: const MyApp(),
+
+    )
   );
 }
 
