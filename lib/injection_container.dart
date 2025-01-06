@@ -69,9 +69,9 @@ void initInjections() {
       () => GetProducts(repository: serviceLocator<ProductRepository>()));
 
   // DataSource para productos (REST)
-  serviceLocator.registerLazySingleton<ProductRemoteDataSourceRest>(
+  /*serviceLocator.registerLazySingleton<ProductRemoteDataSourceRest>(
       () => ProductRemoteDataSourceRestImpl(apiUrl: apiUrl)
-  );
+  );*/
 
   // Repositorio de productos (REST)
   serviceLocator.registerLazySingleton<ProductRestRepository>(() =>
