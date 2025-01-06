@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loging_app/features/order/domain/entities/products_order.dart';
 import 'package:loging_app/features/order/domain/use_cases/cancel_order.dart';
+import 'package:loging_app/features/order/domain/use_cases/confirm_order.dart';
 import 'package:loging_app/features/order/presentation/bloc/order_details_bloc/order_details_bloc.dart';
 import 'package:loging_app/features/product/domain/use_cases/get_order_product.dart';
 import 'package:loging_app/features/user/presentation/widgets/header_logo.dart';
@@ -241,6 +242,63 @@ class _OrderDetailsContentState extends State<OrderDetailsContent> {
                 ),
                 child: const Text(
                   'Cancelar pedido',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+                ),
+              )
+              else
+              //Boton para confirmar entrega
+              ElevatedButton(
+                onPressed: botonHabilitado
+                    ? () async {
+                        final confirm = await showConfirmationDialog(
+                          context,
+                          'Confirmación',
+                          '¿Realmente deseas confirmar la entrega del pedido?',
+                        );
+
+                        if (!confirm) return;
+
+                        final confirmOrderUseCase = serviceLocator<ConfirmOrderUseCase>();
+
+                        try {
+                          final result = await confirmOrderUseCase.call(widget.pedido.idPedido);
+
+                          await result.fold(
+                            (failure) async {
+                              await showMessageDialog(
+                                context,
+                                'Error',
+                                'Error al confirmar la entrega del pedido: ${failure.message}',
+                              );
+                            },
+                            (success) async {
+                              await showMessageDialog(
+                                context,
+                                'Éxito',
+                                'Pedido entregado con éxito',
+                              );
+                              Navigator.pushNamed(context, '/home');
+                              /*setState(() {
+                                estadoPedido = 'Entregado'; // Actualizar estado
+                                botonHabilitado = false; // Deshabilitar botón
+                              });*/
+                            },
+                          );
+                        } catch (e) {
+                          await showMessageDialog(
+                            context,
+                            'Error inesperado',
+                            'Ocurrió un error inesperado: $e',
+                          );
+                        }
+                      }
+                    : null,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: botonHabilitado ? Colors.green : Colors.grey,
+                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+                ),
+                child: const Text(
+                  'Confirmar entrega',
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
                 ),
               ),

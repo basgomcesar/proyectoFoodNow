@@ -4,6 +4,7 @@ import 'package:loging_app/features/order/data/datasources/order_remote_data_sou
 import 'package:loging_app/features/order/data/repositories/products_order_repository_impl.dart';
 import 'package:loging_app/features/order/domain/repositories/products_order_repository.dart';
 import 'package:loging_app/features/order/domain/use_cases/cancel_order.dart';
+import 'package:loging_app/features/order/domain/use_cases/confirm_order.dart';
 import 'package:loging_app/features/order/domain/use_cases/get_customer_orders.dart';
 import 'package:loging_app/features/order/domain/use_cases/get_pending_orders.dart';
 import 'package:loging_app/features/product/data/datasources/product_remote_data_source.dart';
@@ -130,6 +131,10 @@ void initInjections() {
   () => CancelOrderUseCase(repository: serviceLocator()),
   );
 
+    serviceLocator.registerLazySingleton<ConfirmOrderUseCase>(
+  () => ConfirmOrderUseCase(repository: serviceLocator()),
+  );
+
   serviceLocator.registerLazySingleton<UpdateProductUseCase>(
     () => UpdateProductUseCase(repository: serviceLocator()),
   );
@@ -137,4 +142,6 @@ void initInjections() {
   serviceLocator.registerLazySingleton<DeleteProductUseCase>(
     () => DeleteProductUseCase(repository: serviceLocator()),
   );
+
+
 }
