@@ -1,5 +1,4 @@
-import 'dart:typed_data';
-
+import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:loging_app/core/error/failure.dart';
 import 'package:loging_app/core/utils/session.dart';
@@ -104,20 +103,31 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
         final Map<String, dynamic> responseData =
             response.data as Map<String, dynamic>;
 
-        // Comprobamos que la clave 'productos' existe y no es nula
+        // Verificar que la clave 'productos' existe y no es nula
         if (responseData.containsKey('productos') &&
             responseData['productos'] != null) {
           final productos = responseData['productos'];
 
-          // Comprobamos que 'productos' contiene un producto válido
+          // Verificar que 'productos' contiene un producto válido
           if (productos is List && productos.isNotEmpty) {
             // Asumimos que un pedido tiene un único producto
             final productJson = productos.first;
 
-            // Asegurarse de que 'foto' sea manejado si es null
-            if (productJson['foto'] == null) {
-              productJson['foto'] =
-                  ''; // O asignar algún valor predeterminado si es necesario
+            // Procesar la clave 'foto'
+            if (productJson['foto'] is Map<String, dynamic>) {
+              final fotoMap = productJson['foto'] as Map<String, dynamic>;
+
+              if (fotoMap.containsKey('data')) {
+                // Convertir los datos binarios a base64
+                final fotoBytes = List<int>.from(fotoMap['data']);
+                productJson['foto'] = base64Encode(fotoBytes);
+              } else {
+                // Si no hay datos, asignar un valor predeterminado
+                productJson['foto'] = '';
+              }
+            } else {
+              // Si 'foto' no es un mapa, asegurarse de que sea un valor manejable
+              productJson['foto'] = productJson['foto'] ?? '';
             }
 
             // Crear el modelo de producto y devolverlo
@@ -214,9 +224,12 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
     } catch (error) {
       throw ServerFailure('Error inesperado al actualizar el producto. $error');
     }
-  }@override
+  }
+  
+  @override
   Future<ProductOrderModel> placeOrder(Product product, int quantity) async {
     try {
+      print(apiUrl);
       final response = await dioClient.post(
         '$apiUrl/orders',
         data: {
