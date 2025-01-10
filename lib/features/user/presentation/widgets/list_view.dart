@@ -184,7 +184,7 @@ class _DrawerListViewState extends State<DrawerListView> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => const ProductsChartView(),
+                builder: (context) => ProductsChartView(),
               ),
             );
           },

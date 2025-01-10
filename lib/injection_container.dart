@@ -32,7 +32,7 @@ import 'features/product/presentation/bloc/product_offered_bloc/product_offered_
 import 'features/user/domain/use_cases/update_availability_use_case.dart';
 
 final serviceLocator = GetIt.instance;
-String apiUrl = 'http://192.168.240.198:3000';
+String apiUrl = 'http://localhost:3000';
 
 Future<void> init() async {
   initInjections();
@@ -44,7 +44,7 @@ void initInjections() {
 
   // Cliente gRPC
   serviceLocator.registerLazySingleton<ClientChannel>(() => ClientChannel(
-    '192.168.240.198',
+    'localhost',
     port: 50051,
     options: const ChannelOptions(credentials: ChannelCredentials.insecure()),
   ));

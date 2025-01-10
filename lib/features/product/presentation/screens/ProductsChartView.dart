@@ -7,14 +7,27 @@ import '../../../../injection_container.dart';
 import '../bloc/product_offered_bloc/product_offered_bloc.dart';
 import '../bloc/product_offered_bloc/product_offered_event.dart';
 import '../bloc/product_offered_bloc/product_offered_state.dart';
-class ProductsChartView extends StatefulWidget {
-  const ProductsChartView({Key? key}) : super(key: key);
+
+class ProductsChartView extends StatelessWidget {
+  
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider<ProductOfferedBloc>(
+      create: (_) => serviceLocator<ProductOfferedBloc>(),
+      child: ProductsChartViewContent(),
+    );
+  }
+}
+
+class ProductsChartViewContent extends StatefulWidget {
+  const ProductsChartViewContent({Key? key}) : super(key: key);
 
   @override
   _ProductsChartViewState createState() => _ProductsChartViewState();
 }
 
-class _ProductsChartViewState extends State<ProductsChartView> {
+class _ProductsChartViewState extends State<ProductsChartViewContent> {
   String selectedMonth = '01';
   String selectedYear = '2024';
 
@@ -34,7 +47,6 @@ class _ProductsChartViewState extends State<ProductsChartView> {
   void _loadData() {
     BlocProvider.of<ProductOfferedBloc>(context).add(
       FetchProductsOffered(
-        userId: "1", // ID del vendedor
         anio: selectedYear,
         mes: selectedMonth,
       ),
@@ -43,9 +55,7 @@ class _ProductsChartViewState extends State<ProductsChartView> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<ProductOfferedBloc>(
-      create: (context) => serviceLocator<ProductOfferedBloc>(),
-      child: Scaffold(
+    return Scaffold(
         appBar: AppBar(
           title: Text('Top 10 Productos'),
         ),
@@ -55,7 +65,7 @@ class _ProductsChartViewState extends State<ProductsChartView> {
             children: [
               DropdownButtonFormField<String>(
                 value: selectedYear,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Selecciona el Año',
                   border: OutlineInputBorder(),
                 ),
@@ -74,10 +84,10 @@ class _ProductsChartViewState extends State<ProductsChartView> {
                   );
                 }).toList(),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               DropdownButtonFormField<String>(
                 value: selectedMonth,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Selecciona el Mes',
                   border: OutlineInputBorder(),
                 ),
@@ -229,8 +239,7 @@ class _ProductsChartViewState extends State<ProductsChartView> {
             ],
           ),
         ),
-      ),
-    );
+      );
   }
 
   String _getMonthName(String month) {

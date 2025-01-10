@@ -12,9 +12,9 @@ class ProductRestRepositoryRestImpl implements ProductRestRepository {
   ProductRestRepositoryRestImpl(this.userRemoteDataSourceRest);
 
   @override
-  Future<Either<Failure, List<ProductGraph>>> getProductsOffered(String userId, String anio, String mes) async {
+  Future<Either<Failure, List<ProductGraph>>> getProductsOffered( String anio, String mes) async {
     try {
-      final result = await userRemoteDataSourceRest.getProductsOffered(userId, anio, mes);
+      final result = await userRemoteDataSourceRest.getProductsOffered( anio, mes);
 
       return result.fold(
         (failure) {
