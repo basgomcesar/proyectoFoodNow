@@ -7,7 +7,7 @@ import '../../domain/entities/product_graph.dart';
 import 'dart:typed_data';
 
 abstract class ProductRemoteDataSourceRest {
-  Future<Either<Failure, List<ProductGraph>>> getProductsOffered(String userId, String anio, String mes);
+  Future<Either<Failure, List<ProductGraph>>> getProductsOffered( String anio, String mes);
   Future<Either<Failure, List<Product>>> getProductsSeller(String sellerId);
 }
 
@@ -19,10 +19,10 @@ class ProductRemoteDataSourceRestImpl implements ProductRemoteDataSourceRest {
   ProductRemoteDataSourceRestImpl({required this.apiUrl});
 
   @override
-Future<Either<Failure, List<ProductGraph>>> getProductsOffered(String userId, String anio, String mes) async {
+Future<Either<Failure, List<ProductGraph>>> getProductsOffered( String anio, String mes) async {
   try {
     final response = await client.get(
-      '$apiUrl/products/statistics/$userId/$anio/$mes',
+      '$apiUrl/products/statistics/$anio/$mes',
       options: Options(
         headers: {
           'Content-Type': 'application/json',
@@ -38,10 +38,10 @@ Future<Either<Failure, List<ProductGraph>>> getProductsOffered(String userId, St
         return Left(ServerFailure('No hay productos para mostrar.'));
       }
 
-      final List<ProductGraph> products = productList.map((product) {
+      final List<ProductGraph> products = productList.map((productGraph) {//
         return ProductGraph(
-          name: product['producto'] ?? 'Nombre desconocido',
-          sales: product['cantidad_vendida'] ?? 0,
+          name: productGraph['producto'] ?? 'Nombre desconocido',
+          sales: productGraph['cantidad_vendida'] ?? 0,
         );
       }).toList();
 
