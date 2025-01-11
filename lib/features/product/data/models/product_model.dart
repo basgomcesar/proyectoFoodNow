@@ -128,4 +128,28 @@ class ProductModel extends Product {
       userId: (json['idUsuario'] as int?)?.toString() ?? '',
     );
   }
+
+  ProductModel copyWith({
+    String? id,
+    String? name,
+    String? category,
+    bool? available,
+    String? description,
+    double? price,
+    int? quantityAvailable,
+    Uint8List? photo,
+    String? userId,
+  }) {
+    return ProductModel(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      category: category ?? this.category,
+      available: available ?? this.available,
+      description: description ?? this.description,
+      price: price ?? this.price,
+      quantityAvailable: quantityAvailable ?? this.quantityAvailable,
+      photo: photo ?? this.photo,
+      userId: userId ?? this.userId,
+    );
+  }
 }
