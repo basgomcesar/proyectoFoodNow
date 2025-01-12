@@ -7,7 +7,7 @@ import '../../domain/entities/product_graph.dart';
 import 'dart:typed_data';
 
 abstract class ProductRemoteDataSourceRest {
-  Future<Either<Failure, List<ProductGraph>>> getProductsOffered(String userId, String anio, String mes);
+  Future<Either<Failure, List<ProductGraph>>> getProductsOffered( String anio, String mes);
   Future<Either<Failure, List<Product>>> getProductsSeller(String sellerId);
 }
 
@@ -19,10 +19,10 @@ class ProductRemoteDataSourceRestImpl implements ProductRemoteDataSourceRest {
   ProductRemoteDataSourceRestImpl({required this.apiUrl});
 
   @override
-Future<Either<Failure, List<ProductGraph>>> getProductsOffered(String userId, String anio, String mes) async {
+Future<Either<Failure, List<ProductGraph>>> getProductsOffered( String anio, String mes) async {
   try {
     final response = await client.get(
-      '$apiUrl/products/statistics/$userId/$anio/$mes',
+      '$apiUrl/products/statistics/$anio/$mes',
       options: Options(
         headers: {
           'Content-Type': 'application/json',
@@ -38,10 +38,10 @@ Future<Either<Failure, List<ProductGraph>>> getProductsOffered(String userId, St
         return Left(ServerFailure('No hay productos para mostrar.'));
       }
 
-      final List<ProductGraph> products = productList.map((product) {
+      final List<ProductGraph> products = productList.map((productGraph) {//
         return ProductGraph(
-          name: product['producto'] ?? 'Nombre desconocido',
-          sales: product['cantidad_vendida'] ?? 0,
+          name: productGraph['producto'] ?? 'Nombre desconocido',
+          sales: productGraph['cantidad_vendida'] ?? 0,
         );
       }).toList();
 
@@ -56,8 +56,7 @@ Future<Either<Failure, List<ProductGraph>>> getProductsOffered(String userId, St
     return Left(ServerFailure('Error al obtener productos: ${e.toString()}'));
   }
 }
-
-  @override
+@override
 Future<Either<Failure, List<Product>>> getProductsSeller(String sellerId) async {
   try {
     final response = await client.get(
@@ -65,35 +64,36 @@ Future<Either<Failure, List<Product>>> getProductsSeller(String sellerId) async 
       options: Options(
         headers: {
           'Content-Type': 'application/json',
-          'x-token': session.token, 
+          'x-token': session.token,
         },
       ),
     );
 
     if (response.statusCode == 200) {
-  print('Response data: ${response.data}');  // Esto te permitirá ver la estructura real de los datos.
+      print('Response data: ${response.data}');  // Esto te permitirá ver la estructura real de los datos.
 
-  final List<dynamic> productList = response.data['productos'];
-  final List<Product> products = productList.map((product) {
-    print('Product data: $product');  // Imprime cada producto para revisar sus datos.
-    return Product(
-      id: (product['idProducto'] ?? '').toString(),  // Convierte a String si es necesario
-      name: (product['producto'] ?? '').toString(),  // Convierte a String si es necesario
-      available: product['cantidadDisponible'] > 0,
-      category: product['categoria']?.toString(),  // Convierte si es necesario
-      description: product['descripcion']?.toString(),
-      price: double.tryParse(product['precio'].toString()) ?? 0.0,
-      quantityAvailable: product['cantidadDisponible'] ?? 0,
-      photo: Uint8List(0),
-      userId: sellerId,
-    );
-  }).toList();
+      final List<dynamic> productList = response.data['productos'];
+      final List<Product> products = productList.map((product) {
+        print('Product data: $product');  // Imprime cada producto para revisar sus datos.
 
-  return Right(products);
-} else {
-  return Left(ServerFailure(
-    'Failed to fetch seller products: ${response.statusCode} - ${response.statusMessage}'));
-}
+        return Product(
+          id: (product['idProducto'] ?? '').toString(), 
+          name: (product['nombreProducto'] ?? '').toString(),  
+          available: product['cantidadDisponible'] > 0,
+          category: product['categoria']?.toString(), 
+          description: product['descripcion']?.toString(),
+          price: double.tryParse(product['precio'].toString()) ?? 0.0,
+          quantityAvailable: product['cantidadDisponible'] ?? 0,
+          photo: Uint8List(0),  
+          userId: sellerId,
+        );
+      }).toList();
+
+      return Right(products);
+    } else {
+      return Left(ServerFailure(
+        'Failed to fetch seller products: ${response.statusCode} - ${response.statusMessage}'));
+    }
   } catch (e) {
     print('Error in getProductsSeller: $e');
     return Left(ServerFailure('Failed to fetch seller products: $e'));

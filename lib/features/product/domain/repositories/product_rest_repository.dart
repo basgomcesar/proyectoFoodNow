@@ -4,6 +4,6 @@ import '../entities/product.dart';
 import '../entities/product_graph.dart';
 
 abstract class ProductRestRepository {
-  Future<Either<Failure, List<ProductGraph>>> getProductsOffered(String userId, String anio, String mes);
+  Future<Either<Failure, List<ProductGraph>>> getProductsOffered(String anio, String mes);
   Future<Either<Failure, List<Product>>> getProductsSeller(String sellerId);
 }

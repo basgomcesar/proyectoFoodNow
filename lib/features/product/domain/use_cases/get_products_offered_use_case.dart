@@ -10,6 +10,6 @@ class GetProductsOfferedUseCase {
 
   Future<Either<Failure, List<ProductGraph>>> call(
       String userId, String anio, String mes) async {
-    return await repositoryProduct.getProductsOffered(userId, anio, mes);
+    return await repositoryProduct.getProductsOffered(anio, mes);
   }
 }
