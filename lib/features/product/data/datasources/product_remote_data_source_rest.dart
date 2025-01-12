@@ -70,11 +70,9 @@ Future<Either<Failure, List<Product>>> getProductsSeller(String sellerId) async 
     );
 
     if (response.statusCode == 200) {
-      print('Response data: ${response.data}');  // Esto te permitirá ver la estructura real de los datos.
 
       final List<dynamic> productList = response.data['productos'];
       final List<Product> products = productList.map((product) {
-        print('Product data: $product');  // Imprime cada producto para revisar sus datos.
 
         return Product(
           id: (product['idProducto'] ?? '').toString(), 
