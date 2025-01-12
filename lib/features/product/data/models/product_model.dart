@@ -1,5 +1,5 @@
 import 'dart:typed_data';
-
+import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:loging_app/generated/productos.pb.dart';
 
@@ -18,7 +18,6 @@ class ProductModel extends Product {
     required super.userId,
   });
 
-  /// Crea una instancia de `ProductModel` desde una respuesta gRPC
   factory ProductModel.fromGrpc(ProductUpdateResponse product) {
     return ProductModel(
       id: product.productId,
@@ -29,11 +28,9 @@ class ProductModel extends Product {
       available: product.available,
       photo: Uint8List.fromList(product.photo),
       userId: product.userId,
-
     );
   }
 
-  /// Crea una instancia de `ProductModel` desde un JSON
   factory ProductModel.fromJson(Map<String, dynamic> json) {
     return ProductModel(
       id: json['id'] as String,
@@ -47,7 +44,8 @@ class ProductModel extends Product {
       userId: json['userId'] as String,
     );
   }
-  /// Convierte un `ProductModel` en un mapa JSON
+
+  @override
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -61,7 +59,7 @@ class ProductModel extends Product {
       'idUsuario': userId,
     };
   }
-  /// Convierte un `ProductModel` en un `FormData`
+
   FormData toFormData() {
     return FormData.fromMap({
       'id': id,
@@ -76,9 +74,6 @@ class ProductModel extends Product {
     });
   }
 
-
-
-  /// Convierte un `ProductModel` en una entidad del dominio `Product`
   Product toDomain() {
     return Product(
       id: id,
@@ -92,7 +87,6 @@ class ProductModel extends Product {
     );
   }
 
-/// Crea una instancia de `ProductModel` desde una entidad del dominio `Product`
   factory ProductModel.fromEntity(Product product) {
     return ProductModel(
       id: product.id,
@@ -107,5 +101,55 @@ class ProductModel extends Product {
     );
   }
 
+  factory ProductModel.fromJsonEsp(Map<String, dynamic> json) {
+    return ProductModel(
+      id: (json['idProducto'] as int?)?.toString() ?? '',
 
+      name: json['nombre'] as String? ?? 'Sin nombre',
+      
+      category: json['categoria'] as String? ?? 'Sin categoría',
+      
+      description: json['descripcion'] as String? ?? 'Sin descripción',
+      
+      price: double.tryParse(json['precio'].toString()) ?? 0.0,
+      
+      quantityAvailable: json['cantidadDisponible'] as int? ?? 0,
+      
+      available: (json['disponible'] as int?) == 1,
+      
+      photo: json['foto'] is String
+          ? base64Decode(json['foto'] as String)
+          : (json['foto'] is Map<String, dynamic> &&
+                  json['foto']['data'] is List)
+              ? Uint8List.fromList(
+                  (json['foto']['data'] as List<dynamic>).cast<int>())
+              : Uint8List(0),
+
+      userId: (json['idUsuario'] as int?)?.toString() ?? '',
+    );
+  }
+
+  ProductModel copyWith({
+    String? id,
+    String? name,
+    String? category,
+    bool? available,
+    String? description,
+    double? price,
+    int? quantityAvailable,
+    Uint8List? photo,
+    String? userId,
+  }) {
+    return ProductModel(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      category: category ?? this.category,
+      available: available ?? this.available,
+      description: description ?? this.description,
+      price: price ?? this.price,
+      quantityAvailable: quantityAvailable ?? this.quantityAvailable,
+      photo: photo ?? this.photo,
+      userId: userId ?? this.userId,
+    );
+  }
 }

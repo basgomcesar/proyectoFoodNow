@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loging_app/features/product/domain/use_cases/add_product_use_case.dart';
 import 'package:loging_app/features/product/presentation/bloc/add_product/add_product_bloc.dart';
@@ -37,7 +38,6 @@ class AddProductScreen extends StatelessWidget  {
   }
 
   class _AddProductContentState extends State<AddProductContent> {
-  // Inicialización de las variables
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _priceController = TextEditingController();
@@ -51,15 +51,15 @@ class AddProductScreen extends StatelessWidget  {
   final FocusNode _availableQuantityFocusNode = FocusNode();
   final bool _isAvailable = true; // Valor predeterminado 
 
-//Libera recursos cuando ya no son utilizados
-@override
-void dispose() {
-  _nameFocusNode.dispose();
-  _descriptionFocusNode.dispose();
-  _priceFocusNode.dispose();
-  _availableQuantityFocusNode.dispose();
-  super.dispose();
-}
+  //Libera recursos cuando ya no son utilizados
+  @override
+  void dispose() {
+    _nameFocusNode.dispose();
+    _descriptionFocusNode.dispose();
+    _priceFocusNode.dispose();
+    _availableQuantityFocusNode.dispose();
+    super.dispose();
+  }
 
   final List<String> _productTypes = ['Comida', 'Dulce', 'Bebida', 'Botana', 'Postre'];
   String? _selectedProductType;
@@ -73,7 +73,7 @@ void dispose() {
     if (image != null) {
       final bytes = await image.readAsBytes();  // Lee los bytes de la imagen
       setState(() {
-        _ProductImageBytes = bytes;  // Asigna los bytes a la variable
+        _ProductImageBytes = bytes;  
       });
     }
   }
@@ -145,7 +145,6 @@ Widget build(BuildContext context) {
                 ),               
                 const SizedBox(height: 16),
 
-                // Aquí usas tu widget ImageDisplay
                   ImageDisplay(
                     imageBytes: _ProductImageBytes, 
                   ),
@@ -183,6 +182,10 @@ Widget build(BuildContext context) {
                 CustomTextField(
                   controller: _priceController,
                   labelText: 'Precio unitario',
+                  keyboardType: TextInputType.numberWithOptions(decimal: true), // Permite solo números con decimales
+                  inputFormatters: [
+                    FilteringTextInputFormatter.allow(RegExp(r'^\d+(\.\d{0,2})?$')), // Permite solo números con hasta dos decimales
+                  ],
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Por favor, ingresa el precio unitario';
@@ -200,27 +203,32 @@ Widget build(BuildContext context) {
                     return null;
                   },
                 ),
-                const SizedBox(height: 20),
+                  const SizedBox(height: 20),
 
               CustomTextField(
-                  controller: _availableQuantityController,
-                  labelText: 'Cantidad disponible',
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Por favor, ingresa la cantidad disponible';
-                    }
-                    final RegExp quantityRegex = RegExp(r'^\d+$');  // Asegura que solo sea un número entero
-                      if (!quantityRegex.hasMatch(value)) {
-                        return 'La cantidad debe ser un número entero';
-                      }
-                    final double? price = double.tryParse(value);
-                    if (price == null || price <= 0) {
-                      return 'El precio debe ser mayor que cero';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 20),
+                controller: _availableQuantityController,
+                labelText: 'Cantidad disponible',
+                keyboardType: TextInputType.number,  // Permite solo números
+                inputFormatters: [
+                  FilteringTextInputFormatter.digitsOnly, // Permite solo números enteros
+                ],
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Por favor, ingresa la cantidad disponible';
+                  }
+                  final RegExp quantityRegex = RegExp(r'^\d+$');  // Asegura que solo sea un número entero
+                  if (!quantityRegex.hasMatch(value)) {
+                    return 'La cantidad debe ser un número entero';
+                  }
+                  final int? quantity = int.tryParse(value);
+                  if (quantity == null || quantity <= 0) {
+                    return 'La cantidad debe ser mayor que cero';
+                  }
+                  return null;
+                },
+              ),
+
+                  const SizedBox(height: 20),
 
 
                 

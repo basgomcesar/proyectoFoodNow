@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:loging_app/core/utils/session.dart';
 import 'package:loging_app/features/product/domain/entities/product.dart';
 import 'package:loging_app/features/product/domain/use_cases/place_order_use_case.dart';
 import 'package:loging_app/features/product/presentation/bloc/placer_order/place_order_bloc.dart';
@@ -51,7 +52,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreenContent> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => ProductWaitingscreen(state.order),
+              builder: (context) => ProductWaitingScreen(productOrder: state.order),
             ),
           );
         } else if (state is PlaceOrderDelivered) {
@@ -155,6 +156,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreenContent> {
                     },
                   ),
                   Text('Producto(s) seleccionado(s): $currentValue'),
+                  (Session.instance.user?.userType == 'Vendedor') ? const SizedBox() :
                   IconButton(
                     icon: const Icon(Icons.add),
                     onPressed: () {
@@ -166,7 +168,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreenContent> {
                   ),
                 ],
               ),
-              ButtonsOptions(context),
+              //Preguntar si el usuario es vendedor
+              (Session.instance.user?.userType == 'Vendedor') ? const SizedBox() : ButtonsOptions(context),
             ],
           ),
         ),

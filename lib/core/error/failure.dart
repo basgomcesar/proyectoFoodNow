@@ -32,6 +32,9 @@ class UnknownFailure extends Failure {
 class ConnectionFailure extends Failure {
   ConnectionFailure(super.message);
 }
+class UnauthorizedFailure extends Failure {
+  UnauthorizedFailure(super.message);
+}
 
 //UpdateUserFailure
 class NoDataFailure extends Failure {
@@ -54,6 +57,9 @@ class InvalidPriceFailure extends Failure {
   InvalidPriceFailure(super.message);
 }
 
+class NotFoundFailure extends Failure {
+  NotFoundFailure(super.message);
+}
 class OrderFailure extends Failure {
   OrderFailure(super.message);
 }

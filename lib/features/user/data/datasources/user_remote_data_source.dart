@@ -1,5 +1,3 @@
-import 'dart:convert';
-import 'dart:ffi';
 import 'dart:typed_data';
 import 'package:loging_app/core/error/failure.dart';
 import 'package:dio/dio.dart';
@@ -23,13 +21,13 @@ abstract class UserRemoteDataSource {
 
 class UserRemoteDataSourceImpl implements UserRemoteDataSource {
   final Dio dioClient = Dio();
-  final String apiUrl ; // URL de tu API
+  final String apiUrl;
   final Session session = Session.instance;
 
   UserRemoteDataSourceImpl({required this.apiUrl});
 
-  @override
-  Future<UserModel> authenticateUser(String correo, String password) async {
+    @override
+  Future<UserModel> authenticateUser(String correo, String password) async {    
     final Response response = await dioClient.post(
       '$apiUrl/auth/login',
       data: {
@@ -41,36 +39,47 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
 
     if (response.statusCode == 200) {
       try {
+        // Obtener datos asegurando que no sean null y asignando valores predeterminados
         final idUsuario = response.data['idUsuario'];
         final token = response.headers['x-token']?.first ?? '';
+
+        String name = response.data['nombre'] ?? 'Desconocido';
+        String email = response.data['correo'] ?? 'Correo no disponible';
+        String password = response.data['contrasenia'] ?? 'Sin contraseña';
+        Uint8List photo = response.data['foto'] != null
+            ? Uint8List.fromList(List<int>.from(response.data['foto']['data']))
+            : Uint8List(0); // Foto vacía si no está presente
+        String userType = response.data['tipoUsuario'] ?? 'Tipo no especificado';
+        bool disponibility = response.data['disponibilidad'] == 1;
+        String location = response.data['ubicacion'] ?? 'Ubicación no disponible';
+
+        // Construcción del modelo UserModel
         UserModel userAuth = UserModel(
-          //Se agreg[o el idUsuario]
-          name: response.data['nombre'],
-          email: response.data['correo'],
-          password: response.data['contrasenia'],
-          userType: response.data['tipoUsuario'],
-            photo: response.data['foto'] != null
-              ? Uint8List.fromList(List<int>.from(response.data['foto']['data']))
-              : Uint8List(0), // Si no hay foto, crea un Uint8List vacío
-          disponibility: response.data['disponibilidad'] == 1,
-          location: response.data['ubicacion'] ?? '',
+          name: name,
+          email: email,
+          password: password,
+          photo: photo,
+          userType: userType,
+          disponibility: disponibility,
+          location: location,
         );
-        session.startSession(
-            userId: idUsuario.toString(), token: token, user: userAuth);
+
+        // Iniciar sesión
+        session.startSession(userId: idUsuario.toString(), token: token, user: userAuth);
+
         return userAuth;
       } catch (e) {
-        print('Failed to authenticate user1');
-        throw Exception('Failed to authenticate user1');        
+        print('Error al procesar los datos del usuario: $e');
+        throw Exception('Error al procesar los datos del usuario. Verifica la estructura de la respuesta del servidor.');
       }
     } else {
-      print('Failed to authenticate user2');
-      throw Exception('Failed to authenticate user2');
+      print('Error de autenticación: Código de estado ${response.statusCode}, respuesta: ${response.data}');
+      throw Exception('Error de autenticación. Código de estado ${response.statusCode}.');
     }
   }
 
   @override
   Future<bool> createUser(UserModel userModel) async {
-
     try {
       final response = await dioClient.post(
         '$apiUrl/users',
@@ -125,9 +134,6 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
           },
         ),
       );
-
-      print('Response STATUS CODE: ${response.statusCode}');
-
       switch (response.statusCode) {
         case 200:
           return true; // Usuario actualizado correctamente
@@ -165,15 +171,20 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
         ),
       );
 
-      if (response.statusCode == 200) {
-        return true;
-      } else if (response.statusCode == 400) {
-        throw Exception('Invalid data provided');
-      } else if (response.statusCode == 404) {
-        throw Exception('User not found');
-      } else {
-        throw Exception(
-            'Failed to update user with status code ${response.statusCode}');
+      switch (response.statusCode) {
+        case 200:
+          // El usuario fue eliminado correctamente
+          return true;
+        case 400:
+          throw InvalidDataFailure('El ID de usuario en el token es inválido');
+        case 401:
+          throw UnauthorizedFailure('No se proporcionó el token o el token es inválido');
+        case 404:
+          throw UserNotFoundFailure('Usuario no encontrado');
+        case 500:
+          throw ServerFailure('Error en el servidor. Inténtalo más tarde');
+        default:
+          throw UnknownFailure('Error desconocido: ${response.statusCode}');
       }
     } catch (e) {
       throw Exception('Failed to update user: $e');
@@ -194,9 +205,8 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
   @override
   Future<UserModel> updateAvailability(
       bool availability, String location) async {
-    // Asegúrate de que tienes el idUsuario en la sesión
     String? userId =
-        session.userId; // Esto es obtenido desde tu singleton Session
+        session.userId; 
     if (userId == null) {
       throw Exception('User ID is not available');
     }

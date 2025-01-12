@@ -1,7 +1,11 @@
-import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loging_app/core/utils/session.dart';
+import 'package:loging_app/features/product/data/models/product_model.dart';
+import 'package:loging_app/features/product/domain/use_cases/delete_product_use_case.dart';
+import 'package:loging_app/features/product/presentation/screens/EditProductScreen.dart';
+import 'package:loging_app/injection_container.dart';
+import '../../domain/use_cases/delete_product_use_case.dart';
 import '../bloc/product_seller_bloc/products_seller_bloc.dart';
 import '../bloc/product_seller_bloc/products_seller_event.dart';
 import '../bloc/product_seller_bloc/products_seller_state.dart';
@@ -15,20 +19,16 @@ class ProductsOfferedScreen extends StatefulWidget {
 }
 
 class _ProductsOfferedScreenState extends State<ProductsOfferedScreen> {
-
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final session = Session.instance;
-      if (session.userId != null) {
-        context.read<ProductsSellerBloc>().add(
-          FetchProductsSeller(session.userId!), 
-        );
-      } else {
-        _showErrorDialog("No se ha encontrado el usuario.");
-      }
-    });
+    final session = Session.instance;
+    if (session.userId != null) {
+      // Realiza la llamada a la API directamente en initState
+      BlocProvider.of<ProductsSellerBloc>(context).add(
+        FetchProductsSeller(session.userId!),
+      );
+    }
   }
 
   void _showErrorDialog(String message) {
@@ -44,6 +44,47 @@ class _ProductsOfferedScreenState extends State<ProductsOfferedScreen> {
                 Navigator.of(context).pop();
               },
               child: const Text('Aceptar'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<bool> showConfirmationDialog(BuildContext context, String title, String content) async {
+    return await showDialog<bool>(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: Text(title),
+              content: Text(content),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(false),
+                  child: const Text('No'),
+                ),
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(true),
+                  child: const Text('Sí'),
+                ),
+              ],
+            );
+          },
+        ) ??
+        false;
+  }
+
+  Future<void> showMessageDialog(BuildContext context, String title, String content) async {
+    return showDialog<void>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(content),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('OK'),
             ),
           ],
         );
@@ -85,7 +126,7 @@ class _ProductsOfferedScreenState extends State<ProductsOfferedScreen> {
                     leading: ClipRRect(
                       borderRadius: BorderRadius.circular(8.0),
                       child: Image.asset(
-                        'assets/dish.png',  
+                        'assets/dish.png',  // Aquí puedes cambiar por la foto si la tienes
                         width: 50,
                         height: 50,
                         fit: BoxFit.cover,
@@ -96,7 +137,7 @@ class _ProductsOfferedScreenState extends State<ProductsOfferedScreen> {
                       style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
                     subtitle: Text(
-                      'Categoría: ${product.category}\nDisponible: ${product.quantityAvailable} unidades',
+                      'Categoría: ${product.category ?? 'N/A'}\nDisponible: ${product.quantityAvailable} unidades\nPrecio: \$${product.price.toStringAsFixed(2)}',
                       style: const TextStyle(fontSize: 12),
                     ),
                     trailing: Row(
@@ -104,10 +145,52 @@ class _ProductsOfferedScreenState extends State<ProductsOfferedScreen> {
                       children: [
                         IconButton(
                           icon: const Icon(Icons.delete),
-                          onPressed: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('Eliminar ${product.name}')) ,
+                          onPressed: () async {
+                            final confirm = await showConfirmationDialog(
+                              context,
+                              'Confirmación',
+                              '¿Realmente deseas eliminar este producto?',
                             );
+
+                            if (!confirm) return;
+
+                            final deleteProductUseCase = serviceLocator<DeleteProductUseCase>();
+
+                            try {
+                              final productId = int.tryParse(product.id.toString());
+                                if (productId == null) {
+                                  await showMessageDialog(
+                                    context,
+                                    'Error',
+                                    'ID de producto inválido.',
+                                  );
+                                  return;
+                                }
+                              final result = await deleteProductUseCase.call(productId);
+
+                              await result.fold(
+                                (failure) async {
+                                  await showMessageDialog(
+                                    context,
+                                    'Error',
+                                    'Error al eliminar el producto: ${failure.message}',
+                                  );
+                                },
+                                (success) async {
+                                  await showMessageDialog(
+                                    context,
+                                    'Éxito',
+                                    'Producto eliminado con éxito',
+                                  );
+                                  Navigator.pushNamed(context, '/home');
+                                },
+                              );
+                            } catch (e) {
+                              await showMessageDialog( context,
+                                'Error inesperado',
+                                'Ocurrió un error inesperado: $e',
+                              );
+                            }
                           },
                         ),
                         IconButton(
@@ -116,7 +199,7 @@ class _ProductsOfferedScreenState extends State<ProductsOfferedScreen> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => AddProductScreen(),
+                                builder: (context) => EditProductScreen(product: ProductModel.fromEntity(product),),
                               ),
                             );
                           },

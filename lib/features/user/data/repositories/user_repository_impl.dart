@@ -21,11 +21,7 @@ class UserRepositoryImpl implements UserRepository {
   @override
   Future<Either<Failure, User>> authenticateUser(String email, String password) async {
     try {
-      print('UserRepositoryImpl: authenticateUser');
-      print('email: $email');
-      print('password: $password');
       final User user = await userRemoteDataSource.authenticateUser(email, password);// Aquí se hace la petición al servidor
-      print('UserRepositoryImpl: authenticateUser: user: $user');
       return Right(user);
     } catch (e) {
       return Left(ServerFailure('Authentication failed'));
@@ -34,7 +30,6 @@ class UserRepositoryImpl implements UserRepository {
  
 @override
 Future<Either<Failure, bool>> createUser(User user) async {
-
   try {
     final createdUser = await userRemoteDataSource.createUser(UserModel.fromEntity(user));
 
@@ -67,7 +62,6 @@ Future<Either<Failure, bool>> createUser(User user) async {
 @override
   Future<Either<Failure, bool>> updateUser(String name, String email, String password, Uint8List profileImage)async{
     try {
-          print('Datos enviados: name=$name, email=$email, password=$password');
           final bool user = await userRemoteDataSource.updateUser(name, email, password, profileImage);
           return Right(user);
     } on InvalidDataFailure catch (e) {
@@ -82,7 +76,7 @@ Future<Either<Failure, bool>> createUser(User user) async {
       print('Error en editUser (Correo duplicado): ${e.message}');
       return Left(DuplicateEmailFailure(e.message));
 
-    }on ServerFailure catch (e) {
+    } on ServerFailure catch (e) {
       print('Error en editUser (Error en servidor): ${e.message}');
       return Left(ServerFailure(e.message));
       
@@ -94,9 +88,28 @@ Future<Either<Failure, bool>> createUser(User user) async {
   @override
   Future<Either<Failure, bool>> deleteUser() async{
     try {
-      final bool result = await userRemoteDataSource.deleteUser();// Aquí se hace la petición al servidor
+      final bool result = await userRemoteDataSource.deleteUser();
       return Right(result);
-    } catch (e) {
+
+    } on InvalidDataFailure catch (e) {
+      print('Error en deleteUser (Id de usuario invalido): ${e.message}');
+      return Left(InvalidDataFailure(e.message));
+
+    } on UnauthorizedFailure catch (e) {
+      print('Error en deleteUser (Token invalido): ${e.message}');
+      return Left(UnauthorizedFailure(e.message));
+
+    } on UserNotFoundFailure catch (e) {
+      print('Error en deleteUser (Usuario no encontrado): ${e.message}');
+      return Left(UserNotFoundFailure(e.message));
+
+    } on ServerFailure catch (e) {
+      print('Error en deleteUser (Error en el servidor): ${e.message}');
+      return Left(ServerFailure(e.message));
+
+    }
+
+    catch (e) {
       print('Error en deleteUser en UserRepositoryImpl: $e');
       return Left(ServerFailure('Delete user failed'));
     }
