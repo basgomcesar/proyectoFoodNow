@@ -86,7 +86,7 @@ class ProductRepositoryImpl implements ProductRepository {
         } on ServerFailure catch (e) {
           return Left(ServerFailure(e.message));
         } catch (e) {
-          return Left(UnknownFailure('Ocurrió un error inesperado al obtener el producto del pedido.'));
+          return Left(UnknownFailure('Ocurrió un error inesperado al actualizar el producto.'));
         }
     }
 
