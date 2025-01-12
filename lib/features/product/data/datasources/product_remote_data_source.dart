@@ -1,5 +1,4 @@
-import 'dart:typed_data';
-
+import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:loging_app/core/error/failure.dart';
 import 'package:loging_app/core/utils/session.dart';
@@ -24,7 +23,7 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
   final ClientChannel channel;
   late final ProductServiceClient client;
   final Dio dioClient = Dio();
-  final String apiUrl ; // URL de tu API
+  final String apiUrl ;
   final Session session = Session.instance;
 
   ProductRemoteDataSourceImpl(this.channel,{required this.apiUrl}) {
@@ -34,14 +33,12 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
   @override
   Stream<ProductModel> getProducts() async* {
     try {
-      print('Getting products from server');
       final request = ProductUpdateRequest();
       final responseStream = client.subscribeToProductUpdates(request);
       await for (var product in responseStream) {
         yield ProductModel.fromGrpc(product);
       }
     } catch (e) {
-      print('Error getting products: $e');
       rethrow;
     }
   }
@@ -57,13 +54,13 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
             'x-token': session.token,
           },
           validateStatus: (status) =>
-              status! < 500, // Manejar errores del servidor
+              status! < 500,
         ),
       );
 
       switch (response.statusCode) {
         case 201:
-          return true; // Producto creado exitosamente
+          return true;
         case 409:
           throw DuplicateProductFailure(
               'Ya tienes un producto con este nombre registrado.');
@@ -91,7 +88,7 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
         '$apiUrl/products/orderproducts/$idPedido',
         options: Options(
           headers: {
-            'x-token': session.token, // Token de sesión
+            'x-token': session.token,
           },
         ),
       );
@@ -103,21 +100,26 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
 
         final Map<String, dynamic> responseData =
             response.data as Map<String, dynamic>;
-        // Comprobamos que la clave 'productos' existe y no es nula
+
         if (responseData.containsKey('productos') &&
             responseData['productos'] != null) {
           final productos = responseData['productos'];
-          // Comprobamos que 'productos' contiene un producto válido
+
           if (productos is List && productos.isNotEmpty) {
-            // Asumimos que un pedido tiene un único producto
             final productJson = productos.first;
 
-            // Asegurarse de que 'foto' sea manejado si es null
-            if (productJson['foto'] == null) {
-              productJson['foto'] =
-                  ''; // O asignar algún valor predeterminado si es necesario
+            if (productJson['foto'] is Map<String, dynamic>) {
+              final fotoMap = productJson['foto'] as Map<String, dynamic>;
+
+              if (fotoMap.containsKey('data')) {
+                final fotoBytes = List<int>.from(fotoMap['data']);
+                productJson['foto'] = base64Encode(fotoBytes);
+              } else {
+                productJson['foto'] = '';
+              }
+            } else {
+              productJson['foto'] = productJson['foto'] ?? '';
             }
-            // Crear el modelo de producto y devolverlo
             return ProductModel.fromJsonEsp(productJson).toDomain();
           } else {
             throw ServerFailure(
@@ -136,10 +138,8 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
         );
       }
     } on DioException catch (dioError) {
-      print('Error al conectar con el servidor: ${dioError.message}');
-      throw ServerFailure('Error al conectar con el servidor.');
+      throw ServerFailure('Error al conectar con el servidor. ${dioError.message}');
     } catch (error) {
-      print('Error inesperado: $error');
       throw ServerFailure(
           'Error inesperado al obtener el producto del pedido.');
     }
@@ -148,7 +148,8 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
   @override
   Future<bool> deleteProduct(int idProduct) async{
     try {
-      final response = await dioClient.post(
+      
+      final response = await dioClient.delete(
         '$apiUrl/products/delete/$idProduct',
         options: Options(
           headers: {
@@ -158,6 +159,9 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
               status! < 500,
         ),
       );
+
+      print("status code: ${response.statusCode}");
+
       if (response.statusCode == 200){
         return true;
       } else {
@@ -175,7 +179,7 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
   Future<bool> updateProduct(ProductModel updatedProduct) async {
     try {
       final response = await dioClient.put(
-        '$apiUrl/products/${updatedProduct.id}',
+        '$apiUrl/products/update/${updatedProduct.id}',
         data: {
           if (updatedProduct.description != null)
             'descripcion': updatedProduct.description,
@@ -192,7 +196,7 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
 
       switch (response.statusCode) {
         case 200:
-          return true; // Producto actualizado correctamente
+          return true;
         case 404:
           throw NotFoundFailure(
               'El producto no fue encontrado o no pertenece al usuario.');
@@ -211,7 +215,9 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
     } catch (error) {
       throw ServerFailure('Error inesperado al actualizar el producto. $error');
     }
-  }@override
+  }
+  
+  @override
   Future<ProductOrderModel> placeOrder(Product product, int quantity) async {
     try {
       final response = await dioClient.post(
@@ -230,8 +236,7 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
 
       switch (response.statusCode) {
         case 201:
-          print(response.data);
-          return ProductOrderModel.fromJson(response.data['order']); // Orden creada exitosamente
+          return ProductOrderModel.fromJson(response.data['order']);
         case 400:
           throw InvalidDataFailure('Datos inválidos enviados al servidor.');
         case 404:
@@ -244,7 +249,6 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
           );
       }
     } catch (e) {
-      print('Error en placeOrder: $e');
       rethrow;
     }
   }

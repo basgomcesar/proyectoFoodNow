@@ -80,7 +80,6 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
 
   @override
   Future<bool> createUser(UserModel userModel) async {
-
     try {
       final response = await dioClient.post(
         '$apiUrl/users',
@@ -135,9 +134,6 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
           },
         ),
       );
-
-      print('Response STATUS CODE: ${response.statusCode}');
-
       switch (response.statusCode) {
         case 200:
           return true; // Usuario actualizado correctamente
@@ -175,15 +171,20 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
         ),
       );
 
-      if (response.statusCode == 200) {
-        return true;
-      } else if (response.statusCode == 400) {
-        throw Exception('Invalid data provided');
-      } else if (response.statusCode == 404) {
-        throw Exception('User not found');
-      } else {
-        throw Exception(
-            'Failed to update user with status code ${response.statusCode}');
+      switch (response.statusCode) {
+        case 200:
+          // El usuario fue eliminado correctamente
+          return true;
+        case 400:
+          throw InvalidDataFailure('El ID de usuario en el token es inválido');
+        case 401:
+          throw UnauthorizedFailure('No se proporcionó el token o el token es inválido');
+        case 404:
+          throw UserNotFoundFailure('Usuario no encontrado');
+        case 500:
+          throw ServerFailure('Error en el servidor. Inténtalo más tarde');
+        default:
+          throw UnknownFailure('Error desconocido: ${response.statusCode}');
       }
     } catch (e) {
       throw Exception('Failed to update user: $e');
@@ -204,9 +205,8 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
   @override
   Future<UserModel> updateAvailability(
       bool availability, String location) async {
-    // Asegúrate de que tienes el idUsuario en la sesión
     String? userId =
-        session.userId; // Esto es obtenido desde tu singleton Session
+        session.userId; 
     if (userId == null) {
       throw Exception('User ID is not available');
     }

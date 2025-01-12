@@ -31,7 +31,6 @@ class ProductBox extends StatelessWidget {
                 builder: (context) => ProductDetailsScreen(product: product),
               ),
             );
-            print('Product tapped ${product.name}');
           },
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,

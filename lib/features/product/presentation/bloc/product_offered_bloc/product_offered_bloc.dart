@@ -13,8 +13,7 @@ class ProductOfferedBloc extends Bloc<ProductOfferedEvent, ProductOfferedState> 
 
       try {
         final result = await getProductsOfferedUseCase.call(
-            event.userId, event.anio, event.mes);
-
+            event.anio, event.mes);
         result.fold(
           (failure) => emit(ProductOfferedError('Error fetching products: $failure')),
           (products) => emit(ProductOfferedLoaded(products)),

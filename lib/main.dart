@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:loging_app/core/utils/routes.dart';
 import 'package:loging_app/features/order/presentation/bloc/order_details_bloc/order_details_bloc.dart';
+import 'package:loging_app/features/product/presentation/bloc/edit_product/edit_product_bloc.dart';
 import 'package:loging_app/features/product/presentation/bloc/placer_order/place_order_bloc.dart';
 import 'package:loging_app/features/product/presentation/bloc/product_bloc.dart';
 import 'package:loging_app/features/user/presentation/bloc/create_profile/create_profile_bloc.dart';
@@ -49,7 +50,10 @@ void main() async {
     ),
     BlocProvider<ProductOfferedBloc>(
   create: (_) => ProductOfferedBloc(getProductsOfferedUseCase: di.serviceLocator()),
-),
+    ),
+    BlocProvider<EditProductBloc>(
+  create: (_) => EditProductBloc(updateProductUseCase: di.serviceLocator()),
+    ),
   ],
   child: const MyApp(),
 

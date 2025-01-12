@@ -46,7 +46,7 @@ class _OrderDetailsContentState extends State<OrderDetailsContent> {
   @override
   void initState() {
     super.initState();
-    estadoPedido = widget.pedido.estadoPedido; // Estado inicial del pedido
+    estadoPedido = widget.pedido.estadoPedido;
   }
 
   Future<bool> showConfirmationDialog(BuildContext context, String title, String content) async {
@@ -134,16 +134,43 @@ class _OrderDetailsContentState extends State<OrderDetailsContent> {
                   return const Center(child: CircularProgressIndicator());
                 } else if (state is OrderDetailsSuccess) {
                   final product = state.product;
-                  return Column(
+                  return Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      buildInfoRow('Producto:', product.name),
-                      buildInfoRow('Cantidad:', widget.pedido.cantidad.toString()),
-                      buildInfoRow(
-                        'Precio:',
-                        '\$${product.price.toStringAsFixed(2)}',
+                      // Detalles del producto en el lado izquierdo
+                      Expanded(
+                        flex: 2,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            buildInfoRow('Producto:', product.name),
+                            buildInfoRow('Cantidad:', widget.pedido.cantidad.toString()),
+                            buildInfoRow(
+                              'Precio:',
+                              '\$${product.price.toStringAsFixed(2)}',
+                            ),
+                            buildInfoRow('Descripción:', product.description ?? 'Sin descripción'),
+                          ],
+                        ),
                       ),
-                      buildInfoRow('Descripción:', product.description ?? 'Sin descripción'),
+                      const SizedBox(width: 16), // Separador entre texto e imagen
+                      
+                      // Imagen del producto en el lado derecho
+                      Expanded(
+                        flex: 1,
+                        child: product.photo.isNotEmpty
+                            ? Image.memory(
+                                product.photo,
+                                fit: BoxFit.cover,
+                                height: 150,
+                                width: 150,
+                              )
+                            : const Icon(
+                                Icons.image_not_supported,
+                                size: 150,
+                                color: Colors.grey,
+                              ),
+                      ),
                     ],
                   );
                 } else if (state is OrderDetailsFailure) {
@@ -158,6 +185,7 @@ class _OrderDetailsContentState extends State<OrderDetailsContent> {
                 }
               },
             ),
+
             const Spacer(),
 
             // Botón para cancelar el pedido
@@ -193,10 +221,6 @@ class _OrderDetailsContentState extends State<OrderDetailsContent> {
                                 'Pedido cancelado con éxito',
                               );
                               Navigator.pushNamed(context, '/home');
-                              /*setState(() {
-                                estadoPedido = 'Cancelado'; // Actualizar estado
-                                botonHabilitado = false; // Deshabilitar botón
-                              });*/
                             },
                           );
                         } catch (e) {
@@ -250,10 +274,6 @@ class _OrderDetailsContentState extends State<OrderDetailsContent> {
                                 'Pedido entregado con éxito',
                               );
                               Navigator.pushNamed(context, '/home');
-                              /*setState(() {
-                                estadoPedido = 'Entregado'; // Actualizar estado
-                                botonHabilitado = false; // Deshabilitar botón
-                              });*/
                             },
                           );
                         } catch (e) {
