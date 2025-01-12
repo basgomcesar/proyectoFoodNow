@@ -6,15 +6,13 @@ abstract class ProductOfferedEvent extends Equatable {
 }
 
 class FetchProductsOffered extends ProductOfferedEvent {
-  final String userId;
   final String anio;
   final String mes;
 
   FetchProductsOffered({
-    required this.userId,
     required this.anio,
     required this.mes});
 
   @override
-  List<Object> get props => [userId, anio, mes];
+  List<Object> get props => [ anio, mes];
 }

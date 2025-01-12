@@ -9,7 +9,7 @@ class GetProductsOfferedUseCase {
   GetProductsOfferedUseCase({required this.repositoryProduct});
 
   Future<Either<Failure, List<ProductGraph>>> call(
-      String userId, String anio, String mes) async {
-    return await repositoryProduct.getProductsOffered(userId, anio, mes);
+      String anio, String mes) async {
+    return await repositoryProduct.getProductsOffered(anio, mes);
   }
 }

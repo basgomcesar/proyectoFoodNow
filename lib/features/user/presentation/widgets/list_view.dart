@@ -184,7 +184,7 @@ class _DrawerListViewState extends State<DrawerListView> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => const ProductsChartView(),
+                builder: (context) => ProductsChartView(),
               ),
             );
           },
@@ -213,7 +213,8 @@ class _DrawerListViewState extends State<DrawerListView> {
                     onPressed: () {
                       Navigator.pop(context);
                       Session.instance.endSession();
-                      Navigator.pushReplacementNamed(context, '/login');
+                      Navigator.pushNamedAndRemoveUntil(
+                          context, '/login', (route) => false);
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
                             content: Text('Sesión cerrada correctamente')),

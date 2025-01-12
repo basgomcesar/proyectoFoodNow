@@ -148,7 +148,8 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
   @override
   Future<bool> deleteProduct(int idProduct) async{
     try {
-      final response = await dioClient.post(
+      
+      final response = await dioClient.delete(
         '$apiUrl/products/delete/$idProduct',
         options: Options(
           headers: {
@@ -158,6 +159,9 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
               status! < 500,
         ),
       );
+
+      print("status code: ${response.statusCode}");
+
       if (response.statusCode == 200){
         return true;
       } else {
@@ -175,7 +179,7 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
   Future<bool> updateProduct(ProductModel updatedProduct) async {
     try {
       final response = await dioClient.put(
-        '$apiUrl/products/${updatedProduct.id}',
+        '$apiUrl/products/update/${updatedProduct.id}',
         data: {
           if (updatedProduct.description != null)
             'descripcion': updatedProduct.description,

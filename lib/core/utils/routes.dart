@@ -15,7 +15,6 @@ class AppRoutes {
   static const String editProfile = '/editProfile';
   static const String pendingOrders = '/pendingOrders';
   static const String customerOrders = '/customerOrders';
-  static const String orderDetails = '/orderDetails';
   static const String addProduct = '/addProduct';
   static const String placeOrder = '/placeOrder';
 
