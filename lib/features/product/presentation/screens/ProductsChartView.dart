@@ -173,99 +173,106 @@ class _ProductsChartViewState extends State<ProductsChartViewContent> {
 
                     return Padding(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 16.0, vertical: 8.0),
+                        horizontal: 16.0, vertical: 8.0),
                       child: BarChart(
-                        BarChartData(
-                          barGroups: products
-                              .asMap()
-                              .entries
-                              .map(
-                                (entry) => BarChartGroupData(
-                                  x: entry.key,
-                                  barRods: [
-                                    BarChartRodData(
-                                      toY: entry.value.sales.toDouble(),
-                                      color: colors[entry.key % colors.length],
-                                    ),
-                                  ],
-                                ),
-                              )
-                              .toList(),
-                          titlesData: FlTitlesData(
-                            bottomTitles: AxisTitles(
-                              sideTitles: SideTitles(
-                                showTitles: true,
-                                reservedSize:
-                                    80, // Aumentar para dar más espacio a los títulos
-                                getTitlesWidget: (index, meta) {
-                                  final title = products[index.toInt()].name;
-                                  return RotatedBox(
-                                    quarterTurns: 1, // Gira el texto 90 grados
-                                    child: AutoSizeText(
-                                      title,
-                                      style: const TextStyle(
-                                          fontSize: 10), // Tamaño ajustable
-                                      maxLines:
-                                          2, // Permitir hasta 2 líneas si el texto es muy largo
-                                      overflow: TextOverflow
-                                          .ellipsis, // Manejar texto largo con puntos suspensivos
-                                      textAlign:
-                                          TextAlign.center, // Centrar el texto
-                                    ),
-                                  );
-                                },
-                              ),
+                      BarChartData(
+                        barGroups: products
+                          .asMap()
+                          .entries
+                          .map(
+                          (entry) => BarChartGroupData(
+                            x: entry.key,
+                            barRods: [
+                            BarChartRodData(
+                              toY: entry.value.sales.toDouble(),
+                              color: colors[entry.key % colors.length],
                             ),
-                            leftTitles: AxisTitles(
-                              sideTitles: SideTitles(
-                                showTitles: true,
-                                reservedSize: 50,
-                                getTitlesWidget: (value, meta) {
-                                  final intValue = value.toInt();
-                                  return intValue >= 1 && intValue <= 10
-                                      ? AutoSizeText(
-                                          '$intValue',
-                                          style: const TextStyle(fontSize: 10),
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                        )
-                                      : Container();
-                                },
-                              ),
-                            ),
-                            rightTitles: const AxisTitles(
-                              sideTitles: SideTitles(showTitles: false),
-                            ),
-                            topTitles: const AxisTitles(
-                              sideTitles: SideTitles(showTitles: false),
-                            ),
+                            ],
                           ),
-                          borderData: FlBorderData(
-                            show: true,
-                            border: Border.all(
-                              color: const Color(0xff37434d),
-                              width: 1,
+                          )
+                          .toList(),
+                        titlesData: FlTitlesData(
+                        bottomTitles: AxisTitles(
+                          sideTitles: SideTitles(
+                          showTitles: true,
+                          reservedSize:
+                            80, // Aumentar para dar más espacio a los títulos
+                          getTitlesWidget: (index, meta) {
+                            final title = products[index.toInt()].name;
+                            return RotatedBox(
+                            quarterTurns: 1, // Gira el texto 90 grados
+                            child: AutoSizeText(
+                              title,
+                              style: const TextStyle(
+                                fontSize: 10), // Tamaño ajustable
+                              maxLines:
+                                2, // Permitir hasta 2 líneas si el texto es muy largo
+                              overflow: TextOverflow
+                                .ellipsis, // Manejar texto largo con puntos suspensivos
+                              textAlign:
+                                TextAlign.center, // Centrar el texto
                             ),
+                            );
+                          },
                           ),
-                          gridData: FlGridData(
-                            show: true,
-                            drawVerticalLine: true,
-                            drawHorizontalLine: true,
-                            getDrawingHorizontalLine: (value) {
-                              return const FlLine(
-                                color: Color(0xff37434d),
-                                strokeWidth: 0.8,
-                              );
-                            },
-                            getDrawingVerticalLine: (value) {
-                              return const FlLine(
-                                color: Color(0xff37434d),
-                                strokeWidth: 0.8,
-                              );
-                            },
-                          ),
-                          maxY: upperLimit,
                         ),
+                        leftTitles: AxisTitles(
+                          axisNameWidget: const Padding(
+                          padding: EdgeInsets.only(right: 8.0),
+                          child: Text(
+                            'Numero de ordenes vendidas',
+                            style: TextStyle(fontSize: 12),
+                          ),
+                          ),
+                          sideTitles: SideTitles(
+                          showTitles: true,
+                          reservedSize: 50,
+                          getTitlesWidget: (value, meta) {
+                            final intValue = value.toInt();
+                            return intValue >= 1 && intValue <= 10
+                              ? AutoSizeText(
+                                '$intValue',
+                                style: const TextStyle(fontSize: 10),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              )
+                              : Container();
+                          },
+                          ),
+                        ),
+                        rightTitles: const AxisTitles(
+                          sideTitles: SideTitles(showTitles: false),
+                        ),
+                        topTitles: const AxisTitles(
+                          sideTitles: SideTitles(showTitles: false),
+                        ),
+                        ),
+                        borderData: FlBorderData(
+                        show: true,
+                        border: Border.all(
+                          color: const Color(0xff37434d),
+                          width: 1,
+                        ),
+                        ),
+                        gridData: FlGridData(
+                        show: true,
+                        drawVerticalLine: true,
+                        drawHorizontalLine: true,
+                        getDrawingHorizontalLine: (value) {
+                          return const FlLine(
+                          color: Color(0xff37434d),
+                          strokeWidth: 0.8,
+                          );
+                        },
+                        getDrawingVerticalLine: (value) {
+                          return const FlLine(
+                          color: Color(0xff37434d),
+                          strokeWidth: 0.8,
+                          );
+                        },
+                        ),
+                        maxY: upperLimit,
+                      ),
                       ),
                     );
                   }
