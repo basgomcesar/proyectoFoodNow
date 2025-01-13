@@ -28,7 +28,9 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
 
     @override
   Future<UserModel> authenticateUser(String correo, String password) async {    
+    print('....... mensaje api ...........');
     final Response response = await dioClient.post(
+        
       '$apiUrl/auth/login',
       data: {
         'correo': correo,
